@@ -5,10 +5,14 @@ set(CMAKE_CXX_STANDARD 17)
 
 add_executable(Agent_simulation_library main.cpp
         agent.h
-        goal.h
         agent.cpp
-        goal.cpp
-        action.h
-        helloAction.h
-        helloAction.cpp
+        managerAgent.h
+        message.h
+        schedule.cpp
+        schedule.h
+        managerAgent.cpp
+        agents/agent1.cpp
+        agents/agent1.h
+        agents/agent2.cpp
+        agents/agent2.h
 )
