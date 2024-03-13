@@ -2,6 +2,8 @@
 #include "managerAgent.h"
 #include "agents/agent1.h"
 #include "agents/agent2.h"
+
+
 int main() {
     ManagerAgent manager(0,10);
     //ID 2

@@ -1,3 +1,0 @@
-/home/miska/CLionProjects/Agent_simulation_library/cmake-build-debug/CMakeFiles/Agent_simulation_library.dir
-/home/miska/CLionProjects/Agent_simulation_library/cmake-build-debug/CMakeFiles/edit_cache.dir
-/home/miska/CLionProjects/Agent_simulation_library/cmake-build-debug/CMakeFiles/rebuild_cache.dir
