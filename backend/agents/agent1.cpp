@@ -2,7 +2,7 @@
 
 void Agent1::writeHello(int sender) {
     if (counter%3 == 0) {
-        sendMessage(1,3,getCurrTime());
+        sendMessage(1,getCurrTime(),3);
         counter = 1;
     } else {
         std::cout << "Hello." << std::endl;

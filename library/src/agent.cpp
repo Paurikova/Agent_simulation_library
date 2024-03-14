@@ -1,24 +1,27 @@
+#include <memory>
 #include "../include/agent.h"
+
+AgentId_t Agent::nextAgentId = 1;
 
 void Agent::process(ServiceId_t pServiceId, AgentId_t pSender) {
     // Find function connected with the entered service ID
     auto it = functionMap.find(pServiceId);
     if (it != functionMap.end()) {
         // Retrieve the function pointer and call it
-        it->second(sender);
+        it->second(pSender);
     } else {
         // Throw an exception if the function does not exist
-        throw std::runtime_error("Function with service ID " + std::to_string(messageId) + " does not exist in the map.");
+        throw std::runtime_error("Function with service ID " + std::to_string(pServiceId) + " does not exist in the map.");
     }
 }
 
-int Agent::getCurrTime() {
+SimTime_t Agent::getCurrTime() {
     return currTime;
 }
 
-void Agent::sendMessage(ServiceId_t pServiceId, SimTime_t pTime, AgentId_t pReceiver = -1, int pPriority = -1) {
+void Agent::sendMessage(ServiceId_t pServiceId, SimTime_t pTime, AgentId_t pReceiver, int pPriority) {
     // Create a new message
-    Message* newMessage = new Message{pTime, pPriority, pServiceId, getId(), receiver};
+    Message* newMessage = new Message{pTime, pPriority, pServiceId, getId(), pReceiver};
     // Add the new message to the message box
     outBox->push_back(newMessage);
 }
@@ -45,40 +48,40 @@ Agent::Agent(Agent* pParent) {
     parent = pParent;
     currTime  = -1;
     outBox = std::make_unique<std::vector<Message*>>();
-    schedule = std::make_unique<Schedule*>();
+    schedule = std::make_unique<Schedule>();
     // Register agent as child of his parent.
-    pAgent->registerAsChild(pParent);
+    registerAsChild(pParent);
 }
 
 AgentId_t Agent::getId() {
     return id;
 }
 
-Message Agent::receiveMessage(Message pMsg) {
+void Agent::receiveMessage(Message* pMsg) {
     // Add the received message to the agent's schedule
     schedule->pushMessage(pMsg);
 }
 
 void Agent::execute() {
-    Message* message = schedule->popMessage(time); // Get the next scheduled message
+    Message* message = schedule->popMessage(); // Get the next scheduled message
     while (message) { // Loop until there are no more messages scheduled
         currTime = message->execTime; //Set the current time to the execution time of current message
-        process(message->id, message->sender); // Process the message
+        process(message->serviceId, message->sender); // Process the message
         message = schedule->popMessage(); // Get the next scheduled message
     }
 }
 
 bool Agent::providedService(ServiceId_t pServiceId) {
-    return functionMap.find(key) != functionMap.end();
+    return functionMap.find(pServiceId) != functionMap.end();
 }
 
 Message* Agent::getTopOutboxMessage() {
     if (outBox->empty()) {
         return nullptr;
     }
-    Message topMessage = outBox->back(); // Get the last message
+    Message* topMessage = outBox->back(); // Get the last message
     outBox->pop_back(); // Remove the last message
-    return nullptr;
+    return topMessage;
 }
 
 void Agent::registerAsChild(Agent* pParent) {
@@ -92,9 +95,9 @@ void Agent::registerAsChild(Agent* pParent) {
 }
 
 void Agent::registerChild(Agent* pChild) {
-    if (childExists(pChild)) {
+    if (childExists(pChild->getId())) {
         // Throw an exception if the child already exist
-        throw std::runtime_error("Agent with ID " + std::to_string(pChild) +
+        throw std::runtime_error("Agent with ID " + std::to_string(pChild->getId()) +
         " is already registered as child of agent with ID " + std::to_string(id) + ".");
     }
     childs[pChild->getId()] = pChild;
@@ -106,7 +109,7 @@ void Agent::unregisterAsChild() {
         return;
     }
     // Unregister agent from parent child's map.
-    parent->unregisterChild(this);
+    parent->unregisterChild(id);
     // Set agent's parent to nullptr.
     parent = nullptr;
 }
@@ -124,11 +127,11 @@ Agent* Agent::getParent() {
     return parent;
 }
 
-Agent* Agent::setParent(Agent* pPrent) {
+void Agent::setParent(Agent* pPrent) {
     parent = pPrent;
 }
 
-AgentId_t Agent::getAgentIdProvidedService(ServiceId_t pServiceId, AgentId_t sender) {
+AgentId_t Agent::getAgentIdProvidedService(ServiceId_t pServiceId, AgentId_t pSenderId) {
     if (providedService(pServiceId)) {
         return id;
     }
@@ -136,7 +139,7 @@ AgentId_t Agent::getAgentIdProvidedService(ServiceId_t pServiceId, AgentId_t sen
     // Search among the agent's child
     for (const auto& pair : childs) {
         Agent* child = pair.second;
-        if (child->getId() == sender) {
+        if (child->getId() == pSenderId) {
             continue;
         }
         if (child->providedService(pServiceId)) {
@@ -147,10 +150,10 @@ AgentId_t Agent::getAgentIdProvidedService(ServiceId_t pServiceId, AgentId_t sen
     // Recursively search among the children of each agent
     for (const auto& pair : childs) {
         Agent* child = pair.second;
-        if (child->getId() == sender) {
+        if (child->getId() == pSenderId) {
             continue;
         }
-        AgentId_t id = child->getAgentIdProvidedService(pServiceId);
+        AgentId_t id = child->getAgentIdProvidedService(pServiceId, pSenderId);
         if (id != -1) {
             return id;
         }
@@ -158,6 +161,6 @@ AgentId_t Agent::getAgentIdProvidedService(ServiceId_t pServiceId, AgentId_t sen
     return -1;
 }
 
-bool childExists(AgentId_t pChildId) {
+bool Agent::childExists(AgentId_t pChildId) {
     return childs.find(pChildId) != childs.end();
 }

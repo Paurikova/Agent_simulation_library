@@ -4,7 +4,7 @@
 
 #include "agent.h"
 #include "message.h"
-#include "const.h"
+#include "types.h"
 
 /**
  * @brief Represents the core of a simulation.
@@ -12,12 +12,12 @@
  * This class manages the execution of the simulation and interaction
  * between different agents.
  */
-class SimulationCore : Agent{
+class SimulationCore : public Agent{
 private:
     SimTime_t currTime; /**< Current simulation time. */
     SimTime_t endTime; /**< End time of the simulation. */
     std::unordered_map<AgentId_t, Agent*> agents; /**< Map of agent IDs to agent objects. */
-    std::unique_ptr<Schedule*> mainSchedule; /**< Unique pointer to the main schedule. */
+    std::unique_ptr<Schedule> mainSchedule; /**< Unique pointer to the main schedule. */
 
 public:
     /**
@@ -48,6 +48,12 @@ public:
      * This function executes the simulation until the end time is reached.
      */
     void runSimulation();
+
+    /**
+     * @brief Push messsage to simulation core schedule.
+     * @param pMessage Pushed message.
+     */
+    void pushToMainSchedule(Message* pMessage);
 
 private:
     /**
@@ -93,6 +99,13 @@ private:
      * @return true if an agent with the specified ID exists, false otherwise.
      */
     bool agentExists(AgentId_t pAgentId);
+
+    /**
+     * @brief Adds a receiver for the message.
+     *
+     * @param pMessage Pointer to the message being received.
+     */
+    void addReceiver(Message* pMessage);
 
     //function
     void allDone(int sender);

@@ -16,7 +16,7 @@ void Agent2::registerFunctions() {
 //functions
 void Agent2::writeGoodbye(int sender) {
     std::cout << "Goodbye." << std::endl;
-    sendMessage(1,1,getCurrTime());
+    sendMessage(1,getCurrTime(), 1);
 }
 
 void Agent2::allDone(int sender) {

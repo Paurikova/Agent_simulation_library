@@ -1,11 +1,14 @@
 #pragma once
 
+#include "types.h"
+
 /**
  * @brief Definition of the Message structure.
  *
  * This structure represents a message that can be sent between agents.
  */
 struct Message {
+    static int nextMessageId;
     int messageId; /**< Unique identifier for the message */
     SimTime_t execTime; /**< Execution time of the message */
     int priority; /**< Priority of the message */
@@ -22,9 +25,7 @@ struct Message {
      * @param other The message to compare with.
      * @return true if the current message has a greater execution time or if the execution times are equal and the priority is higher; false otherwise.
      */
-    bool operator>(const Message& other) {
-        return time == other.time ? priority > other.priority : time > other.time;
-    }
+    bool operator<(const Message& other) const;
 
     /**
      * @brief Constructor for the Message structure.
@@ -36,4 +37,12 @@ struct Message {
      * @param pSdr The ID of the sender agent.
      * @param pRcvr The ID of the receiver agent. */
     Message(SimTime_t pExecTime, int pPriority, ServiceId_t pServiceId, AgentId_t pSdr, AgentId_t pRcvr);
+};
+
+// Define a custom comparison functor
+struct MessagePtrComparator {
+    bool operator()(const Message* m1, const Message* m2) const {
+        // Use the operator> to compare objects
+        return *m1 < *m2;
+    }
 };

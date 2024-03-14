@@ -4,27 +4,27 @@
 
 
 int main() {
-    SimulationCore manager(0,10);
+    SimulationCore* manager = new SimulationCore(0,10);
     //ID 2
-    Agent1 agent1(2);
+    Agent1* agent1 = new Agent1(manager);
     //register agent
-    manager.registerAgent(&agent1);
-    Agent2 agent2(3);
-    manager.registerAgent(&agent2);
+    manager->registerAgent(agent1);
+    Agent2* agent2 = new Agent2(manager);
+    manager->registerAgent(agent2);
 
     //add Message to agent1 schedule
     Message m1 = {1,1,1,-1,2};
-    Message m2 = {1,3,1,-1,2};
-    Message m3 = {1,4,1,-1,2};
-    Message m4 = {1,5,1,-1,2};
-    Message m5 = {1,6,1,-1,2};
-    Message m6 = {1,7,1,-1,2};
-    agent1.receiveMessage(m1);
-    agent1.receiveMessage(m2);
-    agent1.receiveMessage(m3);
-    agent1.receiveMessage(m4);
-    agent1.receiveMessage(m5);
-    agent1.receiveMessage(m6);
+    manager->pushToMainSchedule(&m1);
+    Message m2 = {2,1,1,-1,2};
+    manager->pushToMainSchedule(&m2);
+    Message m3 = {4,2,1,-1,2};
+    manager->pushToMainSchedule(&m3);
+    Message m4 = {5,1,1,-1,2};
+    manager->pushToMainSchedule(&m4);
+    Message m5 = {7,1,1,-1,2};
+    manager->pushToMainSchedule(&m5);
+    Message m6 = {8,1,1,-1,2};
+    manager->pushToMainSchedule(&m6);
     //run sim
-    manager.runSimulation();
+    manager->runSimulation();
 }
