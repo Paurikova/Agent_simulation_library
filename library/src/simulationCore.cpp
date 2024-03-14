@@ -9,17 +9,12 @@ SimulationCore::SimulationCore(SimTime_t pStartTime, SimTime_t pEndTime) : Agent
     registerAgent(this);
 }
 
-void SimulationCore::registerAgent(Agent* pParent) {
-    if (!pParent or not agentExists(pParent)) {
-        // If the parent is not entered, or parent hasn't existed yet
-        throw std::runtime_error("Parent is not entered, or he hasn't registered yet.");
+void SimulationCore::registerAgent(Agent* pAgent) {
+    if (!pAgent) {
+        throw std::runtime_error("Cannot register agent because the agent is nullptr.");
     }
-    // Create new agent.
-    Agent* agent = new Agent(pParent);
-    // Register agent as child of his parent.
-    agent->registerAsChild(pParent);
     // Registers an agent of simulation core based on his unique id
-    agents[agent->getId()] = agent;
+    agents[agent->getId()] = pAgent;
 }
 
 void SimulationCore::unregisterAgent(int agentId) {

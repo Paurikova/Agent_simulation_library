@@ -1,17 +1,17 @@
-#pragma once
-#include "managerAgent.h"
-#include "agents/agent1.h"
-#include "agents/agent2.h"
+#include "library/include/simulationCore.h"
+#include "backend/agents/agent1.h"
+#include "backend/agents/agent2.h"
 
 
 int main() {
-    ManagerAgent manager(0,10);
+    SimulationCore manager(0,10);
     //ID 2
     Agent1 agent1(2);
     //register agent
     manager.registerAgent(&agent1);
     Agent2 agent2(3);
     manager.registerAgent(&agent2);
+
     //add Message to agent1 schedule
     Message m1 = {1,1,1,-1,2};
     Message m2 = {1,3,1,-1,2};

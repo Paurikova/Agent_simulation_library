@@ -46,6 +46,8 @@ Agent::Agent(Agent* pParent) {
     currTime  = -1;
     outBox = std::make_unique<std::vector<Message*>>();
     schedule = std::make_unique<Schedule*>();
+    // Register agent as child of his parent.
+    pAgent->registerAsChild(pParent);
 }
 
 AgentId_t Agent::getId() {
@@ -81,7 +83,10 @@ Message* Agent::getTopOutboxMessage() {
 
 void Agent::registerAsChild(Agent* pParent) {
     // Call the parent's registerChild method to add the current agent to its list of children
-    pParent->registerChild(this);
+    //Agent of simulation core doesn't have parent.
+    if (pParent) {
+        pParent->registerChild(this);
+    }
     // Set the parent pointer of the current agent
     setParent(pParent);
 }
@@ -96,9 +101,9 @@ void Agent::registerChild(Agent* pChild) {
 }
 
 void Agent::unregisterAsChild() {
-    if (parent == nullptr) {
-        // Throw an exception if the parent does not exist
-        throw std::runtime_error("Parent of agent with ID " + std::to_string(id) + " does not exist.");
+    // Simulation core agent doesn't have parent
+    if (!parent) {
+        return;
     }
     // Unregister agent from parent child's map.
     parent->unregisterChild(this);

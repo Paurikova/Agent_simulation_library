@@ -86,6 +86,12 @@ private:
     */
     void receiveAgentMessages(Agent* agent);
 
+    /**
+     * @brief Checks if an agent with the specified ID exists in the simulation core.
+     *
+     * @param pAgentId The ID of the agent to check for existence.
+     * @return true if an agent with the specified ID exists, false otherwise.
+     */
     bool agentExists(AgentId_t pAgentId);
 
     //function

@@ -1,7 +1,3 @@
-//
-// Created by miska on 10.3.2024.
-//
-
 #include "agent1.h"
 
 void Agent1::writeHello(int sender) {

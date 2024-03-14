@@ -1,4 +1,3 @@
-#include "types.h"
 const SimTime_t SIMULATION_TIME_STEP = 1;
 const SimTime_t SIMULATION_TIME_OFFSET = 0;
 
