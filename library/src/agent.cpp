@@ -43,7 +43,6 @@ void Agent::unregisterFunction(int pServiceId) {
 Agent::Agent(Agent* pParent) {
     id = nextAgentId++;
     parent = pParent;
-    childs = std::make_unique<std::vector<Agent*>>();
     currTime  = -1;
     outBox = std::make_unique<std::vector<Message*>>();
     schedule = std::make_unique<Schedule*>();
@@ -88,7 +87,32 @@ void Agent::registerAsChild(Agent* pParent) {
 }
 
 void Agent::registerChild(Agent* pChild) {
-    childs.push_back(pChild);
+    if (childExists(pChild)) {
+        // Throw an exception if the child already exist
+        throw std::runtime_error("Agent with ID " + std::to_string(pChild) +
+        " is already registered as child of agent with ID " + std::to_string(id) + ".");
+    }
+    childs[pChild->getId()] = pChild;
+}
+
+void Agent::unregisterAsChild() {
+    if (parent == nullptr) {
+        // Throw an exception if the parent does not exist
+        throw std::runtime_error("Parent of agent with ID " + std::to_string(id) + " does not exist.");
+    }
+    // Unregister agent from parent child's map.
+    parent->unregisterChild(this);
+    // Set agent's parent to nullptr.
+    parent = nullptr;
+}
+
+void Agent::unregisterChild(AgentId_t pChildId) {
+    if (not childExists(pChildId)) {
+        // Throw an exception if the child is not agent's child
+        throw std::runtime_error("Agent with ID " + std::to_string(pChildId) + " is not child of agent with ID " + std::to_string(id) + ".");
+    }
+    // Erase agent from child map
+    childs.erase(pChildId);
 }
 
 Agent* Agent::getParent() {
@@ -105,7 +129,8 @@ AgentId_t Agent::getAgentIdProvidedService(ServiceId_t pServiceId, AgentId_t sen
     }
 
     // Search among the agent's child
-    for (Agent* child : childs) {
+    for (const auto& pair : childs) {
+        Agent* child = pair.second;
         if (child->getId() == sender) {
             continue;
         }
@@ -115,7 +140,8 @@ AgentId_t Agent::getAgentIdProvidedService(ServiceId_t pServiceId, AgentId_t sen
     }
 
     // Recursively search among the children of each agent
-    for (Agent* child : childs) {
+    for (const auto& pair : childs) {
+        Agent* child = pair.second;
         if (child->getId() == sender) {
             continue;
         }
@@ -125,4 +151,8 @@ AgentId_t Agent::getAgentIdProvidedService(ServiceId_t pServiceId, AgentId_t sen
         }
     }
     return -1;
+}
+
+bool childExists(AgentId_t pChildId) {
+    return childs.find(pChildId) != childs.end();
 }

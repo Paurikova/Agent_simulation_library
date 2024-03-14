@@ -86,6 +86,8 @@ private:
     */
     void receiveAgentMessages(Agent* agent);
 
+    bool agentExists(AgentId_t pAgentId);
+
     //function
     void allDone(int sender);
 };

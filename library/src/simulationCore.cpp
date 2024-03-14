@@ -9,21 +9,29 @@ SimulationCore::SimulationCore(SimTime_t pStartTime, SimTime_t pEndTime) : Agent
     registerAgent(this);
 }
 
-void SimulationCore::registerAgent(Agent* agent) {
-    // Registers an agent based on his unique id
+void SimulationCore::registerAgent(Agent* pParent) {
+    if (!pParent or not agentExists(pParent)) {
+        // If the parent is not entered, or parent hasn't existed yet
+        throw std::runtime_error("Parent is not entered, or he hasn't registered yet.");
+    }
+    // Create new agent.
+    Agent* agent = new Agent(pParent);
+    // Register agent as child of his parent.
+    agent->registerAsChild(pParent);
+    // Registers an agent of simulation core based on his unique id
     agents[agent->getId()] = agent;
 }
 
 void SimulationCore::unregisterAgent(int agentId) {
     // Find the agent with the specified ID in the map
-    auto it = agents.find(agentId);
-    if (it != agents.end()) {
-        // If the agent is found, erase it from the map
-        agents.erase(it);
-    } else {
+    if (not agentExists(agentId)) {
         // If the agent is not found, throw an exception
         throw std::runtime_error("Agent with event ID " + std::to_string(agentId) + " does not exist in the map");
     }
+    // Unregister agent as child of other agent.
+    agents[agentId]->unregisterAsChild();
+    // Unregister agent from simulation core.
+    agents.erase(agentId);
 }
 
 void SimulationCore::runSimulation() {
@@ -64,8 +72,7 @@ void SimulationCore::performStep() {
     do {
         while (message) {
             // Check if the receiver agent exists
-            auto it = agents.find(message.receiver);
-            if (it == agents.end()) {
+            if (not agentExists(message->receiver)) {
                 throw std::runtime_error("No agent is registered under ID " + std::to_string(message.receiver) + ".");
             }
             // Insert the receiver ID into the set
@@ -119,15 +126,12 @@ void SimulationCore::receiveAgentMessages(Agent* agent) {
     }
 }
 
+bool SimulationCore::agentExists(AgentId_t pAgentId) {
+    return agents.find(pAgentId) != agents.end();
+}
+
 //functions
 void SimulationCore::allDone(int sender) {
     sendMessage(2,2,currTime+1,3);
     sendMessage(2,3,currTime,3);
 }
-
-
-
-
-
-
-

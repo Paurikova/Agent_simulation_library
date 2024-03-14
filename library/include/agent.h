@@ -17,7 +17,7 @@ class Agent {
 private:
     AgentId_t id; /**< The unique identifier of the agent. */
     Agent* parent; /**< The pointer to agent's parent. */
-    std::unique_ptr<std::vector<Agent*>> childs; /**< The list of pointer to agent's childs. */
+    std::unordered_map<AgentId_t, Agent*> childs; /**< The map of pointers to agent's childs. */
     SimTime_t currTime; /**< The current time in the simulation. */
     std::unique_ptr<std::vector<Message*>> outBox ; /**< Outgoing message queue. */
     std::unordered_map<ServiceId_t, ExecFunct_t> functionMap; /**< Maps functions to service IDs. */
@@ -122,6 +122,18 @@ public:
     void registerChild(Agent* pChild);
 
     /**
+     * @brief Unregisters this agent as a child from its parent.
+     */
+    void unregisterAsChild();
+
+    /**
+     * @brief Unregisters a child agent with the specified ID.
+     *
+     * @param pChildId The ID of the child agent to unregister.
+     */
+    void unregisterChild(AgentId_t pChildId);
+
+    /**
     * @brief Gets the pointer the agent's parent.
     *
     * @return The pointer to agent's parent.
@@ -135,7 +147,23 @@ public:
     */
     Agent* setParent(Agent* pPrent);
 
+    /**
+     * @brief Retrieves the ID of the agent providing the specified service.
+     *
+     * The service can provides current agent or some of his childs.
+     *
+     * @param pServiceId The ID of the service to check.
+     * @return The ID of the agent providing the service, or -1 if no agent provides the service.
+     */
     AgentId_t getAgentIdProvidedService(ServiceId_t pServiceId);
+
+    /**
+     * @brief Checks if a child agent with the specified ID exists.
+     *
+     * @param pChildId The ID of the child agent to check.
+     * @return True if a child agent with the specified ID exists, otherwise false.
+     */
+    bool childExists(AgentId_t pChildId);
 
     /**
     * @brief Registers functions for handling events.
