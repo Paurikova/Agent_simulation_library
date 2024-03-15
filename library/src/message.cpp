@@ -14,3 +14,9 @@ Message::Message(SimTime_t pExecTime, int pPriority, ServiceId_t pServiceId, Age
     receiver = pRcvr;
     serviceId = pServiceId;
 }
+
+bool MessagePtrComparator::operator()(const Message* m1, const Message* m2) const {
+    //Message m1 has a priority lower than that of message m2 if its execution time is less than that of m2.
+    // If the execution times are equal, then the priority is determined by the message with the lower priority number.
+    return *m1 < *m2;
+}

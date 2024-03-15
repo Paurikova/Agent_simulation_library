@@ -1,0 +1,19 @@
+cmake_minimum_required(VERSION 3.27)
+
+project(Agent_library)
+
+set(CMAKE_CXX_STANDARD 17)
+
+# Add all source files for the library
+set(LIBRARY_SOURCES
+        src/simulationCore.cpp
+        src/agent.cpp
+        src/message.cpp
+        src/schedule.cpp
+)
+
+# Create the library
+add_library(library ${LIBRARY_SOURCES})
+
+# Include directories if needed
+target_include_directories(library PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})

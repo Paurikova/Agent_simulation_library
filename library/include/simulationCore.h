@@ -66,7 +66,7 @@ private:
     * New function has to be added as lambda function.
     */
     void registerFunctions() override;
-    
+
     /**
      * @brief Initializes the simulation.
      *

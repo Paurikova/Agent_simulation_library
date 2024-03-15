@@ -41,8 +41,5 @@ struct Message {
 
 // Define a custom comparison functor
 struct MessagePtrComparator {
-    bool operator()(const Message* m1, const Message* m2) const {
-        // Use the operator> to compare objects
-        return *m1 < *m2;
-    }
+    bool operator()(const Message* m1, const Message* m2) const;
 };
