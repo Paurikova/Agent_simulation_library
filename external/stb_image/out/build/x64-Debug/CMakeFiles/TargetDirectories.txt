@@ -1,0 +1,2 @@
+C:/Users/miska/Documents/Data/Programming_languages/C++/imgui-node-editor-master/external/stb_image/out/build/x64-Debug/CMakeFiles/edit_cache.dir
+C:/Users/miska/Documents/Data/Programming_languages/C++/imgui-node-editor-master/external/stb_image/out/build/x64-Debug/CMakeFiles/rebuild_cache.dir
