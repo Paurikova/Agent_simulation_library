@@ -4,8 +4,9 @@
 #include <vector>
 #include <functional>
 #include <unordered_map>
+#include <memory>
 
-#include "const.h"
+#include "types.h"
 #include "schedule.h"
 
 /**
@@ -15,13 +16,14 @@
  */
 class Agent {
 private:
+    static AgentId_t nextAgentId;
     AgentId_t id; /**< The unique identifier of the agent. */
     Agent* parent; /**< The pointer to agent's parent. */
     std::unordered_map<AgentId_t, Agent*> childs; /**< The map of pointers to agent's childs. */
     SimTime_t currTime; /**< The current time in the simulation. */
     std::unique_ptr<std::vector<Message*>> outBox ; /**< Outgoing message queue. */
     std::unordered_map<ServiceId_t, ExecFunct_t> functionMap; /**< Maps functions to service IDs. */
-    std::unique_ptr<Schedule*> schedule ; /**< Schedule for managing agent's tasks. */
+    std::unique_ptr<Schedule> schedule ; /**< Schedule for managing agent's tasks. */
 
 private:
     /**
@@ -38,7 +40,7 @@ protected:
      *
      * @return The current time.
      */
-    Sim_time_t getCurrTime();
+    SimTime_t getCurrTime();
 
     /**
      * @brief Sends a message to another agent.
@@ -85,7 +87,7 @@ public:
      *
      * @param msg pMsg message to be received.
      */
-    void receiveMessage(Message pMsg);
+    void receiveMessage(Message* pMsg);
 
     /**
      * @brief Execution of all actions for a schedule.
@@ -145,7 +147,7 @@ public:
     *
     * @param pPrent Pointer to new agent's parent.
     */
-    Agent* setParent(Agent* pPrent);
+    void setParent(Agent* pPrent);
 
     /**
      * @brief Retrieves the ID of the agent providing the specified service.
@@ -153,9 +155,10 @@ public:
      * The service can provides current agent or some of his childs.
      *
      * @param pServiceId The ID of the service to check.
+     * @param pSenderId The ID of the message sender.
      * @return The ID of the agent providing the service, or -1 if no agent provides the service.
      */
-    AgentId_t getAgentIdProvidedService(ServiceId_t pServiceId);
+    AgentId_t getAgentIdProvidedService(ServiceId_t pServiceId, AgentId_t pSenderId);
 
     /**
      * @brief Checks if a child agent with the specified ID exists.
@@ -164,6 +167,13 @@ public:
      * @return True if a child agent with the specified ID exists, otherwise false.
      */
     bool childExists(AgentId_t pChildId);
+
+    /**
+     * @brief Agent initialization.
+     *
+     * Method registers all agent functions, etc.
+     */
+    void initialization();
 
     /**
     * @brief Registers functions for handling events.

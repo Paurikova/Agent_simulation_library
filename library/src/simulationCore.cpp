@@ -11,11 +11,14 @@ SimulationCore::SimulationCore(SimTime_t pStartTime, SimTime_t pEndTime) : Agent
 }
 
 void SimulationCore::registerAgent(Agent* pAgent) {
+    //Note: The registration of an agent as a parent-child is done when the agent is created.
     if (!pAgent) {
         throw std::runtime_error("Cannot register agent because the agent is nullptr.");
     }
     // Registers an agent of simulation core based on his unique id
     agents[pAgent->getId()] = pAgent;
+    // Make agent initialization
+    pAgent->initialization();
 }
 
 void SimulationCore::unregisterAgent(int agentId) {
@@ -58,16 +61,8 @@ void SimulationCore::registerFunctions() {
     });
 }
 
-void SimulationCore::registerAllFunctions() {
-    // Iterate through all agents and register their functions
-    for (auto& pair : agents) {
-        pair.second->registerFunctions();
-    }
-}
-
 void SimulationCore::initSimulation() {
-    // Initialize the simulation by registering all functions for all agents
-    registerAllFunctions();
+    // empty
 }
 
 void SimulationCore::performStep() {
@@ -75,9 +70,9 @@ void SimulationCore::performStep() {
     std::unique_ptr<std::set<AgentId_t>> receivedAgentIds = std::make_unique<std::set<AgentId_t>>();
     // Get the next scheduled message
     Message* message = mainSchedule->popMessage(); // Get the next scheduled message
-    currTime = message->execTime;
     // Loop until there are no more messages scheduled for the current time
-    do {
+    while (message) {
+        currTime = message->execTime;
         while (message) {
             // Check if the receiver agent exists
             if (not agentExists(message->receiver)) {
@@ -98,11 +93,12 @@ void SimulationCore::performStep() {
             agent->execute();
             receiveAgentMessages(agent);
         }
+        // Clean the set.
+        receivedAgentIds->clear();
 
         // Get the next scheduled message
         message = mainSchedule->popMessage();
-        currTime = message->execTime;
-    } while (message);
+    }
 }
 
 void SimulationCore::receiveAgentMessages(Agent* agent) {
@@ -133,7 +129,7 @@ void SimulationCore::addReceiver(Message* pMessage) {
         // Search for an agent ID providing the required service
         receiverId = sender->getAgentIdProvidedService(pMessage->serviceId, sender->getId());
         sender = sender->getParent();
-    } while (receiverId == -1 or sender == nullptr);
+    } while (receiverId == -1 or sender != nullptr);
 
     if (receiverId == -1) {
         // If no agent provides the service, throw an error
@@ -145,6 +141,6 @@ void SimulationCore::addReceiver(Message* pMessage) {
 
 //functions
 void SimulationCore::allDone(int sender) {
-    sendMessage(2,currTime+1,2);
+    sendMessage(2,currTime+1,2, 3);
     sendMessage(2,currTime, 3,3);
 }

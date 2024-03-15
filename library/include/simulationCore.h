@@ -31,6 +31,9 @@ public:
     /**
      * @brief Registers an agent with the simulation core.
      *
+     * The registration of an agent as a parent-child is done when the agent is created.
+     * Do agent initialization (functions registration etc.)
+     *
      * @param pAgent Pointer to the agent to be registered.
      */
     void registerAgent(Agent* pAgent);
@@ -63,12 +66,7 @@ private:
     * New function has to be added as lambda function.
     */
     void registerFunctions() override;
-
-    /**
-     * @brief Registers all functions registered by all agents.
-     */
-    void registerAllFunctions();
-
+    
     /**
      * @brief Initializes the simulation.
      *

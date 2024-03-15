@@ -13,9 +13,9 @@ int main() {
     manager->registerAgent(agent2);
 
     //add Message to agent1 schedule
-    Message m1 = {1,1,1,-1,2};
+    Message m1 = {1,1,1,1,-1};
     manager->pushToMainSchedule(&m1);
-    Message m2 = {2,1,1,-1,2};
+    Message m2 = {2,1,2,1,-1};
     manager->pushToMainSchedule(&m2);
     Message m3 = {4,2,1,-1,2};
     manager->pushToMainSchedule(&m3);

@@ -87,9 +87,10 @@ Message* Agent::getTopOutboxMessage() {
 void Agent::registerAsChild(Agent* pParent) {
     // Call the parent's registerChild method to add the current agent to its list of children
     //Agent of simulation core doesn't have parent.
-    if (pParent) {
-        pParent->registerChild(this);
+    if (!pParent) {
+        return;
     }
+    pParent->registerChild(this);
     // Set the parent pointer of the current agent
     setParent(pParent);
 }
@@ -163,4 +164,9 @@ AgentId_t Agent::getAgentIdProvidedService(ServiceId_t pServiceId, AgentId_t pSe
 
 bool Agent::childExists(AgentId_t pChildId) {
     return childs.find(pChildId) != childs.end();
+}
+
+void Agent::initialization() {
+    // Call all necessary functions for agent initialization
+    registerFunctions();
 }
