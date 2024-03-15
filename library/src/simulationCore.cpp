@@ -37,35 +37,6 @@ void SimulationCore::runSimulation() {
     // Initialization
     initSimulation();
     //Run
-    while (currTime < endTime) {
-        performStep();
-    }
-}
-
-void SimulationCore::pushToMainSchedule(Message* pMessage) {
-    if (!pMessage) {
-        throw std::runtime_error("The received message is nullptr.");
-    }
-    // Add receiver of message if he is missing
-    if (pMessage->receiver == -1) {
-        addReceiver(pMessage);
-    }
-    // Push message to simulation core schedule.
-    mainSchedule->pushMessage(pMessage);
-}
-
-void SimulationCore::registerFunctions() {
-    // Register a lambda function to handle function
-    registerFunction(1, [this](int sender) {
-        allDone(sender);
-    });
-}
-
-void SimulationCore::initSimulation() {
-    // empty
-}
-
-void SimulationCore::performStep() {
     // Set to store IDs of agents that received messages
     std::unique_ptr<std::set<AgentId_t>> receivedAgentIds = std::make_unique<std::set<AgentId_t>>();
     // Get the next scheduled message
@@ -99,6 +70,29 @@ void SimulationCore::performStep() {
         // Get the next scheduled message
         message = mainSchedule->popMessage();
     }
+}
+
+void SimulationCore::pushToMainSchedule(Message* pMessage) {
+    if (!pMessage) {
+        throw std::runtime_error("The received message is nullptr.");
+    }
+    // Add receiver of message if he is missing
+    if (pMessage->receiver == -1) {
+        addReceiver(pMessage);
+    }
+    // Push message to simulation core schedule.
+    mainSchedule->pushMessage(pMessage);
+}
+
+void SimulationCore::registerFunctions() {
+    // Register a lambda function to handle function
+    registerFunction(1, [this](int sender) {
+        allDone(sender);
+    });
+}
+
+void SimulationCore::initSimulation() {
+    // empty
 }
 
 void SimulationCore::receiveAgentMessages(Agent* agent) {

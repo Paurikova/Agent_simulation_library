@@ -75,13 +75,6 @@ private:
     void initSimulation();
 
     /**
-     * @brief Performs a single step of the simulation.
-     *
-     * This function executes a single step of the simulation that consists from performing all messages of current time.
-     */
-    void performStep();
-
-    /**
     * @brief Receives messages from agents.
     *
     * This function receives messages from all registered agents and processes them.
