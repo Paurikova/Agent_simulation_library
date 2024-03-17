@@ -14,4 +14,3 @@ find_package_handle_standard_args(
     REQUIRED_VARS
         _imgui_SourceDir
 )
-

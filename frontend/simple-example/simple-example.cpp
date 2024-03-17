@@ -2,6 +2,7 @@
 # include <imgui_project/imgui_node_editor.h>
 # include <application.h>
 
+
 namespace ed = ax::NodeEditor;
 
 struct Example:
@@ -52,12 +53,12 @@ struct Example:
     ed::EditorContext* m_Context = nullptr;
 };
 
-int Main(int argc, char** argv)
-{
-    Example exampe("Simple", argc, argv);
-
-    if (exampe.Create())
-        return exampe.Run();
-
-    return 0;
-}
+//int Main(int argc, char** argv)
+//{
+//    Example exampe("Simple", argc, argv);
+//
+//    if (exampe.Create())
+//        return exampe.Run();
+//
+//    return 0;
+//}

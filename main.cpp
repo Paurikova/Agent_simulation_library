@@ -2,8 +2,7 @@
 #include "backend/agents/agent1.h"
 #include "backend/agents/agent2.h"
 
-
-int main() {
+int main(int argc, char** argv) {
     SimulationCore* manager = new SimulationCore(0,10);
     //ID 2
     Agent1* agent1 = new Agent1(manager);
