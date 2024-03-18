@@ -57,6 +57,13 @@ enum class NodeType
 
 struct Node;
 
+
+struct TextBuffer {
+    int PinId;
+    char Buffer[128];
+    TextBuffer(int id): PinId(id), Buffer("Edit Me\nMultiline!") {};
+};
+
 struct Pin
 {
     ed::PinId   ID;
@@ -64,9 +71,10 @@ struct Pin
     std::string Name;
     PinType     Type;
     PinKind     Kind;
+    TextBuffer PinBuffer;
 
-    Pin(int id, const char* name, PinType type):
-            ID(id), Node(nullptr), Name(name), Type(type), Kind(PinKind::Input)
+    Pin(int id, const char* name, PinType type, TextBuffer textBuffer = TextBuffer(-1)):
+            ID(id), Node(nullptr), Name(name), Type(type), Kind(PinKind::Input), PinBuffer(textBuffer)
     {
     }
 };
@@ -223,9 +231,10 @@ struct Example:
     Node* SpawnAgentNode()
     {
         m_Nodes.emplace_back(GetNextId(), "Agent", NodeType::Blueprint);
+        m_Nodes.back().Inputs.emplace_back(GetNextId(), "Parent", PinType::Relationship);
         m_Nodes.back().Inputs.emplace_back(GetNextId(), "Attributes", PinType::Attribute);
         m_Nodes.back().Inputs.emplace_back(GetNextId(), "Functions", PinType::Function);
-        m_Nodes.back().Outputs.emplace_back(GetNextId(), "Relationships", PinType::Relationship);
+        m_Nodes.back().Outputs.emplace_back(GetNextId(), "Childs", PinType::Relationship);
 
         BuildNode(&m_Nodes.back());
 
@@ -235,7 +244,8 @@ struct Example:
     Node* SpawnFunctionNode()
     {
         m_Nodes.emplace_back(GetNextId(), "Function", NodeType::Simple, ImColor(128, 195, 248));
-        m_Nodes.back().Outputs.emplace_back(GetNextId(), "Name", PinType::Function);
+        int id = GetNextId();
+        m_Nodes.back().Outputs.emplace_back(id, "Name", PinType::Function, TextBuffer(id));
 
         BuildNode(&m_Nodes.back());
 
@@ -246,7 +256,8 @@ struct Example:
     {
         m_Nodes.emplace_back(GetNextId(), "Attribute", NodeType::Simple, ImColor(128, 195, 248));
         //TODO:TU CHYBA ESTE TYP
-        m_Nodes.back().Outputs.emplace_back(GetNextId(), "Name", PinType::Function);
+        int id = GetNextId();
+        m_Nodes.back().Outputs.emplace_back(id, "Name", PinType::Attribute, TextBuffer(id));
 
         BuildNode(&m_Nodes.back());
 
@@ -343,7 +354,7 @@ struct Example:
             default:
             case PinType::Attribute:      return ImColor( 68, 201, 156); //green
             case PinType::Function:    return ImColor(147, 226,  74); //green
-            case PinType::Relationship:   return ImColor( 51, 150, 215); //mass blue
+            case PinType::Relationship:   return { 51, 150, 215}; //mass blue
         }
     };
 
@@ -460,11 +471,11 @@ struct Example:
                     builder.Output(output.ID);
                     if (output.Type == PinType::Attribute or output.Type == PinType::Function)
                     {
-                        static char buffer[128] = "Edit Me\nMultiline!";
+                        //static char buffer[128] = "Edit Me\nMultiline!";
                         static bool wasActive = false;
 
                         ImGui::PushItemWidth(100.0f);
-                        ImGui::InputText("##edit", buffer, 127);
+                        ImGui::InputText("##edit", output.PinBuffer.Buffer, 127);
                         ImGui::PopItemWidth();
                         if (ImGui::IsItemActive() && !wasActive)
                         {
@@ -802,6 +813,7 @@ struct Example:
     const float          m_TouchTime = 1.0f;
     std::map<ed::NodeId, float, NodeIdLess> m_NodeTouchTime;
     bool                 m_ShowOrdinals = false;
+    bool a = true;
 };
 
 int Main(int argc, char** argv)
