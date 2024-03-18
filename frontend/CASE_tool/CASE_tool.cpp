@@ -52,7 +52,7 @@ enum class PinKind
 enum class NodeType
 {
     Simple,
-    Agent,
+    Blueprint,
 };
 
 struct Node;
@@ -222,7 +222,7 @@ struct Example:
 
     Node* SpawnAgentNode()
     {
-        m_Nodes.emplace_back(GetNextId(), "Agent", NodeType::Agent);
+        m_Nodes.emplace_back(GetNextId(), "Agent", NodeType::Blueprint);
         m_Nodes.back().Inputs.emplace_back(GetNextId(), "Attributes", PinType::Attribute);
         m_Nodes.back().Inputs.emplace_back(GetNextId(), "Functions", PinType::Function);
         m_Nodes.back().Outputs.emplace_back(GetNextId(), "Relationships", PinType::Relationship);
@@ -644,7 +644,7 @@ struct Example:
             if (node)
             {
                 ImGui::Text("ID: %p", node->ID.AsPointer());
-                ImGui::Text("Type: %s", node->Type == NodeType::Agent ? "Agent" : "Feature");
+                ImGui::Text("Type: %s", node->Type == NodeType::Blueprint ? "Agent" : "Feature");
                 ImGui::Text("Inputs: %d", (int)node->Inputs.size());
                 ImGui::Text("Outputs: %d", (int)node->Outputs.size());
             }
