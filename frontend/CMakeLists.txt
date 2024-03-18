@@ -3,11 +3,13 @@ cmake_minimum_required(VERSION 3.12)
 project(frontend)
 
 # Define IMGUI_NODE_EDITOR_ROOT_DIR pointing to project root directory
+#ZMENA TERAZ
 get_filename_component(IMGUI_NODE_EDITOR_ROOT_DIR ${CMAKE_SOURCE_DIR} ABSOLUTE CACHE)
 # Enable solution folders in Visual Studio and Folders in Xcode
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
 # Point CMake where to look for module files.
+#ZMENA TERAZ /..
 list(APPEND CMAKE_MODULE_PATH ${IMGUI_NODE_EDITOR_ROOT_DIR}/misc/cmake-modules)
 # Node editor use C++14
 set(CMAKE_CXX_STANDARD            14)
@@ -133,4 +135,5 @@ add_subdirectory(application)
 add_subdirectory(simple-example)
 #add_subdirectory(widgets-example)
 #add_subdirectory(basic-interaction-example)
-#add_subdirectory(blueprints-example)
+add_subdirectory(blueprints-example)
+add_subdirectory(CASE_tool)
