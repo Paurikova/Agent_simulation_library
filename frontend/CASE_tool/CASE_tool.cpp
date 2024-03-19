@@ -51,17 +51,44 @@ enum class PinKind
 
 enum class NodeType
 {
-    Simple,
     Blueprint,
+};
+
+enum class BufferType
+{
+    Name,
+    Type,
+    Header,
+    ServiceId,
 };
 
 struct Node;
 
 
 struct TextBuffer {
-    int PinId;
+    BufferType Type;
     char Buffer[128];
-    TextBuffer(int id): PinId(id), Buffer("Edit Me\nMultiline!") {};
+
+    // Constructor to initialize TextBuffer with the given type
+    TextBuffer(BufferType type) : Type(type) {
+        // Set the value of Buffer based on the type
+        switch (type) {
+            case BufferType::Name:
+                strcpy(Buffer, "Name");
+                break;
+            case BufferType::Type:
+                strcpy(Buffer, "Type");
+                break;
+            case BufferType::ServiceId:
+                strcpy(Buffer, "ServiceId");
+                break;
+            case BufferType::Header:
+                strcpy(Buffer, "Header");
+                break;
+            default: strcpy(Buffer, "Edit me");
+                break;
+        }
+    }
 };
 
 struct Pin
@@ -71,10 +98,9 @@ struct Pin
     std::string Name;
     PinType     Type;
     PinKind     Kind;
-    TextBuffer PinBuffer;
 
-    Pin(int id, const char* name, PinType type, TextBuffer textBuffer = TextBuffer(-1)):
-            ID(id), Node(nullptr), Name(name), Type(type), Kind(PinKind::Input), PinBuffer(textBuffer)
+    Pin(int id, const char* name, PinType type):
+            ID(id), Node(nullptr), Name(name), Type(type), Kind(PinKind::Input)
     {
     }
 };
@@ -85,6 +111,7 @@ struct Node
     std::string Name;
     std::vector<Pin> Inputs;
     std::vector<Pin> Outputs;
+    std::vector<TextBuffer> Buffers;
     ImColor Color;
     NodeType Type;
     ImVec2 Size;
@@ -92,8 +119,8 @@ struct Node
     std::string State;
     std::string SavedState;
 
-    Node(int id, const char* name, NodeType type, ImColor color = ImColor(255, 255, 255)):
-            ID(id), Name(name), Color(color), Type(type), Size(0, 0)
+    Node(int id, const char* name, ImColor color = ImColor(255, 255, 255)):
+            ID(id), Name(name), Color(color), Type(NodeType::Blueprint), Size(0, 0)
     {
     }
 };
@@ -230,7 +257,7 @@ struct Example:
 
     Node* SpawnAgentNode()
     {
-        m_Nodes.emplace_back(GetNextId(), "Agent", NodeType::Blueprint);
+        m_Nodes.emplace_back(GetNextId(), "Agent");
         m_Nodes.back().Inputs.emplace_back(GetNextId(), "Parent", PinType::Relationship);
         m_Nodes.back().Inputs.emplace_back(GetNextId(), "Attributes", PinType::Attribute);
         m_Nodes.back().Inputs.emplace_back(GetNextId(), "Functions", PinType::Function);
@@ -243,9 +270,10 @@ struct Example:
 
     Node* SpawnFunctionNode()
     {
-        m_Nodes.emplace_back(GetNextId(), "Function", NodeType::Simple, ImColor(128, 195, 248));
-        int id = GetNextId();
-        m_Nodes.back().Outputs.emplace_back(id, "Name", PinType::Function, TextBuffer(id));
+        m_Nodes.emplace_back(GetNextId(), "Function", ImColor(128, 195, 248));
+        m_Nodes.back().Buffers.emplace_back(TextBuffer(BufferType::ServiceId));
+        m_Nodes.back().Buffers.emplace_back(TextBuffer(BufferType::Header));
+        m_Nodes.back().Outputs.emplace_back(GetNextId(), "Name", PinType::Function);
 
         BuildNode(&m_Nodes.back());
 
@@ -254,11 +282,10 @@ struct Example:
 
     Node* SpawnAttributeNode()
     {
-        m_Nodes.emplace_back(GetNextId(), "Attribute", NodeType::Simple, ImColor(128, 195, 248));
-        //TODO:TU CHYBA ESTE TYP
-        int id = GetNextId();
-        m_Nodes.back().Outputs.emplace_back(id, "Name", PinType::Attribute, TextBuffer(id));
-
+        m_Nodes.emplace_back(GetNextId(), "Attribute", ImColor(128, 195, 248));
+        m_Nodes.back().Buffers.emplace_back(TextBuffer(BufferType::Type));
+        m_Nodes.back().Buffers.emplace_back(TextBuffer(BufferType::Name));
+        m_Nodes.back().Outputs.emplace_back(GetNextId(), "Name", PinType::Attribute);
         BuildNode(&m_Nodes.back());
 
         return &m_Nodes.back();
@@ -418,19 +445,34 @@ struct Example:
 
             for (auto& node : m_Nodes)
             {
-               const auto isSimple = node.Type == NodeType::Simple;
-
                 builder.Begin(node.ID);
-                if (!isSimple)
-                {
-                    builder.Header(node.Color);
-                    ImGui::Spring(0);
-                    ImGui::TextUnformatted(node.Name.c_str());
-                    ImGui::Spring(1);
-                    ImGui::Dummy(ImVec2(0, 28));
+                builder.Header(node.Color);
+                ImGui::Spring(0);
+                ImGui::TextUnformatted(node.Name.c_str());
+                ImGui::Spring(1);
+                ImGui::Dummy(ImVec2(0, 28));
 
+                ImGui::Spring(0);
+                builder.EndHeader();
+
+                //Text Buffers
+                for (auto& buffer : node.Buffers) {
+                    static bool wasActive = false;
+
+                    ImGui::PushItemWidth(100.0f);
+                    ImGui::InputText("##edit", buffer.Buffer, 127);
+                    ImGui::PopItemWidth();
+                    if (ImGui::IsItemActive() && !wasActive)
+                    {
+                        ed::EnableShortcuts(false);
+                        wasActive = true;
+                    }
+                    else if (!ImGui::IsItemActive() && wasActive)
+                    {
+                        ed::EnableShortcuts(true);
+                        wasActive = false;
+                    }
                     ImGui::Spring(0);
-                    builder.EndHeader();
                 }
 
                 for (auto& input : node.Inputs)
@@ -452,15 +494,6 @@ struct Example:
                     builder.EndInput();
                 }
 
-                if (isSimple)
-                {
-                    builder.Middle();
-
-                    ImGui::Spring(1, 0);
-                    ImGui::TextUnformatted(node.Name.c_str());
-                    ImGui::Spring(1, 0);
-                }
-
                 for (auto& output : node.Outputs)
                 {
                     auto alpha = ImGui::GetStyle().Alpha;
@@ -469,26 +502,7 @@ struct Example:
 
                     ImGui::PushStyleVar(ImGuiStyleVar_Alpha, alpha);
                     builder.Output(output.ID);
-                    if (output.Type == PinType::Attribute or output.Type == PinType::Function)
-                    {
-                        //static char buffer[128] = "Edit Me\nMultiline!";
-                        static bool wasActive = false;
 
-                        ImGui::PushItemWidth(100.0f);
-                        ImGui::InputText("##edit", output.PinBuffer.Buffer, 127);
-                        ImGui::PopItemWidth();
-                        if (ImGui::IsItemActive() && !wasActive)
-                        {
-                            ed::EnableShortcuts(false);
-                            wasActive = true;
-                        }
-                        else if (!ImGui::IsItemActive() && wasActive)
-                        {
-                            ed::EnableShortcuts(true);
-                            wasActive = false;
-                        }
-                        ImGui::Spring(0);
-                    }
                     if (!output.Name.empty())
                     {
                         ImGui::Spring(0);
