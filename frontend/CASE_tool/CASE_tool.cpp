@@ -42,6 +42,8 @@ enum class PinType
     Attribute,
     Relationship,
     Message,
+    Service,
+    Type,
 };
 
 enum class PinKind
@@ -63,6 +65,7 @@ enum class BufferType
     ServiceId,
     Time,
     Priority,
+    Empty,
 };
 
 struct Node;
@@ -103,13 +106,14 @@ struct TextBuffer {
 struct Pin
 {
     ed::PinId   ID;
+    TextBuffer  PinBuffer;
     ::Node*     Node;
     std::string Name;
     PinType     Type;
     PinKind     Kind;
 
-    Pin(int id, const char* name, PinType type):
-            ID(id), Node(nullptr), Name(name), Type(type), Kind(PinKind::Input)
+    Pin(int id, const char* name, PinType type, TextBuffer buffer):
+            ID(id), Node(nullptr), Name(name), Type(type), Kind(PinKind::Input), PinBuffer(buffer)
     {
     }
 };
@@ -120,7 +124,6 @@ struct Node
     std::string Name;
     std::vector<Pin> Inputs;
     std::vector<Pin> Outputs;
-    std::vector<TextBuffer> Buffers;
     ImColor Color;
     NodeType Type;
     ImVec2 Size;
@@ -267,12 +270,12 @@ struct Example:
     Node* SpawnAgentNode()
     {
         m_Nodes.emplace_back(GetNextId(), "Agent");
-        m_Nodes.back().Inputs.emplace_back(GetNextId(), "Parent", PinType::Relationship);
-        m_Nodes.back().Inputs.emplace_back(GetNextId(), "Attributes", PinType::Attribute);
-        m_Nodes.back().Inputs.emplace_back(GetNextId(), "Functions", PinType::Function);
-        m_Nodes.back().Inputs.emplace_back(GetNextId(), "Sender", PinType::Message);
-        m_Nodes.back().Outputs.emplace_back(GetNextId(), "Childs", PinType::Relationship);
-        m_Nodes.back().Outputs.emplace_back(GetNextId(), "Receiver", PinType::Message);
+        m_Nodes.back().Inputs.emplace_back(GetNextId(), "Parent", PinType::Relationship, TextBuffer(BufferType::Empty));
+        m_Nodes.back().Inputs.emplace_back(GetNextId(), "Attributes", PinType::Attribute, TextBuffer(BufferType::Empty));
+        m_Nodes.back().Inputs.emplace_back(GetNextId(), "Functions", PinType::Function, TextBuffer(BufferType::Empty));
+        m_Nodes.back().Inputs.emplace_back(GetNextId(), "Sender", PinType::Message,TextBuffer(BufferType::Empty));
+        m_Nodes.back().Outputs.emplace_back(GetNextId(), "Childs", PinType::Relationship,TextBuffer(BufferType::Empty));
+        m_Nodes.back().Outputs.emplace_back(GetNextId(), "Receiver", PinType::Message,TextBuffer(BufferType::Empty));
 
         BuildNode(&m_Nodes.back());
 
@@ -282,10 +285,8 @@ struct Example:
     Node* SpawnFunctionNode()
     {
         m_Nodes.emplace_back(GetNextId(), "Function", ImColor(128, 195, 248));
-        m_Nodes.back().Buffers.emplace_back(TextBuffer(BufferType::ServiceId));
-        m_Nodes.back().Buffers.emplace_back(TextBuffer(BufferType::Header));
-        m_Nodes.back().Outputs.emplace_back(GetNextId(), "", PinType::Function);
-
+        m_Nodes.back().Inputs.emplace_back(GetNextId(), "ServiceId", PinType::Service,TextBuffer(BufferType::ServiceId));
+        m_Nodes.back().Outputs.emplace_back(GetNextId(), "", PinType::Function, TextBuffer(BufferType::Name));
         BuildNode(&m_Nodes.back());
 
         return &m_Nodes.back();
@@ -294,9 +295,8 @@ struct Example:
     Node* SpawnAttributeNode()
     {
         m_Nodes.emplace_back(GetNextId(), "Attribute", ImColor(128, 195, 248));
-        m_Nodes.back().Buffers.emplace_back(TextBuffer(BufferType::Type));
-        m_Nodes.back().Buffers.emplace_back(TextBuffer(BufferType::Name));
-        m_Nodes.back().Outputs.emplace_back(GetNextId(), "", PinType::Attribute);
+        m_Nodes.back().Inputs.emplace_back(GetNextId(), "Type", PinType::Type, TextBuffer(BufferType::Empty));
+        m_Nodes.back().Outputs.emplace_back(GetNextId(), "", PinType::Attribute, TextBuffer(BufferType::Name));
         BuildNode(&m_Nodes.back());
 
         return &m_Nodes.back();
@@ -305,15 +305,30 @@ struct Example:
     Node* SpawnMessageNode()
     {
         m_Nodes.emplace_back(GetNextId(), "Message", ImColor(128, 195, 248));
-        m_Nodes.back().Buffers.emplace_back(TextBuffer(BufferType::Type));
-        m_Nodes.back().Buffers.emplace_back(TextBuffer(BufferType::Name));
-        m_Nodes.back().Inputs.emplace_back(GetNextId(), "", PinType::Message);
-        m_Nodes.back().Outputs.emplace_back(GetNextId(), "", PinType::Message);
+        m_Nodes.back().Inputs.emplace_back(GetNextId(), "", PinType::Message, TextBuffer(BufferType::Time));
+        m_Nodes.back().Outputs.emplace_back(GetNextId(), "", PinType::Message, TextBuffer(BufferType::Priority));
         BuildNode(&m_Nodes.back());
 
         return &m_Nodes.back();
     }
 
+    Node* SpawnServiceIdNode()
+    {
+        m_Nodes.emplace_back(GetNextId(), "", ImColor(128, 195, 248));
+        m_Nodes.back().Outputs.emplace_back(GetNextId(), "Service id", PinType::Service, TextBuffer(BufferType::ServiceId));
+        BuildNode(&m_Nodes.back());
+
+        return &m_Nodes.back();
+    }
+
+    Node* SpawnTypeNode()
+    {
+        m_Nodes.emplace_back(GetNextId(), "", ImColor(128, 195, 248));
+        m_Nodes.back().Outputs.emplace_back(GetNextId(), "Type", PinType::Type, TextBuffer(BufferType::Type));
+        BuildNode(&m_Nodes.back());
+
+        return &m_Nodes.back();
+    }
 
     void BuildNodes()
     {
@@ -400,9 +415,11 @@ struct Example:
         {
             default:
             case PinType::Attribute:      return ImColor( 68, 201, 156); //green
+            case PinType::Type:      return ImColor( 68, 201, 156); //green
             case PinType::Function:    return ImColor(147, 226,  74); //green
             case PinType::Relationship:   return { 51, 150, 215}; //mass blue
             case PinType::Message:   return { 255, 255, 255}; //white
+            case PinType::Service:    return ImColor(147, 226,  74); //green
         }
     };
 
@@ -417,6 +434,8 @@ struct Example:
             case PinType::Message:       iconType = IconType::Flow;   break;
             case PinType::Attribute:     iconType = IconType::Circle; break;
             case PinType::Function:      iconType = IconType::Circle; break;
+            case PinType::Type:      iconType = IconType::Circle; break;
+            case PinType::Service:      iconType = IconType::Circle; break;
             default:
                 return;
         }
@@ -487,6 +506,24 @@ struct Example:
                     ImGui::PushStyleVar(ImGuiStyleVar_Alpha, alpha);
                     DrawPinIcon(input, IsPinLinked(input.ID), (int)(alpha * 255));
                     ImGui::Spring(0);
+
+                    if (input.PinBuffer.Type != BufferType::Empty) {
+                        static bool wasActive = false;
+
+                        ImGui::PushItemWidth(100.0f);
+                        ImGui::InputText("##edit", input.PinBuffer.Buffer, 127);
+                        ImGui::PopItemWidth();
+
+                        if (ImGui::IsItemActive() && !wasActive) {
+                            ed::EnableShortcuts(false);
+                            wasActive = true;
+                        } else if (!ImGui::IsItemActive() && wasActive) {
+                            ed::EnableShortcuts(true);
+                            wasActive = false;
+                        }
+                        ImGui::Spring(0);
+                    }
+
                     if (!input.Name.empty())
                     {
                         ImGui::TextUnformatted(input.Name.c_str());
@@ -496,27 +533,6 @@ struct Example:
                     builder.EndInput();
                 }
 
-                //Text Buffers
-                for (auto& buffer : node.Buffers) {
-                    static bool wasActive = false;
-
-                    ImGui::PushItemWidth(100.0f);
-                    ImGui::InputText("##edit", buffer.Buffer, 127);
-                    ImGui::PopItemWidth();
-                    if (ImGui::IsItemActive() && !wasActive)
-                    {
-                        ed::EnableShortcuts(false);
-                        wasActive = true;
-                    }
-                    else if (!ImGui::IsItemActive() && wasActive)
-                    {
-                        ed::EnableShortcuts(true);
-                        wasActive = false;
-                    }
-                    ImGui::Spring(0);
-                }
-
-
                 for (auto& output : node.Outputs)
                 {
                     auto alpha = ImGui::GetStyle().Alpha;
@@ -525,7 +541,21 @@ struct Example:
 
                     ImGui::PushStyleVar(ImGuiStyleVar_Alpha, alpha);
                     builder.Output(output.ID);
+                    if (output.PinBuffer.Type != BufferType::Empty) {
+                        static bool wasActive = false;
 
+                        ImGui::PushItemWidth(100.0f);
+                        ImGui::InputText("##edit", output.PinBuffer.Buffer, 127);
+                        ImGui::PopItemWidth();
+                        if (ImGui::IsItemActive() && !wasActive) {
+                            ed::EnableShortcuts(false);
+                            wasActive = true;
+                        } else if (!ImGui::IsItemActive() && wasActive) {
+                            ed::EnableShortcuts(true);
+                            wasActive = false;
+                        }
+                        ImGui::Spring(0);
+                    }
                     if (!output.Name.empty())
                     {
                         ImGui::Spring(0);
@@ -761,6 +791,10 @@ struct Example:
                 node = SpawnFunctionNode();
             if (ImGui::MenuItem("Message"))
                 node = SpawnMessageNode();
+            if (ImGui::MenuItem("ServiceId"))
+                node = SpawnServiceIdNode();
+            if (ImGui::MenuItem("Type"))
+                node = SpawnTypeNode();
             if (node)
             {
                 BuildNodes();
