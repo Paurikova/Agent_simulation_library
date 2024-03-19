@@ -41,6 +41,7 @@ enum class PinType
     Function,
     Attribute,
     Relationship,
+    Message,
 };
 
 enum class PinKind
@@ -60,6 +61,8 @@ enum class BufferType
     Type,
     Header,
     ServiceId,
+    Time,
+    Priority,
 };
 
 struct Node;
@@ -84,6 +87,12 @@ struct TextBuffer {
                 break;
             case BufferType::Header:
                 strcpy(Buffer, "Header");
+                break;
+            case BufferType::Time:
+                strcpy(Buffer, "Time");
+                break;
+            case BufferType::Priority:
+                strcpy(Buffer, "Priority");
                 break;
             default: strcpy(Buffer, "Edit me");
                 break;
@@ -261,7 +270,9 @@ struct Example:
         m_Nodes.back().Inputs.emplace_back(GetNextId(), "Parent", PinType::Relationship);
         m_Nodes.back().Inputs.emplace_back(GetNextId(), "Attributes", PinType::Attribute);
         m_Nodes.back().Inputs.emplace_back(GetNextId(), "Functions", PinType::Function);
+        m_Nodes.back().Inputs.emplace_back(GetNextId(), "Sender", PinType::Message);
         m_Nodes.back().Outputs.emplace_back(GetNextId(), "Childs", PinType::Relationship);
+        m_Nodes.back().Outputs.emplace_back(GetNextId(), "Receiver", PinType::Message);
 
         BuildNode(&m_Nodes.back());
 
@@ -273,7 +284,7 @@ struct Example:
         m_Nodes.emplace_back(GetNextId(), "Function", ImColor(128, 195, 248));
         m_Nodes.back().Buffers.emplace_back(TextBuffer(BufferType::ServiceId));
         m_Nodes.back().Buffers.emplace_back(TextBuffer(BufferType::Header));
-        m_Nodes.back().Outputs.emplace_back(GetNextId(), "Name", PinType::Function);
+        m_Nodes.back().Outputs.emplace_back(GetNextId(), "", PinType::Function);
 
         BuildNode(&m_Nodes.back());
 
@@ -285,7 +296,19 @@ struct Example:
         m_Nodes.emplace_back(GetNextId(), "Attribute", ImColor(128, 195, 248));
         m_Nodes.back().Buffers.emplace_back(TextBuffer(BufferType::Type));
         m_Nodes.back().Buffers.emplace_back(TextBuffer(BufferType::Name));
-        m_Nodes.back().Outputs.emplace_back(GetNextId(), "Name", PinType::Attribute);
+        m_Nodes.back().Outputs.emplace_back(GetNextId(), "", PinType::Attribute);
+        BuildNode(&m_Nodes.back());
+
+        return &m_Nodes.back();
+    }
+
+    Node* SpawnMessageNode()
+    {
+        m_Nodes.emplace_back(GetNextId(), "Message", ImColor(128, 195, 248));
+        m_Nodes.back().Buffers.emplace_back(TextBuffer(BufferType::Type));
+        m_Nodes.back().Buffers.emplace_back(TextBuffer(BufferType::Name));
+        m_Nodes.back().Inputs.emplace_back(GetNextId(), "", PinType::Message);
+        m_Nodes.back().Outputs.emplace_back(GetNextId(), "", PinType::Message);
         BuildNode(&m_Nodes.back());
 
         return &m_Nodes.back();
@@ -340,9 +363,6 @@ struct Example:
 
         Node* node;
         node = SpawnAgentNode();           ed::SetNodePosition(node->ID, ImVec2(-300, 351));
-        node = SpawnFunctionNode();              ed::SetNodePosition(node->ID, ImVec2(-238, 504));
-        node = SpawnAttributeNode();              ed::SetNodePosition(node->ID, ImVec2(-238, 504));
-
         ed::NavigateToContent();
 
         BuildNodes();
@@ -382,6 +402,7 @@ struct Example:
             case PinType::Attribute:      return ImColor( 68, 201, 156); //green
             case PinType::Function:    return ImColor(147, 226,  74); //green
             case PinType::Relationship:   return { 51, 150, 215}; //mass blue
+            case PinType::Message:   return { 255, 255, 255}; //white
         }
     };
 
@@ -393,6 +414,7 @@ struct Example:
         switch (pin.Type)
         {
             case PinType::Relationship:  iconType = IconType::Flow;   break;
+            case PinType::Message:       iconType = IconType::Flow;   break;
             case PinType::Attribute:     iconType = IconType::Circle; break;
             case PinType::Function:      iconType = IconType::Circle; break;
             default:
@@ -455,6 +477,25 @@ struct Example:
                 ImGui::Spring(0);
                 builder.EndHeader();
 
+                for (auto& input : node.Inputs)
+                {
+                    auto alpha = ImGui::GetStyle().Alpha;
+                    if (newLinkPin && !CanCreateLink(newLinkPin, &input) && &input != newLinkPin)
+                        alpha = alpha * (48.0f / 255.0f);
+
+                    builder.Input(input.ID);
+                    ImGui::PushStyleVar(ImGuiStyleVar_Alpha, alpha);
+                    DrawPinIcon(input, IsPinLinked(input.ID), (int)(alpha * 255));
+                    ImGui::Spring(0);
+                    if (!input.Name.empty())
+                    {
+                        ImGui::TextUnformatted(input.Name.c_str());
+                        ImGui::Spring(0);
+                    }
+                    ImGui::PopStyleVar();
+                    builder.EndInput();
+                }
+
                 //Text Buffers
                 for (auto& buffer : node.Buffers) {
                     static bool wasActive = false;
@@ -475,24 +516,6 @@ struct Example:
                     ImGui::Spring(0);
                 }
 
-                for (auto& input : node.Inputs)
-                {
-                    auto alpha = ImGui::GetStyle().Alpha;
-                    if (newLinkPin && !CanCreateLink(newLinkPin, &input) && &input != newLinkPin)
-                        alpha = alpha * (48.0f / 255.0f);
-
-                    builder.Input(input.ID);
-                    ImGui::PushStyleVar(ImGuiStyleVar_Alpha, alpha);
-                    DrawPinIcon(input, IsPinLinked(input.ID), (int)(alpha * 255));
-                    ImGui::Spring(0);
-                    if (!input.Name.empty())
-                    {
-                        ImGui::TextUnformatted(input.Name.c_str());
-                        ImGui::Spring(0);
-                    }
-                    ImGui::PopStyleVar();
-                    builder.EndInput();
-                }
 
                 for (auto& output : node.Outputs)
                 {
@@ -736,7 +759,8 @@ struct Example:
                 node = SpawnAttributeNode();
             if (ImGui::MenuItem("Function"))
                 node = SpawnFunctionNode();
-
+            if (ImGui::MenuItem("Message"))
+                node = SpawnMessageNode();
             if (node)
             {
                 BuildNodes();
