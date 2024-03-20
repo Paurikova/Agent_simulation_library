@@ -31,6 +31,7 @@
 # include "crude_json.h"
 
 # include <vector>
+# include <unordered_map>
 # include <string>
 
 
@@ -868,6 +869,7 @@ struct NavigateAction final: EditorAction
 
     void SetViewRect(const ImRect& rect);
     ImRect GetViewRect() const;
+    void SetCanvas(ImGuiEx::Canvas& canvas) { m_Canvas = canvas;}
 
 private:
     ImGuiEx::Canvas&   m_Canvas;
@@ -1436,7 +1438,7 @@ struct EditorContext
     void NavigateTo(const ImRect& bounds, bool zoomIn = false, float duration = -1)
     {
         auto zoomMode = zoomIn ? NavigateAction::ZoomMode::WithMargin : NavigateAction::ZoomMode::None;
-        m_NavigateAction.NavigateTo(bounds, zoomMode, duration);
+        m_NavigateAction->NavigateTo(bounds, zoomMode, duration);
     }
 
     void RegisterAnimation(Animation* animation);
@@ -1511,6 +1513,7 @@ private:
     vector<Animation*>  m_LiveAnimations;
     vector<Animation*>  m_LastLiveAnimations;
 
+    std::unordered_map<ImCanvID, ImGuiEx::Canvas>* m_CanvasMap;
     ImGuiEx::Canvas     m_Canvas;
     bool                m_IsCanvasVisible;
 
@@ -1518,7 +1521,7 @@ private:
     HintBuilder         m_HintBuilder;
 
     EditorAction*       m_CurrentAction;
-    NavigateAction      m_NavigateAction;
+    NavigateAction*     m_NavigateAction;
     SizeAction          m_SizeAction;
     DragAction          m_DragAction;
     SelectAction        m_SelectAction;

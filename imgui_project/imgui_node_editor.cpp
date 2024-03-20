@@ -1081,12 +1081,10 @@ ed::EditorContext::EditorContext(const ax::NodeEditor::Config* config)
     , m_Links()
     , m_SelectionId(1)
     , m_LastActiveLink(nullptr)
-    , m_Canvas()
     , m_IsCanvasVisible(false)
     , m_NodeBuilder(this)
     , m_HintBuilder(this)
     , m_CurrentAction(nullptr)
-    , m_NavigateAction(this, m_Canvas)
     , m_SizeAction(this)
     , m_DragAction(this)
     , m_SelectAction(this)
@@ -1109,6 +1107,12 @@ ed::EditorContext::EditorContext(const ax::NodeEditor::Config* config)
     , m_DrawList(nullptr)
     , m_ExternalChannel(0)
 {
+    m_CanvasMap = new std::unordered_map<ImGuiID, ImGuiEx::Canvas>();
+    ImCanvID id_ = 0;
+    m_CanvasMap->insert({id_++, ImGuiEx::Canvas{}});
+    m_CanvasMap->insert({id_++, ImGuiEx::Canvas{}});
+    m_Canvas = m_CanvasMap->at(0);
+    m_NavigateAction = new NavigateAction(this, m_Canvas);
 }
 
 ed::EditorContext::~EditorContext()
@@ -1174,15 +1178,15 @@ void ed::EditorContext::Begin(const char* id, const ImVec2& size)
     ImDrawList_SwapSplitter(m_DrawList, m_Splitter);
     m_ExternalChannel = m_DrawList->_Splitter._Current;
 
-    if (m_CurrentAction && m_CurrentAction->IsDragging() && m_NavigateAction.MoveOverEdge(canvasSize))
+    if (m_CurrentAction && m_CurrentAction->IsDragging() && m_NavigateAction->MoveOverEdge(canvasSize))
     {
         auto& io = ImGui::GetIO();
-        auto offset = m_NavigateAction.GetMoveScreenOffset();
+        auto offset = m_NavigateAction->GetMoveScreenOffset();
         for (int i = 0; i < 5; ++i)
             io.MouseClickedPos[i] = io.MouseClickedPos[i] - offset;
     }
     else
-        m_NavigateAction.StopMoveOverEdge();
+        m_NavigateAction->StopMoveOverEdge();
 
     auto previousSize        = m_Canvas.Rect().GetSize();
     auto previousVisibleRect = m_Canvas.ViewRect();
@@ -1197,12 +1201,12 @@ void ed::EditorContext::Begin(const char* id, const ImVec2& size)
     m_IsFocused = ImGui::IsWindowFocused();
 
     //
-    m_NavigateAction.SetWindow(m_Canvas.ViewRect().Min, m_Canvas.ViewRect().GetSize());
+    m_NavigateAction->SetWindow(m_Canvas.ViewRect().Min, m_Canvas.ViewRect().GetSize());
 
     // Handle canvas size change. Scale to Y axis, center on X.
     if (!ImRect_IsEmpty(previousVisibleRect) && previousSize != canvasSize)
     {
-        m_NavigateAction.FinishNavigation();
+        m_NavigateAction->FinishNavigation();
 
         auto centerX            = (previousVisibleRect.Max.x + previousVisibleRect.Min.x) * 0.5f;
         auto centerY            = (previousVisibleRect.Max.y + previousVisibleRect.Min.y) * 0.5f;
@@ -1232,10 +1236,10 @@ void ed::EditorContext::Begin(const char* id, const ImVec2& size)
         previousVisibleRect.Min.y = centerY - 0.5f * height;
         previousVisibleRect.Max.y = centerY + 0.5f * height;
 
-        m_NavigateAction.NavigateTo(previousVisibleRect, Detail::NavigateAction::ZoomMode::Exact, 0.0f);
+        m_NavigateAction->NavigateTo(previousVisibleRect, Detail::NavigateAction::ZoomMode::Exact, 0.0f);
     }
 
-    m_Canvas.SetView(m_NavigateAction.GetView());
+    m_Canvas.SetView(m_NavigateAction->GetView());
 
     // #debug #clip
     //ImGui::Text("CLIP = { x=%g y=%g w=%g h=%g r=%g b=%g }",
@@ -1334,10 +1338,10 @@ void ed::EditorContext::End()
     if (m_CurrentAction && !m_CurrentAction->Process(control))
         m_CurrentAction = nullptr;
 
-    if (m_NavigateAction.m_IsActive)
-        m_NavigateAction.Process(control);
+    if (m_NavigateAction->m_IsActive)
+        m_NavigateAction->Process(control);
     else
-        m_NavigateAction.Accept(control);
+        m_NavigateAction->Accept(control);
 
     if (nullptr == m_CurrentAction)
     {
@@ -2166,12 +2170,12 @@ void ed::EditorContext::LoadSettings()
 
     if (ImRect_IsEmpty(m_Settings.m_VisibleRect))
     {
-        m_NavigateAction.m_Scroll = m_Settings.m_ViewScroll;
-        m_NavigateAction.m_Zoom   = m_Settings.m_ViewZoom;
+        m_NavigateAction->m_Scroll = m_Settings.m_ViewScroll;
+        m_NavigateAction->m_Zoom   = m_Settings.m_ViewZoom;
     }
     else
     {
-        m_NavigateAction.NavigateTo(m_Settings.m_VisibleRect, NavigateAction::ZoomMode::Exact, 0.0f);
+        m_NavigateAction->NavigateTo(m_Settings.m_VisibleRect, NavigateAction::ZoomMode::Exact, 0.0f);
     }
 }
 
@@ -2198,9 +2202,9 @@ void ed::EditorContext::SaveSettings()
     for (auto& object : m_SelectedObjects)
         m_Settings.m_Selection.push_back(object->ID());
 
-    m_Settings.m_ViewScroll  = m_NavigateAction.m_Scroll;
-    m_Settings.m_ViewZoom    = m_NavigateAction.m_Zoom;
-    m_Settings.m_VisibleRect = m_NavigateAction.m_VisibleRect;
+    m_Settings.m_ViewScroll  = m_NavigateAction->m_Scroll;
+    m_Settings.m_ViewZoom    = m_NavigateAction->m_Zoom;
+    m_Settings.m_VisibleRect = m_NavigateAction->m_VisibleRect;
 
     if (m_Config.Save(m_Settings.Serialize(), m_Settings.m_DirtyReason))
         m_Settings.ClearDirty();
@@ -2643,7 +2647,7 @@ void ed::EditorContext::ShowMetrics(const Control& control)
     }
     ImGui::Text("Action: %s", m_CurrentAction ? m_CurrentAction->GetName() : "<none>");
     ImGui::Text("Action Is Dragging: %s", m_CurrentAction && m_CurrentAction->IsDragging() ? "Yes" : "No");
-    m_NavigateAction.ShowMetrics();
+    m_NavigateAction->ShowMetrics();
     m_SizeAction.ShowMetrics();
     m_DragAction.ShowMetrics();
     m_SelectAction.ShowMetrics();
