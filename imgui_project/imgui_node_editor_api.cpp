@@ -148,9 +148,9 @@ void ax::NodeEditor::BeginNode(NodeId id)
     s_Editor->GetNodeBuilder().Begin(id);
 }
 
-void ax::NodeEditor::BeginPin(PinId id, PinKind kind)
+void ax::NodeEditor::BeginPin(PinId id, PinKind kind, bool active)
 {
-    s_Editor->GetNodeBuilder().BeginPin(id, kind);
+    s_Editor->GetNodeBuilder().BeginPin(id, kind, active);
 }
 
 void ax::NodeEditor::PinRect(const ImVec2& a, const ImVec2& b)

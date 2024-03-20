@@ -111,9 +111,10 @@ struct Pin
     std::string Name;
     PinType     Type;
     PinKind     Kind;
+    bool        IsActive;
 
-    Pin(int id, const char* name, PinType type, TextBuffer buffer):
-            ID(id), Node(nullptr), Name(name), Type(type), Kind(PinKind::Input), PinBuffer(buffer)
+    Pin(int id, const char* name, PinType type, TextBuffer buffer, bool active = true):
+            ID(id), Node(nullptr), Name(name), Type(type), Kind(PinKind::Input), PinBuffer(buffer), IsActive(active)
     {
     }
 };
@@ -285,7 +286,7 @@ struct Example:
     Node* SpawnFunctionNode()
     {
         m_Nodes.emplace_back(GetNextId(), "Function", ImColor(128, 195, 248));
-        m_Nodes.back().Inputs.emplace_back(GetNextId(), "ServiceId", PinType::Service,TextBuffer(BufferType::ServiceId));
+        m_Nodes.back().Inputs.emplace_back(GetNextId(), "", PinType::Service,TextBuffer(BufferType::ServiceId), false);
         m_Nodes.back().Outputs.emplace_back(GetNextId(), "", PinType::Function, TextBuffer(BufferType::Name));
         BuildNode(&m_Nodes.back());
 
@@ -295,7 +296,7 @@ struct Example:
     Node* SpawnAttributeNode()
     {
         m_Nodes.emplace_back(GetNextId(), "Attribute", ImColor(128, 195, 248));
-        m_Nodes.back().Inputs.emplace_back(GetNextId(), "Type", PinType::Type, TextBuffer(BufferType::Empty));
+        m_Nodes.back().Inputs.emplace_back(GetNextId(), "", PinType::Type, TextBuffer(BufferType::Type), false);
         m_Nodes.back().Outputs.emplace_back(GetNextId(), "", PinType::Attribute, TextBuffer(BufferType::Name));
         BuildNode(&m_Nodes.back());
 
@@ -434,8 +435,6 @@ struct Example:
             case PinType::Message:       iconType = IconType::Flow;   break;
             case PinType::Attribute:     iconType = IconType::Circle; break;
             case PinType::Function:      iconType = IconType::Circle; break;
-            case PinType::Type:      iconType = IconType::Circle; break;
-            case PinType::Service:      iconType = IconType::Circle; break;
             default:
                 return;
         }
@@ -502,7 +501,7 @@ struct Example:
                     if (newLinkPin && !CanCreateLink(newLinkPin, &input) && &input != newLinkPin)
                         alpha = alpha * (48.0f / 255.0f);
 
-                    builder.Input(input.ID);
+                    builder.Input(input.ID, input.IsActive);
                     ImGui::PushStyleVar(ImGuiStyleVar_Alpha, alpha);
                     DrawPinIcon(input, IsPinLinked(input.ID), (int)(alpha * 255));
                     ImGui::Spring(0);
@@ -540,7 +539,7 @@ struct Example:
                         alpha = alpha * (48.0f / 255.0f);
 
                     ImGui::PushStyleVar(ImGuiStyleVar_Alpha, alpha);
-                    builder.Output(output.ID);
+                    builder.Output(output.ID, output.IsActive);
                     if (output.PinBuffer.Type != BufferType::Empty) {
                         static bool wasActive = false;
 

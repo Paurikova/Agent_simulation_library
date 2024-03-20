@@ -307,7 +307,7 @@ IMGUI_NODE_EDITOR_API void Begin(const char* id, const ImVec2& size = ImVec2(0, 
 IMGUI_NODE_EDITOR_API void End();
 
 IMGUI_NODE_EDITOR_API void BeginNode(NodeId id);
-IMGUI_NODE_EDITOR_API void BeginPin(PinId id, PinKind kind);
+IMGUI_NODE_EDITOR_API void BeginPin(PinId id, PinKind kind, bool active = true);
 IMGUI_NODE_EDITOR_API void PinRect(const ImVec2& a, const ImVec2& b);
 IMGUI_NODE_EDITOR_API void PinPivotRect(const ImVec2& a, const ImVec2& b);
 IMGUI_NODE_EDITOR_API void PinPivotSize(const ImVec2& size);

@@ -308,8 +308,9 @@ struct Pin final: Object
     bool    m_SnapLinkToDir;
     bool    m_HasConnection;
     bool    m_HadConnection;
+    bool    m_IsActive;
 
-    Pin(EditorContext* editor, PinId id, PinKind kind)
+    Pin(EditorContext* editor, PinId id, PinKind kind, bool active = true)
         : Object(editor)
         , m_ID(id)
         , m_Kind(kind)
@@ -329,6 +330,7 @@ struct Pin final: Object
         , m_SnapLinkToDir(true)
         , m_HasConnection(false)
         , m_HadConnection(false)
+        , m_IsActive(active)
     {
     }
 
@@ -349,7 +351,7 @@ struct Pin final: Object
 
     virtual ImRect GetBounds() const override final { return m_Bounds; }
 
-    virtual Pin* AsPin() override final { return this; }
+    virtual Pin* AsPin() override final { return m_IsActive ? this : nullptr; }
 };
 
 enum class NodeType
@@ -1198,7 +1200,7 @@ struct NodeBuilder
     void Begin(NodeId nodeId);
     void End();
 
-    void BeginPin(PinId pinId, PinKind kind);
+    void BeginPin(PinId pinId, PinKind kind, bool active);
     void EndPin();
 
     void PinRect(const ImVec2& a, const ImVec2& b);
@@ -1378,7 +1380,7 @@ struct EditorContext
     int CountLivePins() const;
     int CountLiveLinks() const;
 
-    Pin*    CreatePin(PinId id, PinKind kind);
+    Pin*    CreatePin(PinId id, PinKind kind, bool active);
     Node*   CreateNode(NodeId id);
     Link*   CreateLink(LinkId id);
 
@@ -1388,7 +1390,7 @@ struct EditorContext
     Object* FindObject(ObjectId id);
 
     Node*  GetNode(NodeId id);
-    Pin*   GetPin(PinId id, PinKind kind);
+    Pin*   GetPin(PinId id, PinKind kind, bool active);
     Link*  GetLink(LinkId id);
 
     Link* FindLinkAt(const ImVec2& p);

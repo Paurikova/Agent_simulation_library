@@ -31,12 +31,12 @@ struct BlueprintNodeBuilder
     void Header(const ImVec4& color = ImVec4(1, 1, 1, 1));
     void EndHeader();
 
-    void Input(PinId id);
+    void Input(PinId id, bool active);
     void EndInput();
 
     void Middle();
 
-    void Output(PinId id);
+    void Output(PinId id, bool active);
     void EndOutput();
 
 
@@ -55,7 +55,7 @@ private:
 
     bool SetStage(Stage stage);
 
-    void Pin(PinId id, ax::NodeEditor::PinKind kind);
+    void Pin(PinId id, ax::NodeEditor::PinKind kind, bool active = true);
     void EndPin();
 
     ImTextureID HeaderTextureId;
