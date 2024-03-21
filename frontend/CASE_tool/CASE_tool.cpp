@@ -1135,8 +1135,41 @@ struct Example:
                         if (ed::AcceptDeletedItem())
                         {
                             auto id = std::find_if(m_Nodes.begin(), m_Nodes.end(), [nodeId](auto& node) { return node.ID == nodeId; });
-                            if (id != m_Nodes.end())
+                            if (id != m_Nodes.end()) {
                                 m_Nodes.erase(id);
+                                // Delete node id from other maps
+                                auto itInt = m_IntToExt.find(nodeId.Get());
+                                long internal = itInt != m_IntToExt.end() ? nodeId.Get() : 0;
+                                auto itExt = m_ExtToInt.find(nodeId.Get());
+                                long external = itExt != m_ExtToInt.end() ? nodeId.Get() : 0;
+                                if (internal != 0 || external != 0)
+                                {
+                                    internal = internal == 0 ? itExt->second : internal;
+                                    external = external == 0 ? itInt->second : external;
+                                    // remove from maps
+                                    m_IntToExt.erase(internal);
+                                    m_ExtToInt.erase(external);
+                                }
+                                // features
+                                auto itFeat = m_FeatToInt.begin();
+                                while (itFeat != m_FeatToInt.end()) {
+                                    if (itFeat->second == internal) {
+                                        itFeat = m_FeatToInt.erase(itFeat); // Erase the element pointed to by the iterator
+                                        // parts
+                                        auto itPar = m_PartToFunct.begin();
+                                        while (itPar != m_PartToFunct.end()) {
+                                            if (itPar->second == itFeat->first) {
+                                                itPar = m_PartToFunct.erase(itPar); // Erase the element pointed to by the iterator
+                                            } else {
+                                                ++itPar; // Move to the next element
+                                            }
+                                        }
+
+                                    } else {
+                                        ++itFeat; // Move to the next element
+                                    }
+                                }
+                            }
                         }
                     }
 
@@ -1383,22 +1416,10 @@ struct Example:
 
     void AddFeature(ed::NodeId featureId, ed::NodeId agentId) {
         m_FeatToInt.insert({featureId.Get(), agentId.Get()});
-        auto it = m_IntToFeat.find(agentId.Get());
-        if (it == m_IntToFeat.end()) {
-            // agentId is not in map
-            m_IntToFeat.insert({agentId.Get(), std::vector<long>()});
-        }
-        m_IntToFeat.at(agentId.Get()).emplace_back(featureId.Get());
     }
 
     void AddParts(ed::NodeId codeId, ed::NodeId functId) {
         m_PartToFunct.insert({codeId.Get(), functId.Get()});
-        auto it = m_FunctToPart.find(functId.Get());
-        if (it == m_FunctToPart.end()) {
-            // agentId is not in map
-            m_FunctToPart.insert({functId.Get(), std::vector<long>()});
-        }
-        m_FunctToPart.at(functId.Get()).emplace_back(codeId.Get());
     }
 
     int                  m_NextId = 1;
@@ -1407,8 +1428,6 @@ struct Example:
     std::map<long, long> m_ExtToInt;
     std::map<long, long> m_IntToExt;
     std::map<long, long> m_FeatToInt;
-    std::map<long, std::vector<long>> m_IntToFeat;
-    std::map<long, std::vector<long>> m_FunctToPart;
     std::map<long, long> m_PartToFunct;
     std::vector<Link>    m_Links;
     ImTextureID          m_HeaderBackground = nullptr;
