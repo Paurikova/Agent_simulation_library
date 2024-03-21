@@ -295,13 +295,8 @@ struct Example:
     Node* SpawnAgentNodeInternal()
     {
         m_Nodes.emplace_back(GetNextId(), "Agent", NodeType::BlueprintAgent);
-        m_Nodes.back().Inputs.emplace_back(GetNextId(), "Parent", PinType::Relationship, TextBuffer(BufferType::Empty));
         m_Nodes.back().Inputs.emplace_back(GetNextId(), "Attributes", PinType::Attribute, TextBuffer(BufferType::Empty));
-        m_Nodes.back().Inputs.emplace_back(GetNextId(), "Functions", PinType::Function, TextBuffer(BufferType::Empty));
-        m_Nodes.back().Inputs.emplace_back(GetNextId(), "Sender", PinType::Message,TextBuffer(BufferType::Empty));
-        m_Nodes.back().Outputs.emplace_back(GetNextId(), "Childs", PinType::Relationship,TextBuffer(BufferType::Empty));
-        m_Nodes.back().Outputs.emplace_back(GetNextId(), "Receiver", PinType::Message,TextBuffer(BufferType::Empty));
-
+        m_Nodes.back().Outputs.emplace_back(GetNextId(), "Functions", PinType::Function, TextBuffer(BufferType::Empty));
         BuildNode(&m_Nodes.back());
 
         return &m_Nodes.back();
@@ -310,8 +305,8 @@ struct Example:
     Node* SpawnFunctionNode()
     {
         m_Nodes.emplace_back(GetNextId(), "Function", NodeType::BlueprintFeature, ImColor(128, 195, 248));
-        m_Nodes.back().Inputs.emplace_back(GetNextId(), "", PinType::Service,TextBuffer(BufferType::ServiceId), false);
-        m_Nodes.back().Outputs.emplace_back(GetNextId(), "", PinType::Function, TextBuffer(BufferType::Name));
+        m_Nodes.back().Inputs.emplace_back(GetNextId(), "", PinType::Function, TextBuffer(BufferType::Name));
+        m_Nodes.back().Outputs.emplace_back(GetNextId(), "", PinType::Service,TextBuffer(BufferType::ServiceId), false);
         BuildNode(&m_Nodes.back());
 
         return &m_Nodes.back();
@@ -330,8 +325,6 @@ struct Example:
     Node* SpawnMessageNode()
     {
         m_Nodes.emplace_back(GetNextId(), "InitialMessage", NodeType::BlueprintFeature, ImColor(128, 195, 248));
-        m_Nodes.back().Inputs.emplace_back(GetNextId(), "", PinType::Message, TextBuffer(BufferType::Time));
-        m_Nodes.back().Outputs.emplace_back(GetNextId(), "", PinType::Message, TextBuffer(BufferType::Priority));
         BuildNode(&m_Nodes.back());
 
         return &m_Nodes.back();
