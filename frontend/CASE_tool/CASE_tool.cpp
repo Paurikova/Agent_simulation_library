@@ -44,6 +44,7 @@ enum class PinType
     Message,
     Service,
     Type,
+    Code,
 };
 
 enum class PinKind
@@ -56,6 +57,7 @@ enum class NodeType
 {
     BlueprintAgent,
     BlueprintFeature,
+    Simple,
     Tree,
 };
 
@@ -63,10 +65,9 @@ enum class BufferType
 {
     Name,
     Type,
-    Header,
     ServiceId,
-    Time,
-    Priority,
+    Header,
+    Id,
     Empty,
 };
 
@@ -90,14 +91,11 @@ struct TextBuffer {
             case BufferType::ServiceId:
                 strcpy(Buffer, "ServiceId");
                 break;
+            case BufferType::Id:
+                strcpy(Buffer, "Id");
+                break;
             case BufferType::Header:
                 strcpy(Buffer, "Header");
-                break;
-            case BufferType::Time:
-                strcpy(Buffer, "Time");
-                break;
-            case BufferType::Priority:
-                strcpy(Buffer, "Priority");
                 break;
             default: strcpy(Buffer, "Edit me");
                 break;
@@ -330,6 +328,42 @@ struct Example:
         return &m_Nodes.back();
     }
 
+    Node* SpawnConditionNode()
+    {
+        m_Nodes.emplace_back(GetNextId(), "Condition", NodeType::Simple, ImColor(128, 195, 248));
+        m_Nodes.back().Type = NodeType::Simple;
+        m_Nodes.back().Inputs.emplace_back(GetNextId(), "", PinType::Code, TextBuffer(BufferType::Empty));
+        m_Nodes.back().Outputs.emplace_back(GetNextId(), "IF", PinType::Code, TextBuffer(BufferType::Empty));
+        m_Nodes.back().Outputs.emplace_back(GetNextId(), "ElSE", PinType::Code, TextBuffer(BufferType::Empty));
+
+        BuildNode(&m_Nodes.back());
+
+        return &m_Nodes.back();
+    }
+
+    Node* SpawnCodeNode()
+    {
+        m_Nodes.emplace_back(GetNextId(), "Code", NodeType::Simple, ImColor(128, 195, 248));
+        m_Nodes.back().Type = NodeType::Simple;
+        m_Nodes.back().Inputs.emplace_back(GetNextId(), "", PinType::Code, TextBuffer(BufferType::Empty));
+        m_Nodes.back().Outputs.emplace_back(GetNextId(), "", PinType::Code, TextBuffer(BufferType::Empty));
+
+        BuildNode(&m_Nodes.back());
+
+        return &m_Nodes.back();
+    }
+
+    Node* SpawnServiceIdNode()
+    {
+        m_Nodes.emplace_back(GetNextId(), "Service", NodeType::Simple, ImColor(128, 195, 248));
+        m_Nodes.back().Type = NodeType::Simple;
+        m_Nodes.back().Inputs.emplace_back(GetNextId(), "", PinType::Code, TextBuffer(BufferType::Id));
+
+        BuildNode(&m_Nodes.back());
+
+        return &m_Nodes.back();
+    }
+
     void BuildNodes()
     {
         for (auto& node : m_Nodes)
@@ -421,6 +455,7 @@ struct Example:
             case PinType::Relationship:   return { 51, 150, 215}; //mass blue
             case PinType::Message:   return { 255, 255, 255}; //white
             case PinType::Service:    return ImColor(147, 226,  74); //green
+            case PinType::Code:    return ImColor(51, 150, 215); //green
         }
     };
 
@@ -435,6 +470,7 @@ struct Example:
             case PinType::Message:       iconType = IconType::Flow;   break;
             case PinType::Attribute:     iconType = IconType::Circle; break;
             case PinType::Function:      iconType = IconType::Circle; break;
+            case PinType::Code:          iconType = IconType::Circle; break;
             default:
                 return;
         }
@@ -744,18 +780,23 @@ struct Example:
                 // -> it != m_FeaturesToInt.end()
                 // -> && m_Inside.Get() == m_FeaturesToInt.find(m_Inside.Get())
                 auto it = m_FeaturesToInt.find(node.ID.Get());
-                if ((node.Type != NodeType::BlueprintAgent || m_Inside.Get() != node.ID.Get()) &&
+                if ((node.Type != NodeType::Simple) &&
+                        (node.Type != NodeType::BlueprintAgent || m_Inside.Get() != node.ID.Get()) &&
                         (node.Type != NodeType::BlueprintFeature || it == m_FeaturesToInt.end()  ||  m_Inside.Get() != it->second))
                     continue;
-                builder.Begin(node.ID);
-                builder.Header(node.Color);
-                ImGui::Spring(0);
-                ImGui::TextUnformatted(node.Name.c_str());
-                ImGui::Spring(1);
-                ImGui::Dummy(ImVec2(0, 28));
 
-                ImGui::Spring(0);
-                builder.EndHeader();
+                const auto isSimple = node.Type == NodeType::Simple;
+                builder.Begin(node.ID);
+                if (!isSimple) {
+                    builder.Header(node.Color);
+                    ImGui::Spring(0);
+                    ImGui::TextUnformatted(node.Name.c_str());
+                    ImGui::Spring(1);
+                    ImGui::Dummy(ImVec2(0, 28));
+
+                    ImGui::Spring(0);
+                    builder.EndHeader();
+                }
 
                 for (auto &input: node.Inputs)
                 {
@@ -792,6 +833,15 @@ struct Example:
                     }
                     ImGui::PopStyleVar();
                     builder.EndInput();
+                }
+
+                if (isSimple)
+                {
+                    builder.Middle();
+
+                    ImGui::Spring(1, 0);
+                    ImGui::TextUnformatted(node.Name.c_str());
+                    ImGui::Spring(1, 0);
                 }
 
                 for (auto& output : node.Outputs)
@@ -1194,6 +1244,18 @@ struct Example:
                 }
                 if (ImGui::MenuItem("Function")) {
                     nodes->push_back(SpawnFunctionNode());
+                    AddFeatureToAgent(nodes->back()->ID, m_Inside);
+                }
+                if (ImGui::MenuItem("Condition")) {
+                    nodes->push_back(SpawnConditionNode());
+                    AddFeatureToAgent(nodes->back()->ID, m_Inside);
+                }
+                if (ImGui::MenuItem("Code")) {
+                    nodes->push_back(SpawnCodeNode());
+                    AddFeatureToAgent(nodes->back()->ID, m_Inside);
+                }
+                if (ImGui::MenuItem("Service")) {
+                    nodes->push_back(SpawnServiceIdNode());
                     AddFeatureToAgent(nodes->back()->ID, m_Inside);
                 }
             }
