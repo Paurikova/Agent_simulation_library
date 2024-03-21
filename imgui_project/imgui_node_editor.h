@@ -105,6 +105,7 @@ struct Config
     int                     SelectButtonIndex;      // Mouse button index select action will react to (0-left, 1-right, 2-middle)
     int                     NavigateButtonIndex;    // Mouse button index navigate action will react to (0-left, 1-right, 2-middle)
     int                     ContextMenuButtonIndex; // Mouse button index context menu action will react to (0-left, 1-right, 2-middle)
+    int                     DoubleClickButtonIndex;
     bool                    EnableSmoothZoom;
     float                   SmoothZoomPower;
 
@@ -123,6 +124,7 @@ struct Config
         , SelectButtonIndex(0)
         , NavigateButtonIndex(1)
         , ContextMenuButtonIndex(1)
+        , DoubleClickButtonIndex(0)
         , EnableSmoothZoom(false)
 # ifdef __APPLE__
         , SmoothZoomPower(1.1f)
@@ -289,6 +291,7 @@ struct EditorContext;
 IMGUI_NODE_EDITOR_API void SetCurrentEditor(EditorContext* ctx);
 IMGUI_NODE_EDITOR_API EditorContext* GetCurrentEditor();
 IMGUI_NODE_EDITOR_API EditorContext* CreateEditor(const Config* config = nullptr);
+IMGUI_NODE_EDITOR_API void SetEditorCanvas(ImCanvID id);
 IMGUI_NODE_EDITOR_API void DestroyEditor(EditorContext* ctx);
 IMGUI_NODE_EDITOR_API const Config& GetConfig(EditorContext* ctx = nullptr);
 
@@ -389,6 +392,7 @@ IMGUI_NODE_EDITOR_API void NavigateToContent(float duration = -1);
 IMGUI_NODE_EDITOR_API void NavigateToSelection(bool zoomIn = false, float duration = -1);
 
 IMGUI_NODE_EDITOR_API bool ShowNodeContextMenu(NodeId* nodeId);
+IMGUI_NODE_EDITOR_API bool GoInsertNode(NodeId* node);
 IMGUI_NODE_EDITOR_API bool ShowPinContextMenu(PinId* pinId);
 IMGUI_NODE_EDITOR_API bool ShowLinkContextMenu(LinkId* linkId);
 IMGUI_NODE_EDITOR_API bool ShowBackgroundContextMenu();

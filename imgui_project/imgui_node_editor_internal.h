@@ -31,7 +31,6 @@
 # include "crude_json.h"
 
 # include <vector>
-# include <unordered_map>
 # include <string>
 
 
@@ -988,6 +987,17 @@ struct SelectAction final: EditorAction
     void Draw(ImDrawList* drawList);
 };
 
+struct DoubleClickAction final: EditorAction {
+    ObjectId m_ContextId;
+
+    DoubleClickAction(EditorContext* editor);
+    bool GoInsertNode(NodeId* nodeId);
+    virtual AcceptResult Accept(const Control& control) override final;
+    virtual bool Process(const Control& control) override final;
+    virtual void Reject() override final;
+    virtual const char* GetName() const override final { return "Double Click"; }
+};
+
 struct ContextMenuAction final: EditorAction
 {
     enum Menu { None, Node, Pin, Link, Background };
@@ -1316,6 +1326,7 @@ struct EditorContext
     CreateItemAction& GetItemCreator() { return m_CreateItemAction; }
     DeleteItemsAction& GetItemDeleter() { return m_DeleteItemsAction; }
     ContextMenuAction& GetContextMenu() { return m_ContextMenuAction; }
+    DoubleClickAction& GetDoubleClickAction() { return m_DoubleClickAction;}
     ShortcutAction& GetShortcut() { return m_ShortcutAction; }
 
     const ImGuiEx::CanvasView& GetView() const { return m_Canvas.View(); }
@@ -1438,7 +1449,7 @@ struct EditorContext
     void NavigateTo(const ImRect& bounds, bool zoomIn = false, float duration = -1)
     {
         auto zoomMode = zoomIn ? NavigateAction::ZoomMode::WithMargin : NavigateAction::ZoomMode::None;
-        m_NavigateAction->NavigateTo(bounds, zoomMode, duration);
+        m_NavigateAction.NavigateTo(bounds, zoomMode, duration);
     }
 
     void RegisterAnimation(Animation* animation);
@@ -1513,7 +1524,6 @@ private:
     vector<Animation*>  m_LiveAnimations;
     vector<Animation*>  m_LastLiveAnimations;
 
-    std::unordered_map<ImCanvID, ImGuiEx::Canvas>* m_CanvasMap;
     ImGuiEx::Canvas     m_Canvas;
     bool                m_IsCanvasVisible;
 
@@ -1521,11 +1531,12 @@ private:
     HintBuilder         m_HintBuilder;
 
     EditorAction*       m_CurrentAction;
-    NavigateAction*     m_NavigateAction;
+    NavigateAction      m_NavigateAction;
     SizeAction          m_SizeAction;
     DragAction          m_DragAction;
     SelectAction        m_SelectAction;
     ContextMenuAction   m_ContextMenuAction;
+    DoubleClickAction   m_DoubleClickAction;
     ShortcutAction      m_ShortcutAction;
     CreateItemAction    m_CreateItemAction;
     DeleteItemsAction   m_DeleteItemsAction;
