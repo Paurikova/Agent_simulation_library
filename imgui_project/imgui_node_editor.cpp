@@ -4236,9 +4236,12 @@ bool ed::DoubleClickAction::GoInsertNode(NodeId* nodeId) {
 }
 
 ed::EditorAction::AcceptResult ed::DoubleClickAction::Accept(const Control& control) {
-    const auto isPressed  = ImGui::IsMouseDoubleClicked(Editor->GetConfig().DoubleClickButtonIndex);
+    const auto isDoublePressed  = ImGui::IsMouseDoubleClicked(Editor->GetConfig().DoubleClickButtonIndex);
+    const auto isPressed  = ImGui::IsMouseClicked(Editor->GetConfig().ContextMenuButtonIndex);
+    const auto isReleased = ImGui::IsMouseReleased(Editor->GetConfig().ContextMenuButtonIndex);
+    const auto isDragging = ImGui::IsMouseDragging(Editor->GetConfig().ContextMenuButtonIndex, 1);
 
-    if (isPressed)
+    if (isDoublePressed)
     {
         ObjectId contextId;
 
@@ -4248,7 +4251,7 @@ ed::EditorAction::AcceptResult ed::DoubleClickAction::Accept(const Control& cont
                 contextId = hotObejct->ID();
         }
 
-        if (isPressed)
+        if (isDoublePressed)
         {
             m_ContextId     = contextId;
             return Possible;
@@ -4263,6 +4266,14 @@ ed::EditorAction::AcceptResult ed::DoubleClickAction::Accept(const Control& cont
             return False;
         }
     }
+
+    if (isPressed || isReleased || isDragging) {
+        //for back option in context menu
+        m_ContextId     = ObjectId();
+        return False;
+    }
+
+
 
     return False;
 }

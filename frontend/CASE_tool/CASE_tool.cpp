@@ -56,7 +56,8 @@ enum class PinKind
 enum class NodeType
 {
     BlueprintAgent,
-    BlueprintFeature,
+    BlueprintOther,
+    BlueprintFunction,
     Simple,
     Tree,
 };
@@ -302,7 +303,7 @@ struct Example:
 
     Node* SpawnFunctionNode()
     {
-        m_Nodes.emplace_back(GetNextId(), "Function", NodeType::BlueprintFeature, ImColor(128, 195, 248));
+        m_Nodes.emplace_back(GetNextId(), "Function", NodeType::BlueprintFunction, ImColor(128, 195, 248));
         m_Nodes.back().Inputs.emplace_back(GetNextId(), "", PinType::Function, TextBuffer(BufferType::Name));
         m_Nodes.back().Outputs.emplace_back(GetNextId(), "", PinType::Service,TextBuffer(BufferType::ServiceId), false);
         BuildNode(&m_Nodes.back());
@@ -312,7 +313,7 @@ struct Example:
 
     Node* SpawnAttributeNode()
     {
-        m_Nodes.emplace_back(GetNextId(), "Attribute", NodeType::BlueprintFeature, ImColor(128, 195, 248));
+        m_Nodes.emplace_back(GetNextId(), "Attribute", NodeType::BlueprintOther, ImColor(128, 195, 248));
         m_Nodes.back().Inputs.emplace_back(GetNextId(), "", PinType::Type, TextBuffer(BufferType::Type));
         m_Nodes.back().Outputs.emplace_back(GetNextId(), "", PinType::Attribute, TextBuffer(BufferType::Name));
         BuildNode(&m_Nodes.back());
@@ -322,7 +323,7 @@ struct Example:
 
     Node* SpawnMessageNode()
     {
-        m_Nodes.emplace_back(GetNextId(), "InitialMessage", NodeType::BlueprintFeature, ImColor(128, 195, 248));
+        m_Nodes.emplace_back(GetNextId(), "InitialMessage", NodeType::BlueprintOther, ImColor(128, 195, 248));
         BuildNode(&m_Nodes.back());
 
         return &m_Nodes.back();
@@ -412,7 +413,7 @@ struct Example:
 
         ed::NodeId inter = SpawnAgentNodes(ImVec2(-300, 351));
         Node* node = SpawnMessageNode();  ed::SetNodePosition(node->ID, ImVec2(-250, 500));
-        AddFeatureToAgent(node->ID, inter);
+        AddFeature(node->ID, inter);
         ed::NavigateToContent();
 
         BuildNodes();
@@ -623,8 +624,9 @@ struct Example:
                     else
                         ed::DeselectNode(node.ID);
                 }
-                else
+                else {
                     ed::SelectNode(node.ID, false);
+                }
 
                 ed::NavigateToSelection();
             }
@@ -733,6 +735,82 @@ struct Example:
         ImGui::EndChild();
     }
 
+    void BlueprintAndSimpleInputs(Node& node, Pin* newLinkPin, util::BlueprintNodeBuilder &builder) {
+        for (auto &input: node.Inputs)
+        {
+            auto alpha = ImGui::GetStyle().Alpha;
+            if (newLinkPin && !CanCreateLink(newLinkPin, &input) && &input != newLinkPin)
+                alpha = alpha * (48.0f / 255.0f);
+
+            builder.Input(input.ID, input.IsActive);
+            ImGui::PushStyleVar(ImGuiStyleVar_Alpha, alpha);
+            DrawPinIcon(input, IsPinLinked(input.ID), (int) (alpha * 255));
+            ImGui::Spring(0);
+
+            if (input.PinBuffer.Type != BufferType::Empty) {
+                static bool wasActive = false;
+
+                ImGui::PushItemWidth(100.0f);
+                ImGui::InputText("##edit", input.PinBuffer.Buffer, 127);
+                ImGui::PopItemWidth();
+
+                if (ImGui::IsItemActive() && !wasActive) {
+                    ed::EnableShortcuts(false);
+                    wasActive = true;
+                } else if (!ImGui::IsItemActive() && wasActive) {
+                    ed::EnableShortcuts(true);
+                    wasActive = false;
+                }
+                ImGui::Spring(0);
+            }
+
+            if (!input.Name.empty())
+            {
+                ImGui::TextUnformatted(input.Name.c_str());
+                ImGui::Spring(0);
+            }
+            ImGui::PopStyleVar();
+            builder.EndInput();
+        }
+
+    }
+
+    void BlueprintAndSimpleOutputs(Node& node, Pin* newLinkPin, util::BlueprintNodeBuilder& builder) {
+        for (auto& output : node.Outputs)
+        {
+            auto alpha = ImGui::GetStyle().Alpha;
+            if (newLinkPin && !CanCreateLink(newLinkPin, &output) && &output != newLinkPin)
+                alpha = alpha * (48.0f / 255.0f);
+
+            ImGui::PushStyleVar(ImGuiStyleVar_Alpha, alpha);
+            builder.Output(output.ID, output.IsActive);
+            if (output.PinBuffer.Type != BufferType::Empty) {
+                static bool wasActive = false;
+
+                ImGui::PushItemWidth(100.0f);
+                ImGui::InputText("##edit", output.PinBuffer.Buffer, 127);
+                ImGui::PopItemWidth();
+                if (ImGui::IsItemActive() && !wasActive) {
+                    ed::EnableShortcuts(false);
+                    wasActive = true;
+                } else if (!ImGui::IsItemActive() && wasActive) {
+                    ed::EnableShortcuts(true);
+                    wasActive = false;
+                }
+                ImGui::Spring(0);
+            }
+            if (!output.Name.empty())
+            {
+                ImGui::Spring(0);
+                ImGui::TextUnformatted(output.Name.c_str());
+            }
+            ImGui::Spring(0);
+            DrawPinIcon(output, IsPinLinked(output.ID), (int)(alpha * 255));
+            ImGui::PopStyleVar();
+            builder.EndOutput();
+        }
+    }
+
     void OnFrame(float deltaTime) override
     {
         UpdateTouch();
@@ -776,107 +854,49 @@ struct Example:
             for (auto& node : m_Nodes) {
                 // node.Type == NodeType::BlueprintAgent &&
                 //  -> m_Inside.Get() == node.ID.Get()
-                // node.Type == NodeType::BlueprintFeature &&
-                // -> it != m_FeaturesToInt.end()
-                // -> && m_Inside.Get() == m_FeaturesToInt.find(m_Inside.Get())
-                auto it = m_FeaturesToInt.find(node.ID.Get());
-                if ((node.Type != NodeType::Simple) &&
-                        (node.Type != NodeType::BlueprintAgent || m_Inside.Get() != node.ID.Get()) &&
-                        (node.Type != NodeType::BlueprintFeature || it == m_FeaturesToInt.end()  ||  m_Inside.Get() != it->second))
+                // node.Type == NodeType::BlueprintOther || node.Type == NodeType::BlueprintFunction
+                // -> it != m_FeatToInt.end()
+                // -> && m_Inside.Get() == m_FeatToInt.find(m_Inside.Get())
+                auto it = m_FeatToInt.find(node.ID.Get());
+                if ((node.Type != NodeType::BlueprintAgent || m_Inside.Get() != node.ID.Get()) &&
+                        ((node.Type != NodeType::BlueprintOther && node.Type != NodeType::BlueprintFunction) ||
+                     it == m_FeatToInt.end()  ||  m_Inside.Get() != it->second))
                     continue;
 
-                const auto isSimple = node.Type == NodeType::Simple;
                 builder.Begin(node.ID);
-                if (!isSimple) {
-                    builder.Header(node.Color);
-                    ImGui::Spring(0);
-                    ImGui::TextUnformatted(node.Name.c_str());
-                    ImGui::Spring(1);
-                    ImGui::Dummy(ImVec2(0, 28));
+                builder.Header(node.Color);
+                ImGui::Spring(0);
+                ImGui::TextUnformatted(node.Name.c_str());
+                ImGui::Spring(1);
+                ImGui::Dummy(ImVec2(0, 28));
 
-                    ImGui::Spring(0);
-                    builder.EndHeader();
-                }
+                ImGui::Spring(0);
+                builder.EndHeader();
 
-                for (auto &input: node.Inputs)
-                {
-                    auto alpha = ImGui::GetStyle().Alpha;
-                    if (newLinkPin && !CanCreateLink(newLinkPin, &input) && &input != newLinkPin)
-                        alpha = alpha * (48.0f / 255.0f);
+                BlueprintAndSimpleInputs(node, newLinkPin, builder);
+                BlueprintAndSimpleOutputs(node, newLinkPin, builder);
 
-                    builder.Input(input.ID, input.IsActive);
-                    ImGui::PushStyleVar(ImGuiStyleVar_Alpha, alpha);
-                    DrawPinIcon(input, IsPinLinked(input.ID), (int) (alpha * 255));
-                    ImGui::Spring(0);
+                builder.End();
+            }
 
-                    if (input.PinBuffer.Type != BufferType::Empty) {
-                        static bool wasActive = false;
+            for (auto& node : m_Nodes) {
+                // node.Type == NodeType::Simple &&
+                // m_PartToFunct.find(node.ID.Get()) != m_PartToFunct.end() &&
+                // m_PartToFunct.find(node.ID.Get())->senond == m_Inside.Get()
+                auto it = m_PartToFunct.find(node.ID.Get());
+                if (node.Type != NodeType::Simple || it == m_PartToFunct.end() ||
+                it->second != m_Inside.Get())
+                    continue;
+                builder.Begin(node.ID);
+                BlueprintAndSimpleInputs(node, newLinkPin, builder);
 
-                        ImGui::PushItemWidth(100.0f);
-                        ImGui::InputText("##edit", input.PinBuffer.Buffer, 127);
-                        ImGui::PopItemWidth();
+                builder.Middle();
 
-                        if (ImGui::IsItemActive() && !wasActive) {
-                            ed::EnableShortcuts(false);
-                            wasActive = true;
-                        } else if (!ImGui::IsItemActive() && wasActive) {
-                            ed::EnableShortcuts(true);
-                            wasActive = false;
-                        }
-                        ImGui::Spring(0);
-                    }
+                ImGui::Spring(1, 0);
+                ImGui::TextUnformatted(node.Name.c_str());
+                ImGui::Spring(1, 0);
 
-                    if (!input.Name.empty())
-                    {
-                        ImGui::TextUnformatted(input.Name.c_str());
-                        ImGui::Spring(0);
-                    }
-                    ImGui::PopStyleVar();
-                    builder.EndInput();
-                }
-
-                if (isSimple)
-                {
-                    builder.Middle();
-
-                    ImGui::Spring(1, 0);
-                    ImGui::TextUnformatted(node.Name.c_str());
-                    ImGui::Spring(1, 0);
-                }
-
-                for (auto& output : node.Outputs)
-                {
-                    auto alpha = ImGui::GetStyle().Alpha;
-                    if (newLinkPin && !CanCreateLink(newLinkPin, &output) && &output != newLinkPin)
-                        alpha = alpha * (48.0f / 255.0f);
-
-                    ImGui::PushStyleVar(ImGuiStyleVar_Alpha, alpha);
-                    builder.Output(output.ID, output.IsActive);
-                    if (output.PinBuffer.Type != BufferType::Empty) {
-                        static bool wasActive = false;
-
-                        ImGui::PushItemWidth(100.0f);
-                        ImGui::InputText("##edit", output.PinBuffer.Buffer, 127);
-                        ImGui::PopItemWidth();
-                        if (ImGui::IsItemActive() && !wasActive) {
-                            ed::EnableShortcuts(false);
-                            wasActive = true;
-                        } else if (!ImGui::IsItemActive() && wasActive) {
-                            ed::EnableShortcuts(true);
-                            wasActive = false;
-                        }
-                        ImGui::Spring(0);
-                    }
-                    if (!output.Name.empty())
-                    {
-                        ImGui::Spring(0);
-                        ImGui::TextUnformatted(output.Name.c_str());
-                    }
-                    ImGui::Spring(0);
-                    DrawPinIcon(output, IsPinLinked(output.ID), (int)(alpha * 255));
-                    ImGui::PopStyleVar();
-                    builder.EndOutput();
-                }
+                BlueprintAndSimpleOutputs(node, newLinkPin, builder);
 
                 builder.End();
             }
@@ -1141,13 +1161,22 @@ struct Example:
         ed::Suspend();
         if (ed::GoInsertNode(&contextNodeId)) {
             m_ContextNodeId = contextNodeId.Get();
-            auto it = m_ExtToInt.find(m_ContextNodeId.Get());
-            if (it != m_ExtToInt.end())
-                m_Inside = it->second;
+            auto itAg = m_ExtToInt.find(m_ContextNodeId.Get());
+            if (itAg != m_ExtToInt.end())
+                // internal agent
+                m_Inside = itAg->second;
             else {
-                it = m_IntToExt.find(m_ContextNodeId.Get());
-                if (it != m_IntToExt.end())
+                Node* node = FindNode(m_ContextNodeId);
+                if (node->Type == NodeType::BlueprintFunction) {
+                    // function
+                    m_Inside = contextNodeId;
+                } else if (node->Type == NodeType::Simple) {
+                    auto itFun = m_PartToFunct.find(m_ContextNodeId.Get());
+                    auto itAg = m_FeatToInt.find(itFun->second);
+                    m_Inside = itAg->second;
+                } else if (node->Type == NodeType::BlueprintAgent) {
                     m_Inside = 0;
+                }
             }
         }
         ed::Resume();
@@ -1238,27 +1267,43 @@ struct Example:
                 if (ImGui::MenuItem("Agent"))
                     SpawnAgentNodes(newNodePostion);
             } else {
-                if (ImGui::MenuItem("Attribute")) {
-                    nodes->push_back(SpawnAttributeNode());
-                    AddFeatureToAgent(nodes->back()->ID, m_Inside);
-                }
-                if (ImGui::MenuItem("Function")) {
-                    nodes->push_back(SpawnFunctionNode());
-                    AddFeatureToAgent(nodes->back()->ID, m_Inside);
-                }
-                if (ImGui::MenuItem("Condition")) {
-                    nodes->push_back(SpawnConditionNode());
-                    AddFeatureToAgent(nodes->back()->ID, m_Inside);
-                }
-                if (ImGui::MenuItem("Code")) {
-                    nodes->push_back(SpawnCodeNode());
-                    AddFeatureToAgent(nodes->back()->ID, m_Inside);
-                }
-                if (ImGui::MenuItem("Service")) {
-                    nodes->push_back(SpawnServiceIdNode());
-                    AddFeatureToAgent(nodes->back()->ID, m_Inside);
+                auto it = m_IntToExt.find(m_Inside.Get());
+                if (it != m_IntToExt.end()) {
+                    if (ImGui::MenuItem("Attribute")) {
+                        nodes->push_back(SpawnAttributeNode());
+                        AddFeature(nodes->back()->ID, m_Inside);
+                    }
+                    if (ImGui::MenuItem("Function")) {
+                        nodes->push_back(SpawnFunctionNode());
+                        AddFeature(nodes->back()->ID, m_Inside);
+                    }
+                } else {
+                    if (ImGui::MenuItem("Condition")) {
+                        nodes->push_back(SpawnConditionNode());
+                        AddParts(nodes->back()->ID, m_Inside);
+                    }
+                    if (ImGui::MenuItem("Code")) {
+                        nodes->push_back(SpawnCodeNode());
+                        AddParts(nodes->back()->ID, m_Inside);
+                    }
+                    if (ImGui::MenuItem("Service")) {
+                        nodes->push_back(SpawnServiceIdNode());
+                        AddParts(nodes->back()->ID, m_Inside);
+                    }
                 }
             }
+            if (ImGui::MenuItem("Back")) {
+                //step back
+                auto it = m_IntToExt.find(m_Inside.Get());
+                if (it != m_IntToExt.end())
+                    m_Inside = 0;
+                else {
+                    auto id = m_FeatToInt.find(m_Inside.Get());
+                    if (id != m_FeatToInt.end())
+                        m_Inside = id->second;
+                }
+            }
+
             if (!nodes->empty()) {
                 BuildNodes();
                 for (Node* node: *nodes) {
@@ -1336,8 +1381,24 @@ struct Example:
         }
     }
 
-    void AddFeatureToAgent(ed::NodeId featureId, ed::NodeId agentId) {
-        m_FeaturesToInt.insert({featureId.Get(), agentId.Get()});
+    void AddFeature(ed::NodeId featureId, ed::NodeId agentId) {
+        m_FeatToInt.insert({featureId.Get(), agentId.Get()});
+        auto it = m_IntToFeat.find(agentId.Get());
+        if (it == m_IntToFeat.end()) {
+            // agentId is not in map
+            m_IntToFeat.insert({agentId.Get(), std::vector<long>()});
+        }
+        m_IntToFeat.at(agentId.Get()).emplace_back(featureId.Get());
+    }
+
+    void AddParts(ed::NodeId codeId, ed::NodeId functId) {
+        m_PartToFunct.insert({codeId.Get(), functId.Get()});
+        auto it = m_FunctToPart.find(functId.Get());
+        if (it == m_FunctToPart.end()) {
+            // agentId is not in map
+            m_FunctToPart.insert({functId.Get(), std::vector<long>()});
+        }
+        m_FunctToPart.at(functId.Get()).emplace_back(codeId.Get());
     }
 
     int                  m_NextId = 1;
@@ -1345,7 +1406,10 @@ struct Example:
     std::vector<Node>    m_Nodes;
     std::map<long, long> m_ExtToInt;
     std::map<long, long> m_IntToExt;
-    std::map<long, long> m_FeaturesToInt;
+    std::map<long, long> m_FeatToInt;
+    std::map<long, std::vector<long>> m_IntToFeat;
+    std::map<long, std::vector<long>> m_FunctToPart;
+    std::map<long, long> m_PartToFunct;
     std::vector<Link>    m_Links;
     ImTextureID          m_HeaderBackground = nullptr;
     ImTextureID          m_SaveIcon = nullptr;
