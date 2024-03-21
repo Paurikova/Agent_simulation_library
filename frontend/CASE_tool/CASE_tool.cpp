@@ -1190,21 +1190,20 @@ struct Example:
         if (ImGui::BeginPopup("Create New Node"))
         {
             auto newNodePostion = openPopupPosition;
-            //ImGui::SetCursorScreenPos(ImGui::GetMousePosOnOpeningCurrentPopup());
 
-            //auto drawList = ImGui::GetWindowDrawList();
-            //drawList->AddCircleFilled(ImGui::GetMousePosOnOpeningCurrentPopup(), 10.0f, 0xFFFF00FF);
-
-            std::unique_ptr<std::vector<Node*>> nodes = std::make_unique<std::vector<Node*>>();;
-            if (ImGui::MenuItem("Agent")) {
-                SpawnAgentNodes(newNodePostion);
+            std::unique_ptr<std::vector<Node*>> nodes = std::make_unique<std::vector<Node*>>();
+            auto it = extToInt.find(m_Inside.Get());
+            if (m_Inside.Get() == 0 || it == extToInt.end()) {
+                if (ImGui::MenuItem("Agent"))
+                    SpawnAgentNodes(newNodePostion);
+            } else {
+                if (ImGui::MenuItem("Attribute"))
+                    nodes->push_back(SpawnAttributeNode());
+                if (ImGui::MenuItem("Function"))
+                    nodes->push_back(SpawnFunctionNode());
+                if (ImGui::MenuItem("Message"))
+                    nodes->push_back(SpawnMessageNode());
             }
-            if (ImGui::MenuItem("Attribute"))
-                nodes->push_back(SpawnAttributeNode());
-            if (ImGui::MenuItem("Function"))
-                nodes->push_back(SpawnFunctionNode());
-            if (ImGui::MenuItem("Message"))
-                nodes->push_back(SpawnMessageNode());
             if (!nodes->empty()) {
                 BuildNodes();
                 for (Node* node: *nodes) {
