@@ -4228,6 +4228,8 @@ void ed::SelectAction::Draw(ImDrawList* drawList)
 
 ed::DoubleClickAction::DoubleClickAction(EditorContext* editor): EditorAction(editor), m_ContextId() {}
 bool ed::DoubleClickAction::GoInsertNode(NodeId* nodeId) {
+    if (!action)
+        return False;
     if (!m_ContextId.IsNodeId())
         return False;
     *nodeId = m_ContextId.AsNodeId();
@@ -4240,9 +4242,11 @@ ed::EditorAction::AcceptResult ed::DoubleClickAction::Accept(const Control& cont
     const auto isPressed  = ImGui::IsMouseClicked(Editor->GetConfig().ContextMenuButtonIndex);
     const auto isReleased = ImGui::IsMouseReleased(Editor->GetConfig().ContextMenuButtonIndex);
     const auto isDragging = ImGui::IsMouseDragging(Editor->GetConfig().ContextMenuButtonIndex, 1);
+    action = False;
 
     if (isDoublePressed)
     {
+        action = True;
         ObjectId contextId;
 
         if (auto hotObejct = control.HotObject)
