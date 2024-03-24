@@ -65,6 +65,7 @@ enum class NodeType
     BlueprintFunction,
     BlueprintFeature,
     Simple,
+    SimpleCond,
     Tree,
 };
 
@@ -206,6 +207,13 @@ static bool Splitter(bool split_vertically, float thickness, float* size1, float
     bb.Max = bb.Min + CalcItemSize(split_vertically ? ImVec2(thickness, splitter_long_axis_size) : ImVec2(splitter_long_axis_size, thickness), 0.0f, 0.0f);
     return SplitterBehavior(bb, id, split_vertically ? ImGuiAxis_X : ImGuiAxis_Y, size1, size2, min_size1, min_size2, 0.0f);
 }
+
+# ifdef _MSC_VER
+# define portable_strcpy    strcpy_s
+# define portable_sprintf   sprintf_s
+# else
+# define portable_strcpy    strcpy
+# endif
 
 struct CASE_tool:
         public Application {
@@ -414,7 +422,7 @@ struct CASE_tool:
     /**
      * @brief Spawn a condition node.
      *
-     * This function creates a new node of type 'Simple' for conditions,
+     * This function creates a new node of type 'SimpleCond' for conditions,
      * then builds and returns the node.
      *
      * @param outsideId The ID of the outside node.
@@ -422,8 +430,7 @@ struct CASE_tool:
      */
     Node* SpawnConditionNode(ed::NodeId outsideId)
     {
-        m_Nodes.emplace_back(GetNextId(), "Condition", NodeType::Simple, outsideId, ImColor(128, 195, 248));
-        m_Nodes.back().Type = NodeType::Simple;
+        m_Nodes.emplace_back(GetNextId(), "", NodeType::SimpleCond, outsideId, ImColor(128, 195, 248));
         m_Nodes.back().Inputs.emplace_back(GetNextId(), "", PinType::Code, TextBuffer(BufferType::Empty));
         m_Nodes.back().Outputs.emplace_back(GetNextId(), "IF", PinType::Code, TextBuffer(BufferType::Empty));
         m_Nodes.back().Outputs.emplace_back(GetNextId(), "ElSE", PinType::Code, TextBuffer(BufferType::Empty));
@@ -445,7 +452,6 @@ struct CASE_tool:
     Node* SpawnCodeNode(ed::NodeId outsideId)
     {
         m_Nodes.emplace_back(GetNextId(), "Code", NodeType::Simple, outsideId, ImColor(128, 195, 248));
-        m_Nodes.back().Type = NodeType::Simple;
         m_Nodes.back().Inputs.emplace_back(GetNextId(), "", PinType::Code, TextBuffer(BufferType::Empty));
         m_Nodes.back().Outputs.emplace_back(GetNextId(), "", PinType::Code, TextBuffer(BufferType::Empty));
         AddInsideNodeId(outsideId, m_Nodes.back().ID);
@@ -466,7 +472,6 @@ struct CASE_tool:
     Node* SpawnServiceIdNode(ed::NodeId outsideId)
     {
         m_Nodes.emplace_back(GetNextId(), "Service", NodeType::Simple, outsideId, ImColor(128, 195, 248));
-        m_Nodes.back().Type = NodeType::Simple;
         m_Nodes.back().Inputs.emplace_back(GetNextId(), "", PinType::Code, TextBuffer(BufferType::Id));
         AddInsideNodeId(outsideId, m_Nodes.back().ID);
         BuildNode(&m_Nodes.back());
@@ -888,9 +893,16 @@ struct CASE_tool:
                 ImGui::Spring(0);
             }
             ImGui::PopStyleVar();
+
+            if (node.Type == NodeType::SimpleCond) {
+                do_popup = false;
+                if (ImGui::Button(popup_text)) {
+                    do_popup = true;    // Instead of saying OpenPopup() here, we set this bool, which is used later in the Deferred Pop-up Section
+                    ImGui::Spring(0);
+                }
+            }
             builder.EndInput();
         }
-
     }
 
     /**
@@ -980,10 +992,11 @@ struct CASE_tool:
             // create blueprint and simple nodes
             for (auto& node : m_Nodes) {
                 if ((node.Type != NodeType::BlueprintAgent && node.Type != NodeType::BlueprintFeature &&
-                node.Type != NodeType::BlueprintFunction && node.Type != NodeType::Simple) || m_Inside.Get() == 0 || node.OutsideId.Get() != m_Inside.Get())
+                node.Type != NodeType::BlueprintFunction && node.Type != NodeType::Simple && node.Type != NodeType::SimpleCond)
+                || m_Inside.Get() == 0 || node.OutsideId.Get() != m_Inside.Get())
                     continue;
                 builder.Begin(node.ID);
-                bool isSimple = node.Type == NodeType::Simple;
+                bool isSimple = node.Type == NodeType::Simple || node.Type == NodeType::SimpleCond;
                 if (!isSimple) {
                     builder.Header(node.Color);
                     ImGui::Spring(0);
@@ -1392,6 +1405,35 @@ struct CASE_tool:
             ImGui::EndPopup();
         }
 
+        if (do_popup) {
+            ImGui::OpenPopup("Conditions"); // Cause Conditions to stick open.
+            do_popup = false; // disable bool so that if we click off the popup, it doesn't open the next frame.
+        }
+        // This is the actual popup Gui drawing section.
+        if (ImGui::BeginPopup("Conditions")) {
+            // Note: if it weren't for the child window, we would have to PushItemWidth() here to avoid a crash!
+            ImGui::TextDisabled("Condition");
+            ImGui::BeginChild("popup_scroller", ImVec2(120, 100), true, ImGuiWindowFlags_AlwaysVerticalScrollbar);
+            if (ImGui::Button("Condition 1")) {
+                portable_strcpy(popup_text, "Condition 1");
+                ImGui::CloseCurrentPopup();  // These calls revoke the popup open state, which was set by OpenPopup above.
+            }
+            if (ImGui::Button("Condition 2")) {
+                portable_strcpy(popup_text, "Condition 2");
+                ImGui::CloseCurrentPopup();
+            }
+            if (ImGui::Button("Condition 3")) {
+                portable_strcpy(popup_text, "Condition 3");
+                ImGui::CloseCurrentPopup();
+            }
+            if (ImGui::Button("Condition 4")) {
+                portable_strcpy(popup_text, "Condition 4");
+                ImGui::CloseCurrentPopup();
+            }
+            ImGui::EndChild();
+            ImGui::EndPopup(); // Note this does not do anything to the popup open/close state. It just terminates the content declaration.
+        }
+
         if (ImGui::BeginPopup("Create New Node"))
         {
             auto newNodePostion = openPopupPosition;
@@ -1623,6 +1665,8 @@ struct CASE_tool:
     bool                 m_ShowOrdinals = false;
     ed::NodeId           m_ContextNodeId = 0;
     ed::NodeId                m_Inside = 0; // id of the node we are currently on
+    char popup_text[128] = "Condition";
+    bool do_popup = false;
 };
 
 int Main(int argc, char** argv)
