@@ -12,11 +12,17 @@
 #include <algorithm>
 #include <utility>
 
+/**
+ * From imgui-node-editor-master.
+ */
 static inline ImRect ImGui_GetItemRect()
 {
     return ImRect(ImGui::GetItemRectMin(), ImGui::GetItemRectMax());
 }
 
+/**
+ * From imgui-node-editor-master.
+ */
 static inline ImRect ImRect_Expanded(const ImRect& rect, float x, float y)
 {
     auto result = rect;
@@ -74,14 +80,19 @@ enum class BufferType
 
 struct Node;
 
-
+/**
+ * Definition of text buffer for the pin.
+ */
 struct TextBuffer {
-    BufferType Type;
+    BufferType Type; //< initialization text value of the buffer
     char Buffer[128];
 
-    // Constructor to initialize TextBuffer with the given type
+    /**
+     * Constuctor for initialization buffer.
+     * @param type Type of pin that is converted to string.
+     */
     TextBuffer(BufferType type) : Type(type) {
-        // Set the value of Buffer based on the type
+        // Set the initialization text of Buffer based on the pin type
         switch (type) {
             case BufferType::Name:
                 strcpy(Buffer, "Name");
@@ -104,16 +115,21 @@ struct TextBuffer {
     }
 };
 
+/**
+ * From imgui-node-master-editor.
+ * Structure represents node pin.
+ * The nodes are connected by them.
+ */
 struct Pin
 {
     ed::PinId   ID;
-    TextBuffer  PinBuffer;
+    TextBuffer  PinBuffer;  //< buffer for user text input
     ::Node*     Node;
     std::string Name;
     PinType     Type;
     PinKind     Kind;
-    bool        IsActive;
-    std::vector<ed::LinkId> LinkIds;
+    bool        IsActive;   //< value if by this pin can be node connected by other node
+    std::vector<ed::LinkId> LinkIds; //< ids of links that are associated by the pin
 
     Pin(int id, const char* name, PinType type, TextBuffer buffer, bool active = true):
             ID(id), Node(nullptr), Name(name), Type(type), Kind(PinKind::Input), PinBuffer(buffer), IsActive(active)
@@ -121,14 +137,18 @@ struct Pin
     }
 };
 
+/**
+ * From imgui-node-master-editor.
+ * Structure represents node.
+ */
 struct Node
 {
     ed::NodeId ID;
     std::string Name;
     std::vector<Pin> Inputs;
     std::vector<Pin> Outputs;
-    ed::NodeId OutsideId;
-    std::vector<ed::NodeId> InsideIds;
+    ed::NodeId OutsideId;   //< id of node that is over this node
+    std::vector<ed::NodeId> InsideIds;  //ids of nodes that are under this node
     ImColor Color;
     NodeType Type;
     ImVec2 Size;
@@ -142,6 +162,10 @@ struct Node
     }
 };
 
+/**
+ * From imgui-node-editor-master.
+ * Structure for connecting of the two nodes.
+ */
 struct Link
 {
     ed::LinkId ID;
@@ -157,6 +181,9 @@ struct Link
     }
 };
 
+/**
+ * From imgui-node-editor-master.
+ */
 struct NodeIdLess
 {
     bool operator()(const ed::NodeId& lhs, const ed::NodeId& rhs) const
@@ -165,6 +192,9 @@ struct NodeIdLess
     }
 };
 
+/**
+ * From imgui-node-editor-master.
+ */
 static bool Splitter(bool split_vertically, float thickness, float* size1, float* size2, float min_size1, float min_size2, float splitter_long_axis_size = -1.0f)
 {
     using namespace ImGui;
@@ -177,7 +207,7 @@ static bool Splitter(bool split_vertically, float thickness, float* size1, float
     return SplitterBehavior(bb, id, split_vertically ? ImGuiAxis_X : ImGuiAxis_Y, size1, size2, min_size1, min_size2, 0.0f);
 }
 
-struct Example:
+struct CASE_tool:
         public Application {
     using Application::Application;
 
@@ -254,7 +284,7 @@ struct Example:
     }
 
     bool CanCreateLink(Pin *a, Pin *b) {
-        if (!a || !b || a == b || a->Kind == b->Kind || a->Type != b->Type || a->Node == b->Node)
+        if (!a || !b || a == b || !a->IsActive || !b->IsActive || a->Kind == b->Kind || a->Type != b->Type || a->Node == b->Node)
             return false;
 
         return true;
@@ -272,6 +302,14 @@ struct Example:
         }
     }
 
+    /**
+     * @brief Spawn an external agent node.
+     *
+     * This function creates a new node of type 'Agent' with pins for relationships,
+     * then builds and returns the node.
+     *
+     * @return Pointer to the newly spawned external agent node.
+    */
     Node* SpawnAgentNodeExternal()
     {
         m_Nodes.emplace_back(GetNextId(), "Agent", NodeType::Tree, 0);
@@ -282,15 +320,15 @@ struct Example:
         return &m_Nodes.back();
     }
 
-    ed::NodeId SpawnAgentNodes(ImVec2 position) {
-        Node * node;
-        ed::NodeId extId, intId;
-        node = SpawnAgentNodeExternal();           ed::SetNodePosition(node->ID, position);
-        extId = node->ID;
-        node = SpawnAgentNodeInternal(extId);           ed::SetNodePosition(node->ID, position);
-        return extId;
-    }
-
+    /**
+     * @brief Spawn an internal agent node.
+     *
+     * This function creates a new node of type 'BlueprintAgent' with pins for attributes and functions,
+     * then builds and returns the node.
+     *
+     * @param outsideId The ID of the outside node.
+     * @return Pointer to the newly spawned internal agent node.
+     */
     Node* SpawnAgentNodeInternal(ed::NodeId outsideId)
     {
         m_Nodes.emplace_back(GetNextId(), "Agent", NodeType::BlueprintAgent, outsideId);
@@ -301,6 +339,32 @@ struct Example:
         return &m_Nodes.back();
     }
 
+    /**
+     * @brief Spawn agent nodes.
+     *
+     * This function spawns both external and internal agent nodes at a given position.
+     *
+     * @param position The position where the nodes should be spawned.
+     * @return The ID of the spawned external agent node.
+     */
+    ed::NodeId SpawnAgentNodes(ImVec2 position) {
+        Node * node;
+        ed::NodeId extId, intId;
+        node = SpawnAgentNodeExternal();           ed::SetNodePosition(node->ID, position);
+        extId = node->ID;
+        node = SpawnAgentNodeInternal(extId);           ed::SetNodePosition(node->ID, position);
+        return extId;
+    }
+
+    /**
+     * @brief Spawn a function node.
+     *
+     * This function creates a new node of type 'BlueprintFunction' with pins for functions and services,
+     * then builds and returns the node.
+     *
+     * @param outsideId The ID of the outside node.
+     * @return Pointer to the newly spawned function node.
+     */
     Node* SpawnFunctionNode(ed::NodeId outsideId)
     {
         m_Nodes.emplace_back(GetNextId(), "Function", NodeType::BlueprintFunction, outsideId, ImColor(128, 195, 248));
@@ -311,6 +375,15 @@ struct Example:
         return &m_Nodes.back();
     }
 
+    /**
+     * @brief Spawn an attribute node.
+     *
+     * This function creates a new node of type 'BlueprintFeature' with pins for type and attribute name,
+     * then builds and returns the node.
+     *
+     * @param outsideId The ID of the outside node.
+     * @return Pointer to the newly spawned attribute node.
+     */
     Node* SpawnAttributeNode(ed::NodeId outsideId)
     {
         m_Nodes.emplace_back(GetNextId(), "Attribute", NodeType::BlueprintFeature, outsideId, ImColor(128, 195, 248));
@@ -321,6 +394,15 @@ struct Example:
         return &m_Nodes.back();
     }
 
+    /**
+     * @brief Spawn a message node.
+     *
+     * This function creates a new node of type 'BlueprintFeature' for initial messages,
+     * then builds and returns the node.
+     *
+     * @param outsideId The ID of the outside node.
+     * @return Pointer to the newly spawned message node.
+     */
     Node* SpawnMessageNode(ed::NodeId outsideId)
     {
         m_Nodes.emplace_back(GetNextId(), "InitialMessage", NodeType::BlueprintFeature, outsideId, ImColor(128, 195, 248));
@@ -329,6 +411,15 @@ struct Example:
         return &m_Nodes.back();
     }
 
+    /**
+     * @brief Spawn a condition node.
+     *
+     * This function creates a new node of type 'Simple' for conditions,
+     * then builds and returns the node.
+     *
+     * @param outsideId The ID of the outside node.
+     * @return Pointer to the newly spawned condition node.
+     */
     Node* SpawnConditionNode(ed::NodeId outsideId)
     {
         m_Nodes.emplace_back(GetNextId(), "Condition", NodeType::Simple, outsideId, ImColor(128, 195, 248));
@@ -342,6 +433,15 @@ struct Example:
         return &m_Nodes.back();
     }
 
+    /**
+     * @brief Spawn a code node.
+     *
+     * This function creates a new node of type 'Simple' for code blocks,
+     * then builds and returns the node.
+     *
+     * @param outsideId The ID of the outside node.
+     * @return Pointer to the newly spawned code node.
+     */
     Node* SpawnCodeNode(ed::NodeId outsideId)
     {
         m_Nodes.emplace_back(GetNextId(), "Code", NodeType::Simple, outsideId, ImColor(128, 195, 248));
@@ -354,6 +454,15 @@ struct Example:
         return &m_Nodes.back();
     }
 
+    /**
+     * @brief Spawn a service ID node.
+     *
+     * This function creates a new node of type 'Simple' with a pin for service ID,
+     * then builds and returns the node.
+     *
+     * @param outsideId The ID of the outside node.
+     * @return Pointer to the newly spawned service ID node.
+     */
     Node* SpawnServiceIdNode(ed::NodeId outsideId)
     {
         m_Nodes.emplace_back(GetNextId(), "Service", NodeType::Simple, outsideId, ImColor(128, 195, 248));
@@ -365,12 +474,19 @@ struct Example:
         return &m_Nodes.back();
     }
 
+    /**
+     * From imgui-node-editor-master.
+     */
     void BuildNodes()
     {
         for (auto& node : m_Nodes)
             BuildNode(&node);
     }
 
+    /**
+     * From imgui-node-editor-master.
+     * Preparation before GUI running.
+     */
     void OnStart() override
     {
         ed::Config config;
@@ -379,7 +495,7 @@ struct Example:
 
         config.LoadNodeSettings = [](ed::NodeId nodeId, char* data, void* userPointer) -> size_t
         {
-            auto self = static_cast<Example*>(userPointer);
+            auto self = static_cast<CASE_tool*>(userPointer);
 
             auto node = self->FindNode(nodeId);
             if (!node)
@@ -392,7 +508,7 @@ struct Example:
 
         config.SaveNodeSettings = [](ed::NodeId nodeId, const char* data, size_t size, ed::SaveReasonFlags reason, void* userPointer) -> bool
         {
-            auto self = static_cast<Example*>(userPointer);
+            auto self = static_cast<CASE_tool*>(userPointer);
 
             auto node = self->FindNode(nodeId);
             if (!node)
@@ -405,9 +521,11 @@ struct Example:
             return true;
         };
 
+        // create and prepare editor
         m_Editor = ed::CreateEditor(&config);
         ed::SetCurrentEditor(m_Editor);
 
+        // create agent master and his initial message
         ed::NodeId ext = SpawnAgentNodes(ImVec2(-300, 351));
         Node* node = SpawnMessageNode(ext);  ed::SetNodePosition(node->ID, ImVec2(-250, 500));
         ed::NavigateToContent();
@@ -419,6 +537,10 @@ struct Example:
         m_RestoreIcon      = LoadTexture("data/ic_restore_white_24dp.png");
     }
 
+    /**
+     * From imgui-node-editor-master.
+     * End of the running GUI.
+     */
     void OnStop() override
     {
         auto releaseTexture = [this](ImTextureID& id)
@@ -475,6 +597,9 @@ struct Example:
         ax::Widgets::Icon(ImVec2(static_cast<float>(m_PinIconSize), static_cast<float>(m_PinIconSize)), iconType, connected, color, ImColor(32, 32, 32, alpha));
     };
 
+    /**
+     * From imgui-node-editor-master.
+     */
     void ShowStyleEditor(bool* show = nullptr)
     {
         if (!ImGui::Begin("Style", show))
@@ -542,6 +667,9 @@ struct Example:
         ImGui::End();
     }
 
+    /**
+     * From imgui-node-editor-master.
+     */
     void ShowLeftPane(float paneWidth)
     {
         auto& io = ImGui::GetIO();
@@ -612,9 +740,14 @@ struct Example:
                         ed::DeselectNode(node.ID);
                 }
                 else {
-                    ed::SelectNode(node.ID, false);
+                    if (node.Type == NodeType::Tree) {
+                        m_Inside = 0;
+                        ed::SelectNode(node.ID, false);
+                    } else {
+                        m_Inside = node.OutsideId;
+                        ed::SelectNode(node.ID, false);
+                    }
                 }
-
                 ed::NavigateToSelection();
             }
             if (ImGui::IsItemHovered() && !node.State.empty())
@@ -692,8 +825,6 @@ struct Example:
         }
         ImGui::Unindent();
 
-        static int changeCount = 0;
-
         ImGui::GetWindowDrawList()->AddRectFilled(
                 ImGui::GetCursorScreenPos(),
                 ImGui::GetCursorScreenPos() + ImVec2(paneWidth, ImGui::GetTextLineHeight()),
@@ -702,7 +833,6 @@ struct Example:
         ImGui::TextUnformatted("Selection");
 
         ImGui::BeginHorizontal("Selection Stats", ImVec2(paneWidth, 0));
-        ImGui::Text("Changed %d time%s", changeCount, changeCount > 1 ? "s" : "");
         ImGui::Spring();
         if (ImGui::Button("Deselect All"))
             ed::ClearSelection();
@@ -716,12 +846,13 @@ struct Example:
             for (auto& link : m_Links)
                 ed::Flow(link.ID);
 
-        if (ed::HasSelectionChanged())
-            ++changeCount;
-
         ImGui::EndChild();
     }
 
+    /**
+     * From imgui-node-editor-master.
+     * Show inputs of blueprint and simple nodes.
+     */
     void BlueprintAndSimpleInputs(Node& node, Pin* newLinkPin, util::BlueprintNodeBuilder &builder) {
         for (auto &input: node.Inputs)
         {
@@ -762,6 +893,10 @@ struct Example:
 
     }
 
+    /**
+     * From imgui-node-editor-master.
+     * Show outputs of blueprint and simple nodes.
+     */
     void BlueprintAndSimpleOutputs(Node& node, Pin* newLinkPin, util::BlueprintNodeBuilder& builder) {
         for (auto& output : node.Outputs)
         {
@@ -798,6 +933,10 @@ struct Example:
         }
     }
 
+    /**
+     * From imgui-node-editor-master.
+     * During GUI running.
+     */
     void OnFrame(float deltaTime) override
     {
         UpdateTouch();
@@ -838,6 +977,7 @@ struct Example:
 
             util::BlueprintNodeBuilder builder(m_HeaderBackground, GetTextureWidth(m_HeaderBackground), GetTextureHeight(m_HeaderBackground));
 
+            // create blueprint and simple nodes
             for (auto& node : m_Nodes) {
                 if ((node.Type != NodeType::BlueprintAgent && node.Type != NodeType::BlueprintFeature &&
                 node.Type != NodeType::BlueprintFunction && node.Type != NodeType::Simple) || m_Inside.Get() == 0 || node.OutsideId.Get() != m_Inside.Get())
@@ -869,6 +1009,7 @@ struct Example:
                 builder.End();
             }
 
+            // create tree nodes
             for (auto& node : m_Nodes)
             {
                 if (node.Type != NodeType::Tree ||  m_Inside != ed::NodeId(0))
@@ -1005,6 +1146,7 @@ struct Example:
                         IM_COL32(48, 128, 255, 100), 0.0f);
             }
 
+            // create links
             for (auto& link : m_Links)
                 ed::Link(link.ID, link.StartPinID, link.EndPinID, link.Color, 2.0f);
 
@@ -1067,6 +1209,7 @@ struct Example:
                                 {
                                     m_Links.emplace_back(Link(GetNextId(), startPinId, endPinId));
                                     m_Links.back().Color = GetIconColor(startPin->Type);
+                                    // add link to its associated pins
                                     AddLinkToPin(startPinId, m_Links.back().ID);
                                     AddLinkToPin(endPinId, m_Links.back().ID);
                                 }
@@ -1099,7 +1242,6 @@ struct Example:
 
                 if (ed::BeginDelete())
                 {
-
                     std::vector<ed::NodeId> deletedNodes;
                     ed::NodeId nodeId = 0;
                     bool deleted = false;
@@ -1107,6 +1249,8 @@ struct Example:
                     {
                         if (ed::AcceptDeletedItem()) {
                             deleted = true;
+                            // delete all nodes that are associated with deleted node
+                            // and all associated links
                             DeleteNode(nodeId);
                         }
                     }
@@ -1115,14 +1259,17 @@ struct Example:
                     ed::LinkId linkId = 0;
                     while (ed::QueryDeletedLink(&linkId))
                     {
+                        // delete link only it it hasn't been already deleted by node
                         if (!deleted && ed::AcceptDeletedItem())
                         {
                             auto id = std::find_if(m_Links.begin(), m_Links.end(), [linkId](auto& link) { return link.ID == linkId; });
                             if (id != m_Links.end()) {
                                 Link* link = FindLink(linkId);
                                 Pin* pin = FindPin(link->StartPinID);
+                                // delete link id from pin
                                 DeleteLink(*pin);
                                 pin = FindPin(link->EndPinID);
+                                // delete link in from pin
                                 DeleteLink(*pin);
                             }
                         }
@@ -1136,22 +1283,30 @@ struct Example:
 
 # if 1
         ed::Suspend();
+        // control if user has made double click
+        // if double click was activated, we change level of nodes
         if (ed::GoInsertNode(&contextNodeId)) {
+            // id of marked node
             m_ContextNodeId = contextNodeId.Get();
             if (m_ContextNodeId.Get() == 0) {
+                // outside view to agent structure
                 m_Inside = 0;
             } else {
                 Node* node = FindNode(contextNodeId);
                 if (node->Type == NodeType::Tree) {
+                    // inside view to agent
                     m_Inside = node->ID;
                 }
                 else if (node->Type == NodeType::BlueprintFunction) {
+                    // inside view to message processing
                     m_Inside = node->ID;
                 }
                 else if (node->Type == NodeType::BlueprintAgent) {
+                    // back to outside view of agent structure
                     m_Inside = 0;
                 }
                 else if (node->Type == NodeType::Simple) {
+                    // back to inside view of agent
                     Node* outsideNode = FindNode(node->OutsideId);
                     m_Inside = (FindNode(outsideNode->OutsideId))->ID;
                 }
@@ -1243,9 +1398,13 @@ struct Example:
 
             std::unique_ptr<std::vector<Node*>> nodes = std::make_unique<std::vector<Node*>>();
             if (m_Inside.Get() == 0) {
+                // outside view to agents structure
+                // user can only create new agent
                 if (ImGui::MenuItem("Agent"))
                     SpawnAgentNodes(newNodePostion);
             } else {
+                // inside view to agent
+                // user can add new agent feature
                 Node* node = FindNode(m_Inside);
                 if (node->Type == NodeType::Tree) {
                     if (ImGui::MenuItem("Attribute")) {
@@ -1255,6 +1414,8 @@ struct Example:
                         nodes->push_back(SpawnFunctionNode(m_Inside));
                     }
                 } else {
+                    // view to message processing
+                    // agent can create condition, code and service id
                     if (ImGui::MenuItem("Condition")) {
                         nodes->push_back(SpawnConditionNode(m_Inside));
                     }
@@ -1266,6 +1427,7 @@ struct Example:
                     }
                 }
             }
+            // in each level can user made step back - step to higher level
             if (ImGui::MenuItem("Back")) {
                 //step back
                 if (m_Inside.Get() != 0) {
@@ -1356,13 +1518,18 @@ struct Example:
         }
     }
 
+    /**
+     * Delete node and all associated nodes
+     * @param nodeId delete node id
+     */
     void DeleteNode(ed::NodeId nodeId) {
+        // find deleted node
         Node* node = FindNode(nodeId);
+        // if node is associated by other node, delete them as first
         if (node->InsideIds.size() != 0) {
             //delete all inside nodes
             for (auto &id: node->InsideIds)
                 DeleteNode(id);
-
         }
         // delete node links
         for(Pin& pin: node->Inputs) {
@@ -1371,7 +1538,7 @@ struct Example:
         for(Pin& pin: node->Outputs) {
             DeleteLink(pin);
         }
-        //delete parent
+        //delete node id from outside node
         if (node->OutsideId.Get() != 0) {
             Node* outsideNode = FindNode(node->OutsideId);
             auto id = std::find_if(outsideNode->InsideIds.begin(), outsideNode->InsideIds.end(),
@@ -1387,12 +1554,20 @@ struct Example:
         }
     }
 
+    /**
+     * Delete links associated from pin.
+     * We have to delete link ids from all ossiciated pins too.
+     * @param pin
+     */
     void DeleteLink(Pin& pin) {
+        //loop over all link id assocaited with the pin
         for (auto& linkId : pin.LinkIds) {
             auto id = std::find_if(m_Links.begin(), m_Links.end(),
                                    [linkId](auto &link) { return link.ID == linkId; });
             if (id != m_Links.end()) {
+                //find link
                 Link* link = FindLink(linkId);
+                //delete link id from associated pin
                 if (link->StartPinID.Get() != linkId.Get()) {
                     Pin* otherPin = FindPin(link->StartPinID);
                     DeleteLinkId(otherPin, linkId);
@@ -1405,17 +1580,32 @@ struct Example:
         }
     }
 
+    /**
+     * Delete link id from pin list od its associated links.
+     * @param otherPin pin id from that we delete link id
+     * @param linkId    deleted link id
+     */
     void DeleteLinkId(Pin* otherPin, ed::LinkId linkId) {
         auto otherId = std::find_if(otherPin->LinkIds.begin(), otherPin->LinkIds.end(),
                                     [linkId](auto &otherLinkId) { return otherLinkId == linkId; });
         otherPin->LinkIds.erase(otherId);
     }
 
+    /**
+     * Add node to its outside node.
+     * @param outsideId outside node id
+     * @param insideId  added node id
+     */
     void AddInsideNodeId(ed::NodeId outsideId, ed::NodeId insideId) {
         Node* node = FindNode(outsideId);
         node->InsideIds.push_back(insideId);
     }
 
+    /**
+     * Add link id to list in its associated pin.
+     * @param pinId     associated pin id
+     * @param linkId    added link id
+     */
     void AddLinkToPin(ed::PinId pinId, ed::LinkId linkId) {
         Pin* pin = FindPin(pinId);
         pin->LinkIds.push_back(linkId);
@@ -1432,15 +1622,15 @@ struct Example:
     std::map<ed::NodeId, float, NodeIdLess> m_NodeTouchTime;
     bool                 m_ShowOrdinals = false;
     ed::NodeId           m_ContextNodeId = 0;
-    ed::NodeId                m_Inside = 0;
+    ed::NodeId                m_Inside = 0; // id of the node we are currently on
 };
 
 int Main(int argc, char** argv)
 {
-    Example exampe("Agent simulation library", argc, argv);
+    CASE_tool tool("Agent simulation library", argc, argv);
 
-    if (exampe.Create())
-        return exampe.Run();
+    if (tool.Create())
+        return tool.Run();
 
     return 0;
 }

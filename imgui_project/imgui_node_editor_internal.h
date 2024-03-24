@@ -989,6 +989,7 @@ struct SelectAction final: EditorAction
 
 struct DoubleClickAction final: EditorAction {
     ObjectId m_ContextId;
+    bool action = false;
 
     DoubleClickAction(EditorContext* editor);
     bool GoInsertNode(NodeId* nodeId);
