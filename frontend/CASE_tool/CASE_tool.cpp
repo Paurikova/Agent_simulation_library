@@ -476,26 +476,6 @@ struct CASE_tool:
         }
     }
 
-    Node* SpawnFunctionNodeReactiveFuncLayer(ed::NodeId outsideId)
-    {
-        m_Nodes.emplace_back(GetNextId(), "Function", NodeType::Function, outsideId,ImColor(128, 195, 248));
-        m_Nodes.back().Inputs.emplace_back(GetNextId(), "ServiceId", PinType::Service,NewTextBuffer(BufferType::Empty));
-        m_Nodes.back().Outputs.emplace_back(GetNextId(), "", PinType::Service,NewTextBuffer(BufferType::Name), false);
-        BuildNode(&m_Nodes.back());
-        AddInsideNodeId(outsideId, m_Nodes.back().ID);
-        return &m_Nodes.back();
-    }
-
-    Node* SpawnFunctionNodeIntelligentFuncLayer(ed::NodeId outsideId)
-    {
-        m_Nodes.emplace_back(GetNextId(), "Function", NodeType::Function, outsideId,ImColor(128, 195, 248));
-        m_Nodes.back().Inputs.emplace_back(GetNextId(), "", PinType::Function,NewTextBuffer(BufferType::Name), false);
-
-        BuildNode(&m_Nodes.back());
-        AddInsideNodeId(outsideId, m_Nodes.back().ID);
-        return &m_Nodes.back();
-    }
-
     Node* SpawnAttributeNode(ed::NodeId outsideId)
     {
         m_Nodes.emplace_back(GetNextId(), "Attribute", NodeType::IntAgent, outsideId, ImColor(128, 195, 248));
@@ -545,7 +525,7 @@ struct CASE_tool:
     Node* SpawnFunctionNodeReactiveReasoning(ed::NodeId outsideId)
     {
         m_Nodes.emplace_back(GetNextId(), "Function", NodeType::ReasReactFunct, outsideId,ImColor(128, 195, 248));
-        m_Nodes.back().Inputs.emplace_back(GetNextId(), "", PinType::Function, NewTextBuffer(BufferType::Empty));
+        m_Nodes.back().Inputs.emplace_back(GetNextId(), "", PinType::Function, NewTextBuffer(BufferType::Name));
         AddInsideNodeId(outsideId, m_Nodes.back().ID);
         BuildNode(&m_Nodes.back());
 
@@ -1551,7 +1531,7 @@ struct CASE_tool:
                     if (ImGui::MenuItem("Intelligent")) {
                         SpawnIntelligentReasoningNode(newNodePostion, node->ID);
                     }
-                } else if (node->Type == NodeType::IntAgent) {
+                } else if (node->Type == NodeType::RespAgent) {
                     if (ImGui::MenuItem("Attribute")) {
                         node = SpawnAttributeNode(node->ID);
                     }
