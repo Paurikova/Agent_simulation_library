@@ -169,12 +169,15 @@ struct Node
     ImVec2 Size;
     char Popup_text[128];
     bool Do_Popup;
+    ed::NodeId AssociatedId;
+    bool Deleted;
 
     std::string State;
     std::string SavedState;
 
-    Node(int id, const char* name, NodeType type, ed::NodeId outsideId, ImColor color = ImColor(255, 255, 255)):
-            ID(id), Name(name), Color(color), Type(type), Size(0, 0), OutsideId(outsideId), Popup_text("Condition"), Do_Popup(false)
+    Node(int id, const char* name, NodeType type, ed::NodeId outsideId, ImColor color = ImColor(255, 255, 255), ed::NodeId associatedId = -1):
+            ID(id), Name(name), Color(color), Type(type), Size(0, 0), OutsideId(outsideId), Popup_text("Condition"), Do_Popup(false), AssociatedId(associatedId),
+            Deleted(false)
     {
     }
 };
@@ -374,9 +377,11 @@ struct CASE_tool:
             Node* insideNode = FindNode(id);
             if (insideNode->Type != NodeType::RespService)
                 continue;
-            Node* serviceNode = SpawnServiceIdNodeReasoning(reasoningId, insideNode->Inputs.back().PinBuffer);
+            Node* serviceNode = SpawnServiceIdNodeReasoning(reasoningId, insideNode->Inputs.back().PinBuffer, id);
             ed::SetNodePosition(serviceNode->ID, position);
             position.y = position.y + 50;
+            //add associated node to RespService
+            insideNode->AssociatedId = serviceNode->ID;
         }
         return FindNode(reasoningId);
     }
@@ -395,9 +400,11 @@ struct CASE_tool:
             Node* insideNode = FindNode(id);
             if (insideNode->Type != NodeType::RespService)
                 continue;
-            Node* serviceNode = SpawnServiceIdNodeReasoning(reasoningId, insideNode->Inputs.back().PinBuffer);
+            Node* serviceNode = SpawnServiceIdNodeReasoning(reasoningId, insideNode->Inputs.back().PinBuffer, id);
             ed::SetNodePosition(serviceNode->ID, position);
             position.y = position.y + 50;
+            //add associated Id to RespService
+            insideNode->AssociatedId = serviceNode->ID;
         }
         return FindNode(reasoningId);
     }
@@ -434,9 +441,9 @@ struct CASE_tool:
         return &m_Nodes.back();
     }
 
-    Node* SpawnServiceIdNodeReasoning(ed::NodeId outsideId, TextBuffer* buffer)
+    Node* SpawnServiceIdNodeReasoning(ed::NodeId outsideId, TextBuffer* buffer, ed::NodeId associatedId)
     {
-        m_Nodes.emplace_back(GetNextId(), "Service", NodeType::ReasService, outsideId,ImColor(128, 195, 248));
+        m_Nodes.emplace_back(GetNextId(), "Service", NodeType::ReasService, outsideId,ImColor(128, 195, 248), associatedId);
         Node* outsideNode = FindNode(outsideId);
         m_Nodes.back().Outputs.emplace_back(GetNextId(), "Id", PinType::Function, buffer);
         AddInsideNodeId(outsideId, m_Nodes.back().ID);
@@ -451,7 +458,8 @@ struct CASE_tool:
         for(ed::NodeId id: outsideNode->InsideIds) {
             Node* insideNode = FindNode(id);
             if (insideNode->Type == NodeType::RespReasoningIntelligent || insideNode->Type == NodeType::RespReasoningReactive) {
-                SpawnServiceIdNodeReasoning(id, node->Inputs.back().PinBuffer);
+                Node* serviceNode = SpawnServiceIdNodeReasoning(id, node->Inputs.back().PinBuffer, node->ID);
+                node->AssociatedId = serviceNode->ID;
             }
         }
     }
@@ -1558,6 +1566,14 @@ struct CASE_tool:
     void DeleteNode(ed::NodeId nodeId) {
         // find deleted node
         Node* node = FindNode(nodeId);
+        node->Deleted = true;
+        // if node is Service, delete service node that is associated with this node
+        if (node->Type == NodeType::RespService  ||  node->Type == NodeType::ReasService) {
+            Node* associatedNode = FindNode(node->AssociatedId);
+            if (!associatedNode->Deleted) {
+                DeleteNode(node->AssociatedId);
+            }
+        }
         // if node is associated by other node, delete them as first
         if (node->InsideIds.size() != 0) {
             //delete all inside nodes
