@@ -13,6 +13,10 @@
 #include <utility>
 #include <stdexcept>
 
+//TODO
+//delete
+//popup option in condition and functions
+
 /**
  * From imgui-node-editor-master.
  */
@@ -48,12 +52,10 @@ enum class PinType
     Function,
     Attribute,
     Relationship,
-    Message,
     Service,
     Reasoning,
     Type,
     Code,
-    NoActive,
 };
 
 enum class PinKind
@@ -66,16 +68,11 @@ enum class NodeType
 {
     ExtAgent,
     RespService,
-    ReasIntellService,
-    ReasReactService,
+    ReasService,
     RespReasoningReactive,
     RespReasoningIntelligent,
-    ReasIntelligentFunct,
-    ReasIntelligentFuncts,
-    ReasReactFunct,
     RespAgent,
     IntAgent,
-    SimpleFunct,
     SimpleCond,
     SimpleCode,
     Function,
@@ -365,7 +362,7 @@ struct CASE_tool:
     Node* SpawnIntelligentReasoningNode(ImVec2 position, ed::NodeId outsideId)
     {
         ReasoningType type = ReasoningType::Intelligent;
-        m_Nodes.emplace_back(GetNextId(), "Reasoning", GetNodeTypeFromReasoningType(type), outsideId);
+        m_Nodes.emplace_back(GetNextId(), "Reasoning", GetNodeTypeFromReasoningType(type), outsideId, ImColor(153,255,153));
         m_Nodes.back().Outputs.emplace_back(GetNextId(), GetReasiningTypeAsString(type).c_str(), PinType::Reasoning, NewTextBuffer(BufferType::Empty));
         BuildNode(&m_Nodes.back());
         AddInsideNodeId(outsideId, m_Nodes.back().ID);
@@ -377,19 +374,16 @@ struct CASE_tool:
             Node* insideNode = FindNode(id);
             if (insideNode->Type != NodeType::RespService)
                 continue;
-            Node* serviceNode = SpawnServiceIdNodeIntellReasoning(reasoningId, insideNode->Inputs.back().PinBuffer);
+            Node* serviceNode = SpawnServiceIdNodeReasoning(reasoningId, insideNode->Inputs.back().PinBuffer);
             ed::SetNodePosition(serviceNode->ID, position);
             position.y = position.y + 50;
         }
-        //create functions node
-        Node* functNode = SpawnFunctionsNodeIntelligentReasoning(reasoningId);
-        ed::SetNodePosition(functNode->ID, position);
         return FindNode(reasoningId);
     }
 
     Node* SpawnReactiveReasoningNode(ImVec2 position, ed::NodeId outsideId) {
         ReasoningType type = ReasoningType::Reactive;
-        m_Nodes.emplace_back(GetNextId(), "Reasoning", GetNodeTypeFromReasoningType(type), outsideId);
+        m_Nodes.emplace_back(GetNextId(), "Reasoning", GetNodeTypeFromReasoningType(type), outsideId, ImColor(0,204,102));
         m_Nodes.back().Outputs.emplace_back(GetNextId(), GetReasiningTypeAsString(type).c_str(), PinType::Reasoning, NewTextBuffer(BufferType::Empty));
         BuildNode(&m_Nodes.back());
         AddInsideNodeId(outsideId, m_Nodes.back().ID);
@@ -401,7 +395,7 @@ struct CASE_tool:
             Node* insideNode = FindNode(id);
             if (insideNode->Type != NodeType::RespService)
                 continue;
-            Node* serviceNode = SpawnServiceIdNodeReactReasoning(reasoningId, insideNode->Inputs.back().PinBuffer);
+            Node* serviceNode = SpawnServiceIdNodeReasoning(reasoningId, insideNode->Inputs.back().PinBuffer);
             ed::SetNodePosition(serviceNode->ID, position);
             position.y = position.y + 50;
         }
@@ -440,22 +434,11 @@ struct CASE_tool:
         return &m_Nodes.back();
     }
 
-    Node* SpawnServiceIdNodeReactReasoning(ed::NodeId outsideId, TextBuffer* buffer)
+    Node* SpawnServiceIdNodeReasoning(ed::NodeId outsideId, TextBuffer* buffer)
     {
-        m_Nodes.emplace_back(GetNextId(), "Service", NodeType::ReasReactService, outsideId,ImColor(128, 195, 248));
+        m_Nodes.emplace_back(GetNextId(), "Service", NodeType::ReasService, outsideId,ImColor(128, 195, 248));
         Node* outsideNode = FindNode(outsideId);
         m_Nodes.back().Outputs.emplace_back(GetNextId(), "Id", PinType::Function, buffer);
-        AddInsideNodeId(outsideId, m_Nodes.back().ID);
-        BuildNode(&m_Nodes.back());
-        return &m_Nodes.back();
-    }
-
-    Node* SpawnServiceIdNodeIntellReasoning(ed::NodeId outsideId, TextBuffer* buffer)
-    {
-        m_Nodes.emplace_back(GetNextId(), "Service", NodeType::ReasIntellService, outsideId,ImColor(128, 195, 248));
-        Node* outsideNode = FindNode(outsideId);
-        m_Nodes.back().Outputs.emplace_back(GetNextId(), "Id", PinType::NoActive, buffer, false);
-
         AddInsideNodeId(outsideId, m_Nodes.back().ID);
         BuildNode(&m_Nodes.back());
         return &m_Nodes.back();
@@ -467,11 +450,8 @@ struct CASE_tool:
         Node* outsideNode = FindNode(outsideId);
         for(ed::NodeId id: outsideNode->InsideIds) {
             Node* insideNode = FindNode(id);
-            if (insideNode->Type == NodeType::RespReasoningIntelligent) {
-                SpawnServiceIdNodeIntellReasoning(id, node->Inputs.back().PinBuffer);
-            }
-            if (insideNode->Type == NodeType::RespReasoningReactive) {
-                SpawnServiceIdNodeReactReasoning(id, node->Inputs.back().PinBuffer);
+            if (insideNode->Type == NodeType::RespReasoningIntelligent || insideNode->Type == NodeType::RespReasoningReactive) {
+                SpawnServiceIdNodeReasoning(id, node->Inputs.back().PinBuffer);
             }
         }
     }
@@ -490,9 +470,9 @@ struct CASE_tool:
     Node* SpawnConditionNode(ed::NodeId outsideId)
     {
         m_Nodes.emplace_back(GetNextId(), "", NodeType::SimpleCond, outsideId,ImColor(128, 195, 248));
-        m_Nodes.back().Inputs.emplace_back(GetNextId(), "", PinType::Code, NewTextBuffer(BufferType::Empty));
-        m_Nodes.back().Outputs.emplace_back(GetNextId(), "IF", PinType::Code, NewTextBuffer(BufferType::Empty));
-        m_Nodes.back().Outputs.emplace_back(GetNextId(), "ElSE", PinType::Code, NewTextBuffer(BufferType::Empty));
+        m_Nodes.back().Inputs.emplace_back(GetNextId(), "", PinType::Function, NewTextBuffer(BufferType::Empty));
+        m_Nodes.back().Outputs.emplace_back(GetNextId(), "IF", PinType::Function, NewTextBuffer(BufferType::Empty));
+        m_Nodes.back().Outputs.emplace_back(GetNextId(), "ElSE", PinType::Function, NewTextBuffer(BufferType::Empty));
         AddInsideNodeId(outsideId, m_Nodes.back().ID);
         BuildNode(&m_Nodes.back());
 
@@ -503,8 +483,8 @@ struct CASE_tool:
     {
         m_Nodes.emplace_back(GetNextId(), "Code", NodeType::SimpleCode, outsideId,ImColor(128, 195, 248));
 
-        m_Nodes.back().Inputs.emplace_back(GetNextId(), "", PinType::Code, NewTextBuffer(BufferType::Empty));
-        m_Nodes.back().Outputs.emplace_back(GetNextId(), "", PinType::Code, NewTextBuffer(BufferType::Empty));
+        m_Nodes.back().Inputs.emplace_back(GetNextId(), "", PinType::Function, NewTextBuffer(BufferType::Empty));
+        m_Nodes.back().Outputs.emplace_back(GetNextId(), "", PinType::Function, NewTextBuffer(BufferType::Empty));
         AddInsideNodeId(outsideId, m_Nodes.back().ID);
         BuildNode(&m_Nodes.back());
 
@@ -513,38 +493,8 @@ struct CASE_tool:
 
     Node* SpawnFunctionNode(ed::NodeId outsideId)
     {
-        m_Nodes.emplace_back(GetNextId(), "Function", NodeType::SimpleFunct, outsideId,ImColor(128, 195, 248));
-
-        m_Nodes.back().Inputs.emplace_back(GetNextId(), "", PinType::Code, NewTextBuffer(BufferType::Empty));
-        AddInsideNodeId(outsideId, m_Nodes.back().ID);
-        BuildNode(&m_Nodes.back());
-
-        return &m_Nodes.back();
-    }
-
-    Node* SpawnFunctionNodeReactiveReasoning(ed::NodeId outsideId)
-    {
-        m_Nodes.emplace_back(GetNextId(), "Function", NodeType::ReasReactFunct, outsideId,ImColor(128, 195, 248));
+        m_Nodes.emplace_back(GetNextId(), "Function", NodeType::Function, outsideId,ImColor(255,178,102));
         m_Nodes.back().Inputs.emplace_back(GetNextId(), "", PinType::Function, NewTextBuffer(BufferType::Name));
-        AddInsideNodeId(outsideId, m_Nodes.back().ID);
-        BuildNode(&m_Nodes.back());
-
-        return &m_Nodes.back();
-    }
-
-    Node* SpawnFunctionNodeIntelligentReasoning(ed::NodeId outsideId)
-    {
-        m_Nodes.emplace_back(GetNextId(), "Function", NodeType::ReasIntelligentFunct, outsideId,ImColor(128, 195, 248));
-        m_Nodes.back().Inputs.emplace_back(GetNextId(), "", PinType::NoActive, NewTextBuffer(BufferType::Name), false);
-        AddInsideNodeId(outsideId, m_Nodes.back().ID);
-        BuildNode(&m_Nodes.back());
-
-        return &m_Nodes.back();
-    }
-
-    Node* SpawnFunctionsNodeIntelligentReasoning(ed::NodeId outsideId)
-    {
-        m_Nodes.emplace_back(GetNextId(), "Functions", NodeType::ReasIntelligentFuncts, outsideId,ImColor(128, 195, 248));
         AddInsideNodeId(outsideId, m_Nodes.back().ID);
         BuildNode(&m_Nodes.back());
 
@@ -644,14 +594,11 @@ struct CASE_tool:
         switch (type)
         {
             default:
-            case PinType::Attribute:      return ImColor( 68, 201, 156); //green
-            case PinType::Type:      return ImColor( 68, 201, 156); //green
-            case PinType::Function:    return ImColor(147, 226,  74); //green
-            case PinType::Relationship:   return { 51, 150, 215}; //mass blue
-            case PinType::Message:   return { 255, 255, 255}; //white
-            case PinType::Service:    return ImColor(147, 226,  74); //green
-            case PinType::Code:    return ImColor(51, 150, 215); //green
-            case PinType::Reasoning:    return ImColor(51, 150, 215); //green
+            case PinType::Attribute:      return ImColor( 255,255,255); //white
+            case PinType::Function:    return ImColor(51, 150, 215); // white
+            case PinType::Relationship:   return { 255, 255, 255}; // white
+            case PinType::Service:    return ImColor(51, 150, 215); //mass blue
+            case PinType::Reasoning:    return ImColor(255,255,255); //mass blue
         }
     };
 
@@ -663,7 +610,6 @@ struct CASE_tool:
         switch (pin.Type)
         {
             case PinType::Relationship:  iconType = IconType::Flow;   break;
-            case PinType::Message:       iconType = IconType::Flow;   break;
             case PinType::Attribute:     iconType = IconType::Circle; break;
             case PinType::Function:      iconType = IconType::Circle; break;
             case PinType::Code:          iconType = IconType::Circle; break;
@@ -968,7 +914,7 @@ struct CASE_tool:
             }
             ImGui::PopStyleVar();
 
-            if (node.Type == NodeType::SimpleCond || node.Type == NodeType::SimpleFunct) {
+            if (node.Type == NodeType::SimpleCond) {
                 node.Do_Popup = false;
                 if (ImGui::Button(node.Popup_text)) {
                     node.Do_Popup = true;
@@ -1074,7 +1020,7 @@ struct CASE_tool:
                 builder.Begin(node.ID);
                 //TODO
                 // node.Type == NodeType::SimpleCond;
-                bool isSimple = node.Type == NodeType::SimpleCond|| node.Type == NodeType::SimpleCode || node.Type == NodeType::SimpleFunct;
+                bool isSimple = node.Type == NodeType::SimpleCond|| node.Type == NodeType::SimpleCode;
                 if (!isSimple) {
                     builder.Header(node.Color);
                     ImGui::Spring(0);
@@ -1366,8 +1312,7 @@ struct CASE_tool:
             } else {
                 Node *node = FindNode(contextNodeId);
                 if (node->Type == NodeType::ExtAgent || node->Type == NodeType::RespAgent ||
-                    node->Type == NodeType::RespReasoningReactive || node->Type == NodeType::RespReasoningIntelligent ||
-                    node->Type == NodeType::ReasIntelligentFuncts || node->Type == NodeType::ReasIntellService) {
+                    node->Type == NodeType::RespReasoningReactive || node->Type == NodeType::RespReasoningIntelligent) {
                     // inside view to agent
                     m_Inside = node->ID;
                 } else {
@@ -1478,36 +1423,6 @@ struct CASE_tool:
                     ImGui::EndPopup(); // Note this does not do anything to the popup open/close state. It just terminates the content declaration.
                 }
             }
-
-            if (node.Do_Popup && node.Type == NodeType::SimpleFunct) {
-                ImGui::OpenPopup("Functions"); // Cause Conditions to stick open.
-                node.Do_Popup = false; // disable bool so that if we click off the popup, it doesn't open the next frame.
-
-                // This is the actual popup Gui drawing section.
-                if (ImGui::BeginPopup("Functions")) {
-                    // Note: if it weren't for the child window, we would have to PushItemWidth() here to avoid a crash!
-                    ImGui::TextDisabled("Function");
-                    ImGui::BeginChild("popup_scroller", ImVec2(120, 100), true, ImGuiWindowFlags_AlwaysVerticalScrollbar);
-                    if (ImGui::Button("Function 1")) {
-                        portable_strcpy(node.Popup_text, "Function 1");
-                        ImGui::CloseCurrentPopup();  // These calls revoke the popup open state, which was set by OpenPopup above.
-                    }
-                    if (ImGui::Button("Function 2")) {
-                        portable_strcpy(node.Popup_text, "Function 2");
-                        ImGui::CloseCurrentPopup();
-                    }
-                    if (ImGui::Button("Function 3")) {
-                        portable_strcpy(node.Popup_text, "Function 3");
-                        ImGui::CloseCurrentPopup();
-                    }
-                    if (ImGui::Button("Function 4")) {
-                        portable_strcpy(node.Popup_text, "Function 4");
-                        ImGui::CloseCurrentPopup();
-                    }
-                    ImGui::EndChild();
-                    ImGui::EndPopup(); // Note this does not do anything to the popup open/close state. It just terminates the content declaration.
-                }
-            }
         }
 
 
@@ -1537,13 +1452,9 @@ struct CASE_tool:
                     }
                 } else if (node->Type == NodeType::RespReasoningReactive) {
                     if (ImGui::MenuItem("Function")) {
-                        node = SpawnFunctionNodeReactiveReasoning(node->ID);
+                        node = SpawnFunctionNode(node->ID);
                     }
-                } else if (node->Type == NodeType::ReasIntelligentFuncts) {
-                    if (ImGui::MenuItem("Function")) {
-                        node = SpawnFunctionNodeIntelligentReasoning(node->ID);
-                    }
-                } else if (node->Type == NodeType::ReasIntellService) {
+                } else if (node->Type == NodeType::RespReasoningIntelligent) {
                     if (ImGui::MenuItem("Condition")) {
                         node = SpawnConditionNode(node->ID);
                     }
@@ -1744,7 +1655,7 @@ struct CASE_tool:
     std::map<ed::NodeId, float, NodeIdLess> m_NodeTouchTime;
     bool                 m_ShowOrdinals = false;
     ed::NodeId           m_ContextNodeId = 0;
-    ed::NodeId                m_Inside = 0; // id of the node we are currently on
+    ed::NodeId           m_Inside = 0; // id of the node we are currently on
 };
 
 int Main(int argc, char** argv)
