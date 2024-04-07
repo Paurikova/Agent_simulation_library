@@ -14,8 +14,7 @@
 #include <stdexcept>
 
 //TODO
-//delete
-//popup option in condition and functions
+//popup option in conditions
 
 /**
  * From imgui-node-editor-master.
@@ -55,7 +54,6 @@ enum class PinType
     Service,
     Reasoning,
     Type,
-    Code,
 };
 
 enum class PinKind
@@ -83,7 +81,6 @@ enum class BufferType
     Name,
     Type,
     ServiceId,
-    Header,
     Id,
     Empty,
 };
@@ -120,9 +117,6 @@ struct TextBuffer {
                 break;
             case BufferType::Id:
                 strcpy(Buffer, "Id");
-                break;
-            case BufferType::Header:
-                strcpy(Buffer, "Header");
                 break;
             default: strcpy(Buffer, "Edit me");
                 break;
@@ -169,14 +163,14 @@ struct Node
     ImVec2 Size;
     char Popup_text[128];
     bool Do_Popup;
-    ed::NodeId AssociatedId;
-    bool Deleted;
+    std::vector<ed::NodeId> AssociatedIds; // node id by which is node associated
+    bool Deleted; //< true if is node deleting
 
     std::string State;
     std::string SavedState;
 
-    Node(int id, const char* name, NodeType type, ed::NodeId outsideId, ImColor color = ImColor(255, 255, 255), ed::NodeId associatedId = -1):
-            ID(id), Name(name), Color(color), Type(type), Size(0, 0), OutsideId(outsideId), Popup_text("Condition"), Do_Popup(false), AssociatedId(associatedId),
+    Node(int id, const char* name, NodeType type, ed::NodeId outsideId, ImColor color = ImColor(255, 255, 255)):
+            ID(id), Name(name), Color(color), Type(type), Size(0, 0), OutsideId(outsideId), Popup_text("Condition"), Do_Popup(false),
             Deleted(false)
     {
     }
@@ -329,10 +323,19 @@ struct CASE_tool:
         }
     }
 
+    /**
+     * Returns new text buffer based on input buffer type.
+     * @param type type of buffer
+     * @return     created buffer
+     */
     TextBuffer* NewTextBuffer(BufferType type) {
         return new TextBuffer(type);
     }
 
+    /**
+     * Creates node for representation agents' relationships.
+     * @return created node
+     */
     Node* SpawnAgentNodeTree()
     {
         m_Nodes.emplace_back(GetNextId(), "Agent", NodeType::ExtAgent, 0);
@@ -343,6 +346,12 @@ struct CASE_tool:
         return &m_Nodes.back();
     }
 
+    /**
+     * Creates node for representation of agent's responsibilities
+     * and types of decision making.
+     * @param outsideId the ID of node that is hierarchically higher
+     * @return          created node
+     */
     Node* SpawnAgentNodeResponsibilities(ed::NodeId outsideId)
     {
         m_Nodes.emplace_back(GetNextId(), "Agent", NodeType::RespAgent, outsideId);
@@ -353,6 +362,11 @@ struct CASE_tool:
         return &m_Nodes.back();
     }
 
+    /**
+     * Creates node for agent's attribute.
+     * @param outsideId the ID of node that is hierarchically higher
+     * @return          created node
+     */
     Node* SpawnAgentNodeAttributes(ed::NodeId outsideId)
     {
         m_Nodes.emplace_back(GetNextId(), "Agent", NodeType::IntAgent, outsideId);
@@ -362,6 +376,13 @@ struct CASE_tool:
         return &m_Nodes.back();
     }
 
+    /**
+     * Creates node of agent intelligent reasoning.
+     * For all added services in agent responsibility creates new node on reasoning level.
+     * @param position  position of created node in canvas
+     * @param outsideId the ID of node that is hierarchically higher
+     * @return          created node
+     */
     Node* SpawnIntelligentReasoningNode(ImVec2 position, ed::NodeId outsideId)
     {
         ReasoningType type = ReasoningType::Intelligent;
@@ -371,7 +392,41 @@ struct CASE_tool:
         AddInsideNodeId(outsideId, m_Nodes.back().ID);
         ed::NodeId reasoningId = m_Nodes.back().ID;
         ed::SetNodePosition(reasoningId, position);
-        //create services nodes if service exists
+        //create service node if service exists on level of responsibility
+        Node* outsideNode = FindNode(outsideId);
+        for (ed::NodeId id : outsideNode->InsideIds) {
+            // find outside node
+            Node* insideNode = FindNode(id);
+            // Is node type of Service?
+            if (insideNode->Type != NodeType::RespService)
+                continue;
+            // create service node on reasoning level
+            Node* serviceNode = SpawnServiceIdNodeReasoning(reasoningId, insideNode->Inputs.back().PinBuffer, id);
+            ed::SetNodePosition(serviceNode->ID, position);
+            position.y = position.y + 50;
+            //add associated node to RespService
+            insideNode->AssociatedIds.push_back(serviceNode->ID);
+        }
+        return FindNode(reasoningId);
+    }
+
+    /**
+     * Creates node of agent reactive reasoning.
+     * For all added services in agent responsibility creates new node on reasoning level.
+     * @param position position of created node in canvas
+     * @param outsideId the ID of node that is hierarchically higher
+     * @return          created node
+     */
+    Node* SpawnReactiveReasoningNode(ImVec2 position, ed::NodeId outsideId) {
+        ReasoningType type = ReasoningType::Reactive;
+        m_Nodes.emplace_back(GetNextId(), "Reasoning", GetNodeTypeFromReasoningType(type), outsideId, ImColor(0,204,102));
+        m_Nodes.back().Outputs.emplace_back(GetNextId(), GetReasiningTypeAsString(type).c_str(), PinType::Reasoning, NewTextBuffer(BufferType::Empty));
+        BuildNode(&m_Nodes.back());
+        // add node to its outside node
+        AddInsideNodeId(outsideId, m_Nodes.back().ID);
+        ed::NodeId reasoningId = m_Nodes.back().ID;
+        ed::SetNodePosition(reasoningId, position);
+        //create service node if service exists
         Node* outsideNode = FindNode(outsideId);
         for (ed::NodeId id : outsideNode->InsideIds) {
             Node* insideNode = FindNode(id);
@@ -381,34 +436,16 @@ struct CASE_tool:
             ed::SetNodePosition(serviceNode->ID, position);
             position.y = position.y + 50;
             //add associated node to RespService
-            insideNode->AssociatedId = serviceNode->ID;
+            insideNode->AssociatedIds.push_back(serviceNode->ID);
         }
         return FindNode(reasoningId);
     }
 
-    Node* SpawnReactiveReasoningNode(ImVec2 position, ed::NodeId outsideId) {
-        ReasoningType type = ReasoningType::Reactive;
-        m_Nodes.emplace_back(GetNextId(), "Reasoning", GetNodeTypeFromReasoningType(type), outsideId, ImColor(0,204,102));
-        m_Nodes.back().Outputs.emplace_back(GetNextId(), GetReasiningTypeAsString(type).c_str(), PinType::Reasoning, NewTextBuffer(BufferType::Empty));
-        BuildNode(&m_Nodes.back());
-        AddInsideNodeId(outsideId, m_Nodes.back().ID);
-        ed::NodeId reasoningId = m_Nodes.back().ID;
-        ed::SetNodePosition(reasoningId, position);
-        //create services nodes if service exists
-        Node* outsideNode = FindNode(outsideId);
-        for (ed::NodeId id : outsideNode->InsideIds) {
-            Node* insideNode = FindNode(id);
-            if (insideNode->Type != NodeType::RespService)
-                continue;
-            Node* serviceNode = SpawnServiceIdNodeReasoning(reasoningId, insideNode->Inputs.back().PinBuffer, id);
-            ed::SetNodePosition(serviceNode->ID, position);
-            position.y = position.y + 50;
-            //add associated Id to RespService
-            insideNode->AssociatedId = serviceNode->ID;
-        }
-        return FindNode(reasoningId);
-    }
-
+    /**
+     * Return reasoning type as string.
+     * @param type type of reasoning
+     * @return     string form of reasoning type
+     */
     std::string GetReasiningTypeAsString(ReasoningType type) {
         switch(type) {
             case(ReasoningType::Reactive): return "Reactive";
@@ -416,7 +453,12 @@ struct CASE_tool:
             default: throw std::runtime_error("String version for input doesn't exist.");
         }
     }
-    
+
+    /**
+     * Get type of node based of reasoning type.
+     * @param type reasoning type
+     * @return     type of node
+     */
     NodeType GetNodeTypeFromReasoningType(ReasoningType type) {
         switch (type) {
             case (ReasoningType::Reactive): return NodeType::RespReasoningReactive;
@@ -425,12 +467,24 @@ struct CASE_tool:
         }
     }
 
+    /**
+     * Creates nodes for representation of agent's relationships, responsibilities and features.
+     * @param position  nodes position
+     */
     void SpawnAgent(ImVec2 position) {
+        // relationships
         Node* node = SpawnAgentNodeTree(); ed::SetNodePosition(node->ID, position);
+        // responsibilities
         node = SpawnAgentNodeResponsibilities(node->ID); ed::SetNodePosition(node->ID, position);
+        // features
         node = SpawnAgentNodeAttributes(node->ID); ed::SetNodePosition(node->ID, position);
     }
 
+    /**
+     * Creates service on responsibility level.
+     * @param outsideId     id of outside node
+     * @return              created node
+     */
     Node* SpawnServiceIdNodeResponsibilities(ed::NodeId outsideId)
     {
         m_Nodes.emplace_back(GetNextId(), "Service", NodeType::RespService, outsideId,ImColor(128, 195, 248));
@@ -441,29 +495,55 @@ struct CASE_tool:
         return &m_Nodes.back();
     }
 
+    /**
+     * Creates service node on reasoning level.
+     * @param outsideId  id of outside node
+     * @param buffer     buffer from associated service from responsibility level
+     * @param associatedId  id of associated service from responsibility level
+     * @return              created node
+     */
     Node* SpawnServiceIdNodeReasoning(ed::NodeId outsideId, TextBuffer* buffer, ed::NodeId associatedId)
     {
-        m_Nodes.emplace_back(GetNextId(), "Service", NodeType::ReasService, outsideId,ImColor(128, 195, 248), associatedId);
+        m_Nodes.emplace_back(GetNextId(), "Service", NodeType::ReasService, outsideId,ImColor(128, 195, 248));
+        // add associated ID to node
+        m_Nodes.back().AssociatedIds.push_back(associatedId);
         Node* outsideNode = FindNode(outsideId);
         m_Nodes.back().Outputs.emplace_back(GetNextId(), "Id", PinType::Function, buffer);
+        // add node to its outside node
         AddInsideNodeId(outsideId, m_Nodes.back().ID);
         BuildNode(&m_Nodes.back());
         return &m_Nodes.back();
     }
 
+    /**
+     * Creates service on responsibility level.
+     * @param position  node position
+     * @param outsideId ID of outside node
+     * @return          created node
+     */
     Node* SpawnServiceIdNode(ImVec2 position, ed::NodeId outsideId) {
+        // create service on responsibility level
         Node *node = SpawnServiceIdNodeResponsibilities(outsideId);
         ed::SetNodePosition(node->ID, position);
         Node* outsideNode = FindNode(outsideId);
+        // find reasoning nodes added to agent
         for(ed::NodeId id: outsideNode->InsideIds) {
             Node* insideNode = FindNode(id);
             if (insideNode->Type == NodeType::RespReasoningIntelligent || insideNode->Type == NodeType::RespReasoningReactive) {
+                // create service node in reasoning level
+                // associate it with created node
                 Node* serviceNode = SpawnServiceIdNodeReasoning(id, node->Inputs.back().PinBuffer, node->ID);
-                node->AssociatedId = serviceNode->ID;
+                // add created service ID to node associated IDs
+                node->AssociatedIds.push_back(serviceNode->ID);
             }
         }
     }
 
+    /**
+     * Creates node of attribute.
+     * @param outsideId  ID of outside node
+     * @return           created node
+     */
     Node* SpawnAttributeNode(ed::NodeId outsideId)
     {
         m_Nodes.emplace_back(GetNextId(), "Attribute", NodeType::IntAgent, outsideId, ImColor(128, 195, 248));
@@ -475,6 +555,11 @@ struct CASE_tool:
         return &m_Nodes.back();
     }
 
+    /**
+     * Creates node of condition for creating Petri net.
+     * @param outsideId  ID of outside node
+     * @return           created node
+     */
     Node* SpawnConditionNode(ed::NodeId outsideId)
     {
         m_Nodes.emplace_back(GetNextId(), "", NodeType::SimpleCond, outsideId,ImColor(128, 195, 248));
@@ -487,6 +572,11 @@ struct CASE_tool:
         return &m_Nodes.back();
     }
 
+    /**
+     * Creates node of code in Petri net.
+     * @param outsideId  ID of outside node
+     * @return           created node
+     */
     Node* SpawnCodeNode(ed::NodeId outsideId)
     {
         m_Nodes.emplace_back(GetNextId(), "Code", NodeType::SimpleCode, outsideId,ImColor(128, 195, 248));
@@ -499,6 +589,11 @@ struct CASE_tool:
         return &m_Nodes.back();
     }
 
+    /**
+     * Creates node of function.
+     * @param outsideId  ID of outside node
+     * @return           created node
+     */
     Node* SpawnFunctionNode(ed::NodeId outsideId)
     {
         m_Nodes.emplace_back(GetNextId(), "Function", NodeType::Function, outsideId,ImColor(255,178,102));
@@ -597,19 +692,25 @@ struct CASE_tool:
         }
     }
 
+    /**
+     * From imgui-node-editor-master.
+     */
     ImColor GetIconColor(PinType type)
     {
         switch (type)
         {
             default:
-            case PinType::Attribute:      return ImColor( 255,255,255); //white
-            case PinType::Function:    return ImColor(51, 150, 215); // white
+            case PinType::Attribute:      return ImColor( 255,255,255); // white
+            case PinType::Function:    return ImColor(51, 150, 215); // mass blue
             case PinType::Relationship:   return { 255, 255, 255}; // white
-            case PinType::Service:    return ImColor(51, 150, 215); //mass blue
-            case PinType::Reasoning:    return ImColor(255,255,255); //mass blue
+            case PinType::Service:    return ImColor(51, 150, 215); // mass blue
+            case PinType::Reasoning:    return ImColor(255,255,255); // white
         }
     };
 
+    /**
+     * From imgui-node-editor-master.
+     */
     void DrawPinIcon(const Pin& pin, bool connected, int alpha)
     {
         IconType iconType;
@@ -620,7 +721,6 @@ struct CASE_tool:
             case PinType::Relationship:  iconType = IconType::Flow;   break;
             case PinType::Attribute:     iconType = IconType::Circle; break;
             case PinType::Function:      iconType = IconType::Circle; break;
-            case PinType::Code:          iconType = IconType::Circle; break;
             case PinType::Service:       iconType = IconType::Circle; break;
             case PinType::Reasoning:       iconType = IconType::Circle; break;
             default:
@@ -1019,15 +1119,10 @@ struct CASE_tool:
 
             // create blueprint and simple nodes
             for (auto &node: m_Nodes) {
-                //TODO
-                //&& node.Type != NodeType::SimpleCond
-                //TODO
                 if (node.Type == NodeType::ExtAgent
                     || m_Inside.Get() == 0 || node.OutsideId.Get() != m_Inside.Get())
                     continue;
                 builder.Begin(node.ID);
-                //TODO
-                // node.Type == NodeType::SimpleCond;
                 bool isSimple = node.Type == NodeType::SimpleCond|| node.Type == NodeType::SimpleCode;
                 if (!isSimple) {
                     builder.Header(node.Color);
@@ -1278,7 +1373,9 @@ struct CASE_tool:
                             deleted = true;
                             // delete all nodes that are associated with deleted node
                             // and all associated links
-                            DeleteNode(nodeId);
+                            // user cannot delete main agent
+                            if (nodeId.Get() != MANAGER_AGENT_ID)
+                                DeleteNode(nodeId);
                         }
                     }
 
@@ -1326,7 +1423,11 @@ struct CASE_tool:
                 } else {
                     // back to inside view of agent
                     Node *outsideNode = FindNode(node->OutsideId);
-                    m_Inside = (FindNode(outsideNode->OutsideId))->ID;
+                    if (outsideNode->OutsideId.Get() == 0) {
+                        m_Inside = 0;
+                    } else {
+                        m_Inside = outsideNode->OutsideId;
+                    }
                 }
             }
         }
@@ -1407,6 +1508,7 @@ struct CASE_tool:
                 node.Do_Popup = false; // disable bool so that if we click off the popup, it doesn't open the next frame.
 
                 // This is the actual popup Gui drawing section.
+                // TODO
                 if (ImGui::BeginPopup("Conditions")) {
                     // Note: if it weren't for the child window, we would have to PushItemWidth() here to avoid a crash!
                     ImGui::TextDisabled("Condition");
@@ -1444,6 +1546,7 @@ struct CASE_tool:
                     SpawnAgent(newNodePostion);
             } else {
                 Node *node = FindNode(m_Inside);
+                // level of agent's responsibilities
                 if (node->Type == NodeType::ExtAgent) {
                     if (ImGui::MenuItem("Service")) {
                         SpawnServiceIdNode(newNodePostion, node->ID);
@@ -1455,14 +1558,17 @@ struct CASE_tool:
                         SpawnIntelligentReasoningNode(newNodePostion, node->ID);
                     }
                 } else if (node->Type == NodeType::RespAgent) {
+                    //level of agent's features
                     if (ImGui::MenuItem("Attribute")) {
                         node = SpawnAttributeNode(node->ID);
                     }
                 } else if (node->Type == NodeType::RespReasoningReactive) {
+                    //level of agent's reactive reasoning
                     if (ImGui::MenuItem("Function")) {
                         node = SpawnFunctionNode(node->ID);
                     }
                 } else if (node->Type == NodeType::RespReasoningIntelligent) {
+                    // level of agent's intelligent reasoning
                     if (ImGui::MenuItem("Condition")) {
                         node = SpawnConditionNode(node->ID);
                     }
@@ -1560,18 +1666,38 @@ struct CASE_tool:
     }
 
     /**
-     * Delete node and all associated nodes
-     * @param nodeId delete node id
+     * Delete node and all associated nodes.
+     * @param nodeId deleted node id
      */
     void DeleteNode(ed::NodeId nodeId) {
         // find deleted node
         Node* node = FindNode(nodeId);
+        // prevents to never ending loop in deleting
         node->Deleted = true;
+        // if deleted node is responsible or internal agent, remove the whole agent
+        if (node->Type == NodeType::RespAgent || node->Type == NodeType::IntAgent) {
+            ed::NodeId outsideId = node->OutsideId;
+            Node* outsideNode = FindNode(outsideId);
+            if (!outsideNode->Deleted) {
+                outsideNode->Deleted = true;
+                if (outsideNode->Type == NodeType::RespAgent) {
+                    outsideId = outsideNode->OutsideId;
+                    outsideNode = FindNode(outsideId);
+                    if (!outsideNode->Deleted) {
+                        outsideNode->Deleted = true;
+                    }
+                }
+                node = outsideNode;
+                nodeId = outsideId;
+            }
+        }
         // if node is Service, delete service node that is associated with this node
-        if (node->Type == NodeType::RespService  ||  node->Type == NodeType::ReasService) {
-            Node* associatedNode = FindNode(node->AssociatedId);
-            if (!associatedNode->Deleted) {
-                DeleteNode(node->AssociatedId);
+        if (node->Type == NodeType::RespService || node->Type == NodeType::ReasService) {
+            for (ed::NodeId id : node->AssociatedIds) {
+                Node *associatedNode = FindNode(id);
+                if (!associatedNode->Deleted) {
+                    DeleteNode(id);
+                }
             }
         }
         // if node is associated by other node, delete them as first
@@ -1596,6 +1722,9 @@ struct CASE_tool:
                 outsideNode->InsideIds.erase(id);
         }
         //delete node
+        //if node is ext agent, go up
+        if (node->Type == NodeType::ExtAgent)
+            m_Inside = 0;
         auto id = std::find_if(m_Nodes.begin(), m_Nodes.end(),
                                [nodeId](auto &node) { return node.ID == nodeId; });
         if (id != m_Nodes.end()) {
@@ -1662,6 +1791,7 @@ struct CASE_tool:
 
     int                  m_NextId = 1;
     const int            m_PinIconSize = 24;
+    const int            MANAGER_AGENT_ID = 1; // << if of agent manager
     std::vector<Node>    m_Nodes;
     std::vector<Link>    m_Links;
     ImTextureID          m_HeaderBackground = nullptr;
@@ -1670,8 +1800,8 @@ struct CASE_tool:
     const float          m_TouchTime = 1.0f;
     std::map<ed::NodeId, float, NodeIdLess> m_NodeTouchTime;
     bool                 m_ShowOrdinals = false;
-    ed::NodeId           m_ContextNodeId = 0;
-    ed::NodeId           m_Inside = 0; // id of the node we are currently on
+    ed::NodeId           m_ContextNodeId = 0; // << id of context node
+    ed::NodeId           m_Inside = 0; // << id of the node we are currently on
 };
 
 int Main(int argc, char** argv)
