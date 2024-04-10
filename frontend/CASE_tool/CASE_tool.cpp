@@ -1336,28 +1336,21 @@ struct CASE_tool:
 
 # if 1
         ed::Suspend();
-        // control if user has made double click
-        // if double click was activated, we change level of nodes
-        if (ed::GoInsertNode(&contextNodeId)) {
-            // id of marked node
-            m_ContextNodeId = contextNodeId.Get();
-            if (m_ContextNodeId.Get() == 0) {
-                // outside view to agent structure
-                m_Inside = 0;
+        //control if user made doubleclick on node
+        ed::NodeId doubleClickedNode = ed::GetDoubleClickedNode();
+        if (doubleClickedNode.Get() > 0) {
+            Node *node = FindNode(doubleClickedNode);
+            if (node->Type == NodeType::ExtAgent || node->Type == NodeType::RespAgent ||
+                node->Type == NodeType::RespReasoningReactive || node->Type == NodeType::RespReasoningIntelligent) {
+                // inside view to agent
+                m_Inside = node->ID;
             } else {
-                Node *node = FindNode(contextNodeId);
-                if (node->Type == NodeType::ExtAgent || node->Type == NodeType::RespAgent ||
-                    node->Type == NodeType::RespReasoningReactive || node->Type == NodeType::RespReasoningIntelligent) {
-                    // inside view to agent
-                    m_Inside = node->ID;
+                // back to inside view of agent
+                Node *outsideNode = FindNode(node->OutsideId);
+                if (outsideNode->OutsideId.Get() == 0) {
+                    m_Inside = 0;
                 } else {
-                    // back to inside view of agent
-                    Node *outsideNode = FindNode(node->OutsideId);
-                    if (outsideNode->OutsideId.Get() == 0) {
-                        m_Inside = 0;
-                    } else {
-                        m_Inside = outsideNode->OutsideId;
-                    }
+                    m_Inside = outsideNode->OutsideId;
                 }
             }
         }

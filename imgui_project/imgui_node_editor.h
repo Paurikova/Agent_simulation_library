@@ -105,7 +105,6 @@ struct Config
     int                     SelectButtonIndex;      // Mouse button index select action will react to (0-left, 1-right, 2-middle)
     int                     NavigateButtonIndex;    // Mouse button index navigate action will react to (0-left, 1-right, 2-middle)
     int                     ContextMenuButtonIndex; // Mouse button index context menu action will react to (0-left, 1-right, 2-middle)
-    int                     DoubleClickButtonIndex;
     bool                    EnableSmoothZoom;
     float                   SmoothZoomPower;
 
@@ -124,7 +123,6 @@ struct Config
         , SelectButtonIndex(0)
         , NavigateButtonIndex(1)
         , ContextMenuButtonIndex(1)
-        , DoubleClickButtonIndex(0)
         , EnableSmoothZoom(false)
 # ifdef __APPLE__
         , SmoothZoomPower(1.1f)

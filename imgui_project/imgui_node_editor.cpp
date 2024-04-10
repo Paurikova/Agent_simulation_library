@@ -1089,7 +1089,6 @@ ed::EditorContext::EditorContext(const ax::NodeEditor::Config* config)
     , m_DragAction(this)
     , m_SelectAction(this)
     , m_ContextMenuAction(this)
-    , m_DoubleClickAction(this)
     , m_Canvas()
     , m_NavigateAction(this, m_Canvas)
     , m_ShortcutAction(this)
@@ -1360,8 +1359,6 @@ void ed::EditorContext::End()
 
         if (accept(m_ContextMenuAction))
             m_CurrentAction = &m_ContextMenuAction;
-        else if (accept(m_DoubleClickAction))
-            m_CurrentAction = &m_DoubleClickAction;
         else if (accept(m_ShortcutAction))
             m_CurrentAction = &m_ShortcutAction;
         else if (accept(m_SizeAction))
@@ -4225,73 +4222,6 @@ void ed::SelectAction::Draw(ImDrawList* drawList)
     drawList->AddRect(min, max, outlineColor);
 }
 
-
-ed::DoubleClickAction::DoubleClickAction(EditorContext* editor): EditorAction(editor), m_ContextId() {}
-bool ed::DoubleClickAction::GoInsertNode(NodeId* nodeId) {
-    if (!action)
-        return False;
-    if (!m_ContextId.IsNodeId())
-        return False;
-    *nodeId = m_ContextId.AsNodeId();
-    Editor->SetUserContext();
-    return True;
-}
-
-ed::EditorAction::AcceptResult ed::DoubleClickAction::Accept(const Control& control) {
-    const auto isDoublePressed  = ImGui::IsMouseDoubleClicked(Editor->GetConfig().DoubleClickButtonIndex);
-    const auto isPressed  = ImGui::IsMouseClicked(Editor->GetConfig().ContextMenuButtonIndex);
-    const auto isReleased = ImGui::IsMouseReleased(Editor->GetConfig().ContextMenuButtonIndex);
-    const auto isDragging = ImGui::IsMouseDragging(Editor->GetConfig().ContextMenuButtonIndex, 1);
-    action = False;
-
-    if (isDoublePressed)
-    {
-        action = True;
-        ObjectId contextId;
-
-        if (auto hotObejct = control.HotObject)
-        {
-            if (hotObejct->AsNode())
-                contextId = hotObejct->ID();
-        }
-
-        if (isDoublePressed)
-        {
-            m_ContextId     = contextId;
-            return Possible;
-        }
-        else if (m_ContextId == contextId)
-        {
-            return True;
-        }
-        else
-        {
-            m_ContextId     = ObjectId();
-            return False;
-        }
-    }
-
-    if (isPressed || isReleased || isDragging) {
-        //for back option in context menu
-        m_ContextId     = ObjectId();
-        return False;
-    }
-
-
-
-    return False;
-}
-
-bool ed::DoubleClickAction::Process(const Control& control) {
-    IM_UNUSED(control);
-    m_ContextId     = ObjectId();
-    return false;
-}
-
-void ed::DoubleClickAction::Reject()
-{
-    m_ContextId     = ObjectId();
-}
 
 //------------------------------------------------------------------------------
 //

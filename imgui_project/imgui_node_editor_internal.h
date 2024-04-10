@@ -987,18 +987,6 @@ struct SelectAction final: EditorAction
     void Draw(ImDrawList* drawList);
 };
 
-struct DoubleClickAction final: EditorAction {
-    ObjectId m_ContextId;
-    bool action = false;
-
-    DoubleClickAction(EditorContext* editor);
-    bool GoInsertNode(NodeId* nodeId);
-    virtual AcceptResult Accept(const Control& control) override final;
-    virtual bool Process(const Control& control) override final;
-    virtual void Reject() override final;
-    virtual const char* GetName() const override final { return "Double Click"; }
-};
-
 struct ContextMenuAction final: EditorAction
 {
     enum Menu { None, Node, Pin, Link, Background };
@@ -1327,7 +1315,6 @@ struct EditorContext
     CreateItemAction& GetItemCreator() { return m_CreateItemAction; }
     DeleteItemsAction& GetItemDeleter() { return m_DeleteItemsAction; }
     ContextMenuAction& GetContextMenu() { return m_ContextMenuAction; }
-    DoubleClickAction& GetDoubleClickAction() { return m_DoubleClickAction;}
     ShortcutAction& GetShortcut() { return m_ShortcutAction; }
 
     const ImGuiEx::CanvasView& GetView() const { return m_Canvas.View(); }
@@ -1537,7 +1524,6 @@ private:
     DragAction          m_DragAction;
     SelectAction        m_SelectAction;
     ContextMenuAction   m_ContextMenuAction;
-    DoubleClickAction   m_DoubleClickAction;
     ShortcutAction      m_ShortcutAction;
     CreateItemAction    m_CreateItemAction;
     DeleteItemsAction   m_DeleteItemsAction;

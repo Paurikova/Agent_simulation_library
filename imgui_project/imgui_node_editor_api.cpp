@@ -581,10 +581,6 @@ bool ax::NodeEditor::ShowNodeContextMenu(NodeId* nodeId)
     return s_Editor->GetContextMenu().ShowNodeContextMenu(nodeId);
 }
 
-bool ax::NodeEditor::GoInsertNode(NodeId* nodeId) {
-    return s_Editor->GetDoubleClickAction().GoInsertNode(nodeId);
-}
-
 bool ax::NodeEditor::ShowPinContextMenu(PinId* pinId)
 {
     return s_Editor->GetContextMenu().ShowPinContextMenu(pinId);
