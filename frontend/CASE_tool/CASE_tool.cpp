@@ -871,6 +871,7 @@ struct CASE_tool:
         }
     }
 
+    //TODO: we added shift attribute to imgui library - add it to documentation for future library updating
     /**
      * @brief Recursively performs depth-first search starting from the given node.
      *
