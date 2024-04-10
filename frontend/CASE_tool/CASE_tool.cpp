@@ -124,6 +124,12 @@ struct TextBuffer {
     }
 };
 
+struct Button
+{
+    char* Label;
+    Button(char* label): Label(label) {}
+};
+
 /**
  * From imgui-node-master-editor.
  * Structure represents node pin.
@@ -139,6 +145,7 @@ struct Pin
     PinKind     Kind;
     bool        IsActive;   //< value if by this pin can be node connected by other node
     std::vector<ed::LinkId> LinkIds; //< ids of links that are associated by the pin
+    Button*     PinButton; //< Button for user choice from options
 
     Pin(int id, const char* name, PinType type, TextBuffer* buffer, bool active = true):
             ID(id), Node(nullptr), Name(name), Type(type), Kind(PinKind::Input), PinBuffer(buffer), IsActive(active)
@@ -161,8 +168,6 @@ struct Node
     ImColor Color;
     NodeType Type;
     ImVec2 Size;
-    char Popup_text[128];
-    bool Do_Popup;
     std::vector<ed::NodeId> AssociatedIds; // node id by which is node associated
     bool Deleted; //< true if is node deleting
 
@@ -170,7 +175,7 @@ struct Node
     std::string SavedState;
 
     Node(int id, const char* name, NodeType type, ed::NodeId outsideId, ImColor color = ImColor(255, 255, 255)):
-            ID(id), Name(name), Color(color), Type(type), Size(0, 0), OutsideId(outsideId), Popup_text("Condition"), Do_Popup(false),
+            ID(id), Name(name), Color(color), Type(type), Size(0, 0), OutsideId(outsideId),
             Deleted(false)
     {
     }
@@ -330,6 +335,15 @@ struct CASE_tool:
      */
     TextBuffer* NewTextBuffer(BufferType type) {
         return new TextBuffer(type);
+    }
+
+    /**
+     * Method sets label of button by user input.
+     * @param button  button
+     * @param label   new label
+     */
+    void SetButtonLabel(Button* button, char* label) {
+        button->Label = label;
     }
 
     /**
@@ -564,6 +578,8 @@ struct CASE_tool:
     {
         m_Nodes.emplace_back(GetNextId(), "", NodeType::SimpleCond, outsideId,ImColor(128, 195, 248));
         m_Nodes.back().Inputs.emplace_back(GetNextId(), "", PinType::Function, NewTextBuffer(BufferType::Empty));
+        //An option for user choice of condition from menu
+        m_Nodes.back().Inputs.back().PinButton = new Button("Condition");
         m_Nodes.back().Outputs.emplace_back(GetNextId(), "IF", PinType::Function, NewTextBuffer(BufferType::Empty));
         m_Nodes.back().Outputs.emplace_back(GetNextId(), "ElSE", PinType::Function, NewTextBuffer(BufferType::Empty));
         AddInsideNodeId(outsideId, m_Nodes.back().ID);
@@ -942,11 +958,10 @@ struct CASE_tool:
             }
             ImGui::PopStyleVar();
 
+            //Button definition for condition node
             if (node.Type == NodeType::SimpleCond) {
-                node.Do_Popup = false;
-                if (ImGui::Button(node.Popup_text)) {
-                    node.Do_Popup = true;
-                    ImGui::Spring(0);
+                if (ImGui::Button(input.PinButton->Label)) {
+                    m_ActiveButton = input.PinButton;
                 }
             }
             builder.EndInput();
@@ -1358,6 +1373,8 @@ struct CASE_tool:
         else if (ed::ShowBackgroundContextMenu()) {
             ImGui::OpenPopup("Create New Node");
             newNodeLinkPin = nullptr;
+        } else if (m_ActiveButton) {
+            ImGui::OpenPopup("Conditions");
         }
         ed::Resume();
 
@@ -1365,23 +1382,28 @@ struct CASE_tool:
         ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(8, 8));
         if (ImGui::BeginPopup("Node Context Menu")) {
             auto node = FindNode(contextNodeId);
-
-//            ImGui::TextUnformatted("Node Context Menu");
-//            ImGui::Separator();
-//            if (node) {
-//                ImGui::Text("ID: %p", node->ID.AsPointer());
-//
-//                ImGui::Text("Type: %s", (node->Type == NodeType:: ||
-//                                                 node->Type == NodeType::RespAgentFunction || node->Type == NodeType::RespAgentFeature) ? "RespAgent" : (node->Type == NodeType::Tree) ? "Tree" : "Simple");
-//                ImGui::Text("Inputs: %d", (int) node->Inputs.size());
-//                ImGui::Text("Outputs: %d", (int) node->Outputs.size());
-//            } else
-//                ImGui::Text("Unknown node: %p", contextNodeId.AsPointer());
-//            ImGui::Separator();
             if (ImGui::MenuItem("Delete"))
                 ed::DeleteNode(contextNodeId);
             ImGui::EndPopup();
         }
+
+        //TODO: definition condition for petri net
+        if (ImGui::BeginPopup("Conditions")) {
+            if (ImGui::MenuItem("Conditions1")) {
+                SetButtonLabel(m_ActiveButton, "Conditions1");
+                m_ActiveButton = nullptr;
+            }
+            if (ImGui::MenuItem("Conditions2")) {
+                SetButtonLabel(m_ActiveButton, "Conditions2");
+                m_ActiveButton = nullptr;
+            }
+            if (ImGui::MenuItem("Conditions3")) {
+                SetButtonLabel(m_ActiveButton, "Conditions3");
+                m_ActiveButton = nullptr;
+            }
+            ImGui::EndPopup();
+        }
+
 
         if (ImGui::BeginPopup("Pin Context Menu")) {
             auto pin = FindPin(contextPinId);
@@ -1416,40 +1438,6 @@ struct CASE_tool:
                 ed::DeleteLink(contextLinkId);
             ImGui::EndPopup();
         }
-
-        for (auto &node: m_Nodes) {
-            if (node.Do_Popup && node.Type == NodeType::SimpleCond) {
-                ImGui::OpenPopup("Conditions"); // Cause Conditions to stick open.
-                node.Do_Popup = false; // disable bool so that if we click off the popup, it doesn't open the next frame.
-
-                // This is the actual popup Gui drawing section.
-                // TODO
-                if (ImGui::BeginPopup("Conditions")) {
-                    // Note: if it weren't for the child window, we would have to PushItemWidth() here to avoid a crash!
-                    ImGui::TextDisabled("Condition");
-                    ImGui::BeginChild("popup_scroller", ImVec2(120, 100), true, ImGuiWindowFlags_AlwaysVerticalScrollbar);
-                    if (ImGui::Button("Condition 1")) {
-                        portable_strcpy(node.Popup_text, "Condition 1");
-                        ImGui::CloseCurrentPopup();  // These calls revoke the popup open state, which was set by OpenPopup above.
-                    }
-                    if (ImGui::Button("Condition 2")) {
-                        portable_strcpy(node.Popup_text, "Condition 2");
-                        ImGui::CloseCurrentPopup();
-                    }
-                    if (ImGui::Button("Condition 3")) {
-                        portable_strcpy(node.Popup_text, "Condition 3");
-                        ImGui::CloseCurrentPopup();
-                    }
-                    if (ImGui::Button("Condition 4")) {
-                        portable_strcpy(node.Popup_text, "Condition 4");
-                        ImGui::CloseCurrentPopup();
-                    }
-                    ImGui::EndChild();
-                    ImGui::EndPopup(); // Note this does not do anything to the popup open/close state. It just terminates the content declaration.
-                }
-            }
-        }
-
 
         if (ImGui::BeginPopup("Create New Node")) {
             auto newNodePostion = openPopupPosition;
@@ -1679,6 +1667,7 @@ struct CASE_tool:
     std::map<ed::NodeId, float, NodeIdLess> m_NodeTouchTime;
     ed::NodeId           m_ContextNodeId = 0; // << id of context node
     ed::NodeId           m_Inside = 0; // << id of the node we are currently on
+    Button*              m_ActiveButton = nullptr; // << pointer to active button in condition node
 };
 
 int Main(int argc, char** argv)
