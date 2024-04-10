@@ -338,7 +338,7 @@ struct CASE_tool:
      */
     Node* SpawnAgentNodeTree()
     {
-        m_Nodes.emplace_back(GetNextId(), "Agent", NodeType::ExtAgent, 0);
+        m_Nodes.emplace_back(GetNextId(), "Agent Relationships", NodeType::ExtAgent, 0);
         m_Nodes.back().Inputs.emplace_back(GetNextId(), "", PinType::Relationship, NewTextBuffer(BufferType::Empty));
         m_Nodes.back().Outputs.emplace_back(GetNextId(), "", PinType::Relationship, NewTextBuffer(BufferType::Empty));
         BuildNode(&m_Nodes.back());
@@ -354,7 +354,7 @@ struct CASE_tool:
      */
     Node* SpawnAgentNodeResponsibilities(ed::NodeId outsideId)
     {
-        m_Nodes.emplace_back(GetNextId(), "Agent", NodeType::RespAgent, outsideId);
+        m_Nodes.emplace_back(GetNextId(), "Agent Responsibilities", NodeType::RespAgent, outsideId);
         m_Nodes.back().Inputs.emplace_back(GetNextId(), "Reasoning", PinType::Reasoning, NewTextBuffer(BufferType::Empty));
         m_Nodes.back().Outputs.emplace_back(GetNextId(), "Services", PinType::Service, NewTextBuffer(BufferType::Empty));
         BuildNode(&m_Nodes.back());
@@ -369,7 +369,7 @@ struct CASE_tool:
      */
     Node* SpawnAgentNodeAttributes(ed::NodeId outsideId)
     {
-        m_Nodes.emplace_back(GetNextId(), "Agent", NodeType::IntAgent, outsideId);
+        m_Nodes.emplace_back(GetNextId(), "Agent Features", NodeType::IntAgent, outsideId);
         m_Nodes.back().Inputs.emplace_back(GetNextId(), "Attributes", PinType::Attribute, NewTextBuffer(BufferType::Empty));
         BuildNode(&m_Nodes.back());
         AddInsideNodeId(outsideId, m_Nodes.back().ID);
@@ -839,6 +839,12 @@ struct CASE_tool:
         ImGui::EndChild();
     }
 
+    /**
+     * @brief Shows nodes in the left pane of the interface.
+     *
+     * This method iterates through the nodes stored in m_Nodes and displays those
+     * of type NodeType::ExtAgent in the left pane using DepthSearching().
+     */
     void ShowLeftPaneNodes() {
         for (auto& node : m_Nodes)
         {
@@ -849,6 +855,15 @@ struct CASE_tool:
         }
     }
 
+    /**
+     * @brief Recursively performs depth-first search starting from the given node.
+     *
+     * This method processes the given node and then recursively searches through its
+     * child nodes, adjusting their position with each level of depth.
+     *
+     * @param node The starting node for the depth-first search.
+     * @param shift The amount of shift to apply to the node's position.
+     */
     void DepthSearching(Node& node, ImVec2 shift) {
         DoWithNode(node, shift);
         if (node.InsideIds.size() < 0)
@@ -860,6 +875,11 @@ struct CASE_tool:
         }
     }
 
+    /**
+     * Display node text and provide control over its selection.
+     * @param node      input node
+     * @param shift     shift of node from left side of the panel
+     */
     void DoWithNode(Node& node, const ImVec2& shift) {
         ImGui::PushID(node.ID.AsPointer());
         auto start = ImGui::GetCursorScreenPos();
