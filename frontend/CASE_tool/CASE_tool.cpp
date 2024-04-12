@@ -19,9 +19,9 @@
 /**
  * From imgui-node-editor-master.
  */
-static inline ImRect ImGui_GetItemRect()
+static inline auto ImGui_GetItemRect() -> ImRect
 {
-    return ImRect(ImGui::GetItemRectMin(), ImGui::GetItemRectMax());
+    return { ImGui::GetItemRectMin(), ImGui::GetItemRectMax() };
 }
 
 /**
@@ -103,7 +103,7 @@ struct TextBuffer {
      * Constuctor for initialization buffer.
      * @param type Type of pin that is converted to string.
      */
-    TextBuffer(BufferType type) : Type(type) {
+    explicit TextBuffer(BufferType type) : Type(type), Buffer{} {
         // Set the initialization text of Buffer based on the pin type
         switch (type) {
             case BufferType::Name:
@@ -126,8 +126,11 @@ struct TextBuffer {
 
 struct Button
 {
-    char* Label;
-    Button(char* label): Label(label) {}
+    const char* Label;
+    explicit Button(const char* label): Label(label) {}
+    ~Button() {
+        delete[] Label;
+    }
 };
 
 /**
@@ -148,7 +151,8 @@ struct Pin
     Button*     PinButton; //< Button for user choice from options
 
     Pin(int id, const char* name, PinType type, TextBuffer* buffer, bool active = true):
-            ID(id), Node(nullptr), Name(name), Type(type), Kind(PinKind::Input), PinBuffer(buffer), IsActive(active)
+            ID(id), Node(nullptr), Name(name), Type(type), Kind(PinKind::Input), PinBuffer(buffer), IsActive(active),
+            PinButton{}
     {
     }
 };
@@ -241,20 +245,8 @@ struct CASE_tool:
         return m_NextId++;
     }
 
-    ed::LinkId GetNextLinkId() {
-        return ed::LinkId(GetNextId());
-    }
-
     void TouchNode(ed::NodeId id) {
         m_NodeTouchTime[id] = m_TouchTime;
-    }
-
-    float GetTouchProgress(ed::NodeId id) {
-        auto it = m_NodeTouchTime.find(id);
-        if (it != m_NodeTouchTime.end() && it->second > 0.0f)
-            return (m_TouchTime - it->second) / m_TouchTime;
-        else
-            return 0.0f;
     }
 
     void UpdateTouch() {
@@ -302,21 +294,19 @@ struct CASE_tool:
         if (!id)
             return false;
 
-        for (auto &link: m_Links)
-            if (link.StartPinID == id || link.EndPinID == id)
-                return true;
-
-        return false;
+        return std::any_of(m_Links.begin(), m_Links.end(), [id](const auto& link) {
+            return link.StartPinID == id || link.EndPinID == id;
+        });
     }
 
-    bool CanCreateLink(Pin *a, Pin *b) {
+    static bool CanCreateLink(Pin *a, Pin *b) {
         if (!a || !b || a == b || !a->IsActive || !b->IsActive || a->Kind == b->Kind || a->Type != b->Type || a->Node == b->Node)
             return false;
 
         return true;
     }
 
-    void BuildNode(Node *node) {
+    static void BuildNode(Node *node) {
         for (auto &input: node->Inputs) {
             input.Node = node;
             input.Kind = PinKind::Input;
@@ -333,7 +323,7 @@ struct CASE_tool:
      * @param type type of buffer
      * @return     created buffer
      */
-    TextBuffer* NewTextBuffer(BufferType type) {
+    static TextBuffer* NewTextBuffer(BufferType type) {
         return new TextBuffer(type);
     }
 
@@ -342,7 +332,7 @@ struct CASE_tool:
      * @param button  button
      * @param label   new label
      */
-    void SetButtonLabel(Button* button, char* label) {
+    static void SetButtonLabel(Button* button, const char* label) {
         button->Label = label;
     }
 
@@ -460,7 +450,7 @@ struct CASE_tool:
      * @param type type of reasoning
      * @return     string form of reasoning type
      */
-    std::string GetReasiningTypeAsString(ReasoningType type) {
+    static std::string GetReasiningTypeAsString(ReasoningType type) {
         switch(type) {
             case(ReasoningType::Reactive): return "Reactive";
             case(ReasoningType::Intelligent): return "Intelligent";
@@ -473,7 +463,7 @@ struct CASE_tool:
      * @param type reasoning type
      * @return     type of node
      */
-    NodeType GetNodeTypeFromReasoningType(ReasoningType type) {
+    static NodeType GetNodeTypeFromReasoningType(ReasoningType type) {
         switch (type) {
             case (ReasoningType::Reactive): return NodeType::RespReasoningReactive;
             case (ReasoningType::Intelligent): return NodeType::RespReasoningIntelligent;
@@ -535,7 +525,7 @@ struct CASE_tool:
      * @param outsideId ID of outside node
      * @return          created node
      */
-    Node* SpawnServiceIdNode(ImVec2 position, ed::NodeId outsideId) {
+    void SpawnServiceIdNode(ImVec2 position, ed::NodeId outsideId) {
         // create service on responsibility level
         Node *node = SpawnServiceIdNodeResponsibilities(outsideId);
         ed::SetNodePosition(node->ID, position);
@@ -711,34 +701,39 @@ struct CASE_tool:
     /**
      * From imgui-node-editor-master.
      */
-    ImColor GetIconColor(PinType type)
+    static ImColor GetIconColor(PinType type)
     {
         switch (type)
         {
             default:
-            case PinType::Attribute:      return ImColor( 255,255,255); // white
-            case PinType::Function:    return ImColor(51, 150, 215); // mass blue
-            case PinType::Relationship:   return { 255, 255, 255}; // white
-            case PinType::Service:    return ImColor(51, 150, 215); // mass blue
-            case PinType::Reasoning:    return ImColor(255,255,255); // white
+            case PinType::Attribute:      return {255, 255, 255}; // white
+            case PinType::Function:    return {51, 150, 215}; // mass blue
+            case PinType::Relationship:   return {255, 255, 255}; // white
+            case PinType::Service:    return {51, 150, 215}; // mass blue
+            case PinType::Reasoning:    return {255, 255, 255}; // white
         }
     };
 
     /**
      * From imgui-node-editor-master.
      */
-    void DrawPinIcon(const Pin& pin, bool connected, int alpha)
+    void DrawPinIcon(const Pin& pin, bool connected, int alpha) const
     {
         IconType iconType;
-        ImColor  color = GetIconColor(pin.Type);
-        color.Value.w = alpha / 255.0f;
+        ImColor color = GetIconColor(pin.Type);
+        color.Value.w = static_cast<float>(alpha) / 255.0f;
+
         switch (pin.Type)
         {
-            case PinType::Relationship:  iconType = IconType::Flow;   break;
-            case PinType::Attribute:     iconType = IconType::Circle; break;
-            case PinType::Function:      iconType = IconType::Circle; break;
-            case PinType::Service:       iconType = IconType::Circle; break;
-            case PinType::Reasoning:       iconType = IconType::Circle; break;
+            case PinType::Relationship:
+                iconType = IconType::Flow;
+                break;
+            case PinType::Attribute:
+            case PinType::Function:
+            case PinType::Service:
+            case PinType::Reasoning:
+                iconType = IconType::Circle;
+                break;
             default:
                 return;
         }
@@ -749,7 +744,7 @@ struct CASE_tool:
     /**
      * From imgui-node-editor-master.
      */
-    void ShowStyleEditor(bool* show = nullptr)
+    static void ShowStyleEditor(bool* show = nullptr)
     {
         if (!ImGui::Begin("Style", show))
         {
@@ -883,9 +878,9 @@ struct CASE_tool:
      */
     void DepthSearching(Node& node, ImVec2 shift) {
         DoWithNode(node, shift);
-        if (node.InsideIds.size() < 0)
+        if (node.InsideIds.empty())
             return;
-        shift = ImVec2(shift.x + 15,0);
+        shift.x += 15;
         for (auto& id : node.InsideIds) {
             Node* insideNode = FindNode(id);
             DepthSearching(*insideNode, shift);
@@ -1265,7 +1260,7 @@ struct CASE_tool:
                             } else {
                                 showLabel("+ Create Link", ImColor(32, 45, 32, 180));
                                 if (ed::AcceptNewItem(ImColor(128, 255, 128), 4.0f)) {
-                                    m_Links.emplace_back(Link(GetNextId(), startPinId, endPinId));
+                                    m_Links.emplace_back(GetNextId(), startPinId, endPinId);
                                     m_Links.back().Color = GetIconColor(startPin->Type);
                                     // add link to its associated pins
                                     AddLinkToPin(startPinId, m_Links.back().ID);
@@ -1442,7 +1437,7 @@ struct CASE_tool:
                 if (ImGui::MenuItem("Agent"))
                     SpawnAgent(newNodePostion);
             } else {
-                Node *node = FindNode(m_Inside);
+                node = FindNode(m_Inside);
                 // level of agent's responsibilities
                 if (node->Type == NodeType::ExtAgent) {
                     if (ImGui::MenuItem("Service")) {
@@ -1502,7 +1497,7 @@ struct CASE_tool:
                             if (startPin->Kind == PinKind::Input)
                                 std::swap(startPin, endPin);
 
-                            m_Links.emplace_back(Link(GetNextId(), startPin->ID, endPin->ID));
+                            m_Links.emplace_back(GetNextId(), startPin->ID, endPin->ID);
                             m_Links.back().Color = GetIconColor(startPin->Type);
                             AddLinkToPin(startPin->ID, m_Links.back().ID);
                             AddLinkToPin(endPin->ID, m_Links.back().ID);
@@ -1512,11 +1507,11 @@ struct CASE_tool:
                 }
             }
             ImGui::EndPopup();
-            }
-            else
-                createNewNode = false;
-            ImGui::PopStyleVar();
-            ed::Resume();
+        }
+        else
+            createNewNode = false;
+        ImGui::PopStyleVar();
+        ed::Resume();
     # endif
 
         ed::End();
@@ -1561,7 +1556,7 @@ struct CASE_tool:
             }
         }
         // if node is associated by other node, delete them as first
-        if (node->InsideIds.size() != 0) {
+        if (!node->InsideIds.empty()) {
             //delete all inside nodes
             for (auto &id: node->InsideIds)
                 DeleteNode(id);
@@ -1623,7 +1618,7 @@ struct CASE_tool:
      * @param otherPin pin id from that we delete link id
      * @param linkId    deleted link id
      */
-    void DeleteLinkId(Pin* otherPin, ed::LinkId linkId) {
+    static void DeleteLinkId(Pin* otherPin, ed::LinkId linkId) {
         auto otherId = std::find_if(otherPin->LinkIds.begin(), otherPin->LinkIds.end(),
                                     [linkId](auto &otherLinkId) { return otherLinkId == linkId; });
         otherPin->LinkIds.erase(otherId);
