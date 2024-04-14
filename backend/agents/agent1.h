@@ -10,6 +10,6 @@ private:
     void writeHello(int sender);
     void allDone(int sender);
 public:
-    Agent1(Agent* pParent): Agent(pParent) {};
+    Agent1(AgentId_t pId, Agent* pParent): Agent(pId, pParent) {};
     void registerFunctions() override;
 };

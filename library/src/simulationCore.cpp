@@ -3,7 +3,7 @@
 
 //ID = 1
 //parent = nullptr
-SimulationCore::SimulationCore(SimTime_t pStartTime, SimTime_t pEndTime) : Agent(nullptr) {
+SimulationCore::SimulationCore(SimTime_t pStartTime, SimTime_t pEndTime) : Agent(SIMULATION_CORE_ID, nullptr) {
     currTime = pStartTime;
     endTime = pEndTime;
     registerAgent(this);

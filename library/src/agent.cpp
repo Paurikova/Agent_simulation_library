@@ -1,7 +1,5 @@
 #include "../include/agent.h"
 
-AgentId_t Agent::nextAgentId = 1;
-
 void Agent::process(ServiceId_t pServiceId, AgentId_t pSender) {
     if (agentType == AgentType::REACTIVE) {
         // Find function connected with the entered service ID
@@ -52,8 +50,8 @@ void Agent::unregisterFunction(int pServiceId) {
     }
 }
 
-Agent::Agent(Agent* pParent) {
-    id = nextAgentId++;
+Agent::Agent(AgentId_t pId, Agent* pParent) {
+    id = pId;
     parent = pParent;
     currTime  = -1;
     outBox = std::make_unique<std::vector<Message*>>();
@@ -184,11 +182,12 @@ bool Agent::childExists(AgentId_t pChildId) {
     return childs.find(pChildId) != childs.end();
 }
 
-void Agent::initialization() {
+void Agent::initialization(PetriNet* pPetriNet) {
     // Call all necessary functions for agent initialization
     registerFunctions();
+    registerPetriNet(pPetriNet);
 }
 
-void Agent::registerPetriNet(PetriNet* registeredPetriNet) {
-    petriNet = registeredPetriNet;
+void Agent::registerPetriNet(PetriNet* pPetriNet) {
+    petriNet = pPetriNet;
 }

@@ -17,7 +17,6 @@
  */
 class Agent {
 private:
-    static AgentId_t nextAgentId;
     AgentId_t id; /**< The unique identifier of the agent. */
     Agent* parent; /**< The pointer to agent's parent. */
     std::unordered_map<AgentId_t, Agent*> childs; /**< The map of pointers to agent's childs. */
@@ -76,7 +75,7 @@ public:
      *
      * @param pParent The pointer to agent parent.
      */
-    explicit Agent(Agent* pParent);
+    explicit Agent(AgentId_t pId, Agent* pParent);
     
     /**
      * @brief Set agent type.
@@ -182,13 +181,13 @@ public:
      *
      * Method registers all agent functions, etc.
      */
-    void initialization();
+    void initialization(PetriNet* pPetriNet = nullptr);
 
     /**
      * @brief Function for registration of Petri Net.
      * @param registeredPetriNet    petri net
      */
-    void registerPetriNet(PetriNet* registeredPetriNet);
+    void registerPetriNet(PetriNet* pPetriNet);
     
     /**
     * @brief Registers functions for handling events.

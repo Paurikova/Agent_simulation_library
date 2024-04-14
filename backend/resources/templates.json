@@ -1,0 +1,8 @@
+{
+  "AgentH" : "#pragma once\n#include \"../../library/include/agent.h\"\n#include <functional>\n\nclass Agent{}: public Agent {\nprivate:\npublic:\n    Agent{}(AgentId_t pId, Agent* pParent): Agent(pId, pParent) {{}};\n    void registerFunctions() override;\n};",
+  "AgentCpp" : "#include \"agent{}.h\"\n\nvoid Agent{}::registerFunctions() {{\n}}",
+  "Attribute" : "{} {};",
+  "FunctionDef" : "void {}(int pSender);",
+  "FunctionImpl" : "void Agent{}::{}(int pSender) {{\n    //add your code\n    }}",
+  "FunctionReg" : "registerFunction({}, [this](int pSender) {{\n        {}(pSender);\n    }});"
+}

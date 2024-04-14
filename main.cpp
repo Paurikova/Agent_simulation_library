@@ -2,13 +2,27 @@
 #include "backend/agents/agent1.h"
 #include "backend/agents/agent2.h"
 
+#include <iostream>
+#include <fstream>
+#include <nlohmann/json.hpp>
+#include <fstream>
+
+#include <iostream>
+#include <string>
+#include <vector>
+#include <nlohmann/json.hpp>
+
+using json = nlohmann::json;
+
+using namespace nlohmann;
+
 int main(int argc, char** argv) {
     SimulationCore* manager = new SimulationCore(0,10);
     //ID 2
-    Agent1* agent1 = new Agent1(manager);
+    Agent1* agent1 = new Agent1(2, manager);
     //register agent
     manager->registerAgent(agent1);
-    Agent2* agent2 = new Agent2(manager);
+    Agent2* agent2 = new Agent2(3, manager);
     manager->registerAgent(agent2);
 
     //add Message to agent1 schedule
@@ -26,4 +40,5 @@ int main(int argc, char** argv) {
     manager->pushToMainSchedule(&m6);
     //run sim
     manager->runSimulation();
+    return 0;
 }
