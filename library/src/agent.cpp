@@ -1,34 +1,43 @@
-#include <memory>
 #include "../include/agent.h"
 
 AgentId_t Agent::nextAgentId = 1;
 
 void Agent::process(ServiceId_t pServiceId, AgentId_t pSender) {
-    // Find function connected with the entered service ID
-    auto it = functionMap.find(pServiceId);
-    if (it != functionMap.end()) {
-        // Retrieve the function pointer and call it
-        it->second(pSender);
+    if (agentType == AgentType::REACTIVE) {
+        // Find function connected with the entered service ID
+        auto it = functionMap.find(pServiceId);
+        if (it != functionMap.end()) {
+            // Retrieve the function pointer and call it
+            it->second(pSender);
+        } else {
+            // Throw an exception if the function does not exist
+            throw std::runtime_error(
+                    "Function with service ID " + std::to_string(pServiceId) + " does not exist in the map.");
+        }
+    } else if (agentType == AgentType::INTELLIGENT) {
+        ExecFunct_t funct = petriNet->getExecFunct(pServiceId);
+        funct(pSender);
     } else {
-        // Throw an exception if the function does not exist
-        throw std::runtime_error("Function with service ID " + std::to_string(pServiceId) + " does not exist in the map.");
+        // Throw an exception that agent type is invalid.
+        throw std::runtime_error(
+                "Agent type is invalid.");
     }
 }
 
-SimTime_t Agent::getCurrTime() {
+SimTime_t Agent::getCurrTime() const {
     return currTime;
 }
 
 void Agent::sendMessage(ServiceId_t pServiceId, SimTime_t pTime, AgentId_t pReceiver, int pPriority) {
     // Create a new message
-    Message* newMessage = new Message{pTime, pPriority, pServiceId, getId(), pReceiver};
+    auto newMessage = new Message{pTime, pPriority, pServiceId, getId(), pReceiver};
     // Add the new message to the message box
     outBox->push_back(newMessage);
 }
 
 void Agent::registerFunction(ServiceId_t pServiceId, ExecFunct_t pFunc) {
     // Add the function pointer to the function map
-    functionMap[pServiceId] = pFunc;
+    functionMap[pServiceId] = std::move(pFunc);
 }
 
 void Agent::unregisterFunction(int pServiceId) {
@@ -51,9 +60,15 @@ Agent::Agent(Agent* pParent) {
     schedule = std::make_unique<Schedule>();
     // Register agent as child of his parent.
     registerAsChild(pParent);
+    agentType = AgentType::REACTIVE;
+    petriNet = nullptr;
 }
 
-AgentId_t Agent::getId() {
+void Agent::setAgentType(AgentType newAgentType) {
+    agentType = newAgentType;
+}
+
+AgentId_t Agent::getId() const {
     return id;
 }
 
@@ -72,7 +87,10 @@ void Agent::execute() {
 }
 
 bool Agent::providedService(ServiceId_t pServiceId) {
-    return functionMap.find(pServiceId) != functionMap.end();
+    if (agentType == AgentType::REACTIVE)
+        return functionMap.find(pServiceId) != functionMap.end();
+    else if (agentType == AgentType::INTELLIGENT)
+        return petriNet->providedService(pServiceId);
 }
 
 Message* Agent::getTopOutboxMessage() {
@@ -169,4 +187,8 @@ bool Agent::childExists(AgentId_t pChildId) {
 void Agent::initialization() {
     // Call all necessary functions for agent initialization
     registerFunctions();
+}
+
+void Agent::registerPetriNet(PetriNet* registeredPetriNet) {
+    petriNet = registeredPetriNet;
 }

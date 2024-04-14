@@ -8,6 +8,7 @@
 
 #include "types.h"
 #include "schedule.h"
+#include "petriNet.h"
 
 /**
  * @brief Represents an agent in the simulation.
@@ -23,7 +24,9 @@ private:
     SimTime_t currTime; /**< The current time in the simulation. */
     std::unique_ptr<std::vector<Message*>> outBox ; /**< Outgoing message queue. */
     std::unordered_map<ServiceId_t, ExecFunct_t> functionMap; /**< Maps functions to service IDs. */
+    PetriNet* petriNet; /**< Petri net for intelligent agent. */
     std::unique_ptr<Schedule> schedule ; /**< Schedule for managing agent's tasks. */
+    AgentType agentType; /**< Type of agent. */
 
 private:
     /**
@@ -40,7 +43,7 @@ protected:
      *
      * @return The current time.
      */
-    SimTime_t getCurrTime();
+    SimTime_t getCurrTime() const;
 
     /**
      * @brief Sends a message to another agent.
@@ -73,14 +76,20 @@ public:
      *
      * @param pParent The pointer to agent parent.
      */
-    Agent(Agent* pParent);
+    explicit Agent(Agent* pParent);
+    
+    /**
+     * @brief Set agent type.
+     * @param newAgentType new agent type
+     */
+    void setAgentType(AgentType newAgentType);
 
     /**
      * @brief Gets the ID of the agent.
      *
      * @return The ID of the agent.
      */
-    AgentId_t getId();
+    AgentId_t getId() const;
 
     /**
      * @brief Receives a message and push it into agent's schedule.
@@ -175,6 +184,12 @@ public:
      */
     void initialization();
 
+    /**
+     * @brief Function for registration of Petri Net.
+     * @param registeredPetriNet    petri net
+     */
+    void registerPetriNet(PetriNet* registeredPetriNet);
+    
     /**
     * @brief Registers functions for handling events.
     *

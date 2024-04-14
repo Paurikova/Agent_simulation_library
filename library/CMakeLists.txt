@@ -10,6 +10,7 @@ set(LIBRARY_SOURCES
         src/agent.cpp
         src/message.cpp
         src/schedule.cpp
+        src/petriNet.cpp
 )
 
 # Create the library

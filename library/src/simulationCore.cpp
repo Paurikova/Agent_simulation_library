@@ -123,7 +123,9 @@ void SimulationCore::addReceiver(Message* pMessage) {
         // Search for an agent ID providing the required service
         receiverId = sender->getAgentIdProvidedService(pMessage->serviceId, sender->getId());
         sender = sender->getParent();
-    } while (receiverId == -1 or sender != nullptr);
+        if (sender == nullptr)
+            break;
+    } while (receiverId == -1);
 
     if (receiverId == -1) {
         // If no agent provides the service, throw an error
