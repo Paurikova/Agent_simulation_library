@@ -1,20 +1,7 @@
 #include "library/include/simulationCore.h"
-#include "backend/agents/agent1.h"
-#include "backend/agents/agent2.h"
-
-#include <iostream>
-#include <fstream>
-#include <nlohmann/json.hpp>
-#include <fstream>
-
-#include <iostream>
-#include <string>
+#include "library_test/agents/include/agent1.h"
+#include "library_test/agents/include/agent2.h"
 #include <vector>
-#include <nlohmann/json.hpp>
-
-using json = nlohmann::json;
-
-using namespace nlohmann;
 
 int main(int argc, char** argv) {
     SimulationCore* manager = new SimulationCore(0,10);
