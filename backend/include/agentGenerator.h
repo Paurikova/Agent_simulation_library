@@ -10,7 +10,7 @@
 #include <fmt/format.h>
 
 #include "agentTemplate.h"
-#include "../library/include/types.h"
+#include "../../library/include/types.h"
 
 class AgentGenerator {
 private:

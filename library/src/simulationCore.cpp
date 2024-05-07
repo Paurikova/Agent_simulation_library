@@ -3,7 +3,7 @@
 
 //ID = 1
 //parent = nullptr
-SimulationCore::SimulationCore(SimTime_t pStartTime, SimTime_t pEndTime) : Agent(SIMULATION_CORE_ID, nullptr) {
+SimulationCore::SimulationCore(AgentReasoning* pAgentReasoning, SimTime_t pStartTime, SimTime_t pEndTime) : Agent(SIMULATION_CORE_ID, nullptr, pAgentReasoning) {
     currTime = pStartTime;
     endTime = pEndTime;
     registerAgent(this);
@@ -84,13 +84,6 @@ void SimulationCore::pushToMainSchedule(Message* pMessage) {
     mainSchedule->pushMessage(pMessage);
 }
 
-void SimulationCore::registerFunctions() {
-    // Register a lambda function to handle function
-    registerFunction(1, [this](int sender) {
-        allDone(sender);
-    });
-}
-
 void SimulationCore::initSimulation() {
     // empty
 }
@@ -133,10 +126,4 @@ void SimulationCore::addReceiver(Message* pMessage) {
     }
     // Assign the receiver ID to the message
     pMessage->receiver = receiverId;
-}
-
-//functions
-void SimulationCore::allDone(int sender) {
-    sendMessage(2,currTime+1,2, 3);
-    sendMessage(2,currTime, 3,3);
 }

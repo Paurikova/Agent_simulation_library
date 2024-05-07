@@ -10,7 +10,10 @@ set(LIBRARY_SOURCES
         src/agent.cpp
         src/message.cpp
         src/schedule.cpp
-        src/petriNet.cpp
+        src/petriNetReasoning.cpp
+        src/reactiveReasoning.cpp
+        include/types.h
+        src/agentReasoning.cpp
 )
 
 # Create the library

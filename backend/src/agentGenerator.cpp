@@ -1,4 +1,4 @@
-#include "agentGenerator.h"
+#include "../include/agentGenerator.h"
 
 AgentId_t AgentGenerator::nextAgentId = AGENT_ID_START;
 

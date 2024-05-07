@@ -1,4 +1,4 @@
-#include "agentTemplate.h"
+#include "../include/agentTemplate.h"
 
 AgentTemplate::AgentTemplate() {
     attributes = std::make_unique<std::vector<std::pair<std::string, std::string>>>();

@@ -21,6 +21,7 @@ private:
     Agent* parent; /**< The pointer to agent's parent. */
     std::unordered_map<AgentId_t, Agent*> childs; /**< The map of pointers to agent's childs. */
     SimTime_t currTime; /**< The current time in the simulation. */
+    std::unique_ptr<std::vector<Message*>> outBox ; /**< Outgoing message queue. */
     std::unique_ptr<Schedule> schedule ; /**< Schedule for managing agent's tasks. */
     AgentReasoning* agentReasoning;
 private:
@@ -29,17 +30,32 @@ private:
      *
      * @param pServiceId The ID of the service.
      * @param pSender The ID of the sender.
-     * @param pExecTime The time of execution.
      */
-    void process(ServiceId_t pServiceId, AgentId_t pSender, SimTime_t pExecTime);
+    void process(ServiceId_t pServiceId, AgentId_t pSender);
+
+protected:
+    /**
+     * @brief Gets the current time in the simulation.
+     *
+     * @return The current time.
+     */
+    SimTime_t getCurrTime() const;
+
+    /**
+     * @brief Sends a message to another agent.
+     *
+     * @param pServiceId The ID of the service.
+     * @param pReceiver The ID of the receiver agent.
+     * @param pTime The time at which the message is sent.
+     * @param pPriority The priority of the message (optional, default is -1).
+     */
+    void sendMessage(ServiceId_t pServiceId, SimTime_t pTime, AgentId_t pReceiver = -1, int pPriority = -1);
 
 public:
     /**
      * @brief Constructs an Agent object.
      *
-     * @param pId The ID of agent.
      * @param pParent The pointer to agent parent.
-     * @param pAgentReasoning The reasoning of agent.
      */
     explicit Agent(AgentId_t pId, Agent* pParent, AgentReasoning* pAgentReasoning);
 
@@ -71,7 +87,7 @@ public:
     bool providedService(ServiceId_t pServiceId);
 
     /**
-     * @brief Returns a pointer to the top message in the outbox of agent reasoning.
+     * @brief Returns a pointer to the top message in the outbox.
      *
      * @return Pointer to the top message in the outbox.
      */
@@ -120,7 +136,7 @@ public:
     /**
      * @brief Retrieves the ID of the agent providing the specified service.
      *
-     * The service has to be provided by agent's child.
+     * The service can provides current agent or some of his childs.
      *
      * @param pServiceId The ID of the service to check.
      * @param pSenderId The ID of the message sender.
@@ -139,7 +155,7 @@ public:
     /**
      * @brief Agent initialization.
      *
-     * Method provides initialization of agent reasoning.
+     * Method registers all agent functions, etc.
      */
     void initialization();
 };

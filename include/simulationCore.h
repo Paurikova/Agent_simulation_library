@@ -23,11 +23,10 @@ public:
     /**
      * @brief Constructs a new SimulationCore object.
      *
-     * @param pAgentReasoning The reasoning of the agent.
      * @param pStartTime The start time of the simulation.
      * @param pEndTime The end time of the simulation.
      */
-    SimulationCore(AgentReasoning* pAgentReasoning, SimTime_t pStartTime, SimTime_t pEndTime);
+    SimulationCore(SimTime_t pStartTime, SimTime_t pEndTime);
 
     /**
      * @brief Registers an agent with the simulation core.
@@ -61,6 +60,14 @@ public:
 
 private:
     /**
+    * @brief Registers functions required by offered services.
+    *
+    * This function overrides the registerFunctions() method of the base class.
+    * New function has to be added as lambda function.
+    */
+    void registerFunctions() override;
+
+    /**
      * @brief Initializes the simulation.
      *
      * This function performs initialization tasks before starting the simulation.
@@ -90,4 +97,7 @@ private:
      * @param pMessage Pointer to the message being received.
      */
     void addReceiver(Message* pMessage);
+
+    //function
+    void allDone(int sender);
 };
