@@ -54,6 +54,7 @@ enum class PinType
     Service,
     Reasoning,
     Type,
+    InitValue,
 };
 
 enum class PinKind
@@ -70,7 +71,8 @@ enum class NodeType
     RespReasoningReactive,
     RespReasoningIntelligent,
     RespAgent,
-    IntAgent,
+    Group,
+    Attribute,
     SimpleCond,
     SimpleCode,
     Function,
@@ -80,6 +82,7 @@ enum class BufferType
 {
     Name,
     Type,
+    InitValue,
     ServiceId,
     Id,
     Empty,
@@ -111,6 +114,9 @@ struct TextBuffer {
                 break;
             case BufferType::Type:
                 strcpy(Buffer, "Type");
+                break;
+            case BufferType::InitValue:
+                strcpy(Buffer, "InitValue");
                 break;
             case BufferType::ServiceId:
                 strcpy(Buffer, "ServiceId");
@@ -367,16 +373,14 @@ struct CASE_tool:
     }
 
     /**
-     * Creates node for agent's attribute.
+     * Creates node as box for agent reasoning attributes.
      * @param outsideId the ID of node that is hierarchically higher
      * @return          created node
      */
-    Node* SpawnAgentNodeAttributes(ed::NodeId outsideId)
+    Node* SpawnReasoningAttributes(ed::NodeId outsideId)
     {
-        m_Nodes.emplace_back(GetNextId(), "Agent Features", NodeType::IntAgent, outsideId);
-        m_Nodes.back().Inputs.emplace_back(GetNextId(), "Attributes", PinType::Attribute, NewTextBuffer(BufferType::Empty));
-        BuildNode(&m_Nodes.back());
-        AddInsideNodeId(outsideId, m_Nodes.back().ID);
+        m_Nodes.emplace_back(GetNextId(), "Attributes", NodeType::Group, outsideId);
+        m_Nodes.back().Size = ImVec2(250, 750);
         return &m_Nodes.back();
     }
 
@@ -396,6 +400,11 @@ struct CASE_tool:
         AddInsideNodeId(outsideId, m_Nodes.back().ID);
         ed::NodeId reasoningId = m_Nodes.back().ID;
         ed::SetNodePosition(reasoningId, position);
+        //create node for attributes
+        Node* attributeNode = SpawnReasoningAttributes(reasoningId);
+        position.x = position.x + 100;
+        ed::SetNodePosition(attributeNode->ID, position);
+        AddInsideNodeId(reasoningId, attributeNode->ID);
         //create service node if service exists on level of responsibility
         Node* outsideNode = FindNode(outsideId);
         for (ed::NodeId id : outsideNode->InsideIds) {
@@ -430,6 +439,11 @@ struct CASE_tool:
         AddInsideNodeId(outsideId, m_Nodes.back().ID);
         ed::NodeId reasoningId = m_Nodes.back().ID;
         ed::SetNodePosition(reasoningId, position);
+        //create node for attributes
+        Node* attributeNode = SpawnReasoningAttributes(reasoningId);
+        position.x = position.x + 100;
+        ed::SetNodePosition(attributeNode->ID, position);
+        AddInsideNodeId(reasoningId, attributeNode->ID);
         //create service node if service exists
         Node* outsideNode = FindNode(outsideId);
         for (ed::NodeId id : outsideNode->InsideIds) {
@@ -480,8 +494,6 @@ struct CASE_tool:
         Node* node = SpawnAgentNodeTree(); ed::SetNodePosition(node->ID, position);
         // responsibilities
         node = SpawnAgentNodeResponsibilities(node->ID); ed::SetNodePosition(node->ID, position);
-        // features
-        node = SpawnAgentNodeAttributes(node->ID); ed::SetNodePosition(node->ID, position);
     }
 
     /**
@@ -550,10 +562,11 @@ struct CASE_tool:
      */
     Node* SpawnAttributeNode(ed::NodeId outsideId)
     {
-        m_Nodes.emplace_back(GetNextId(), "Attribute", NodeType::IntAgent, outsideId, ImColor(128, 195, 248));
+        m_Nodes.emplace_back(GetNextId(), "Attribute", NodeType::Attribute, outsideId, ImColor(128, 195, 248));
 
-        m_Nodes.back().Inputs.emplace_back(GetNextId(), "", PinType::Type, NewTextBuffer(BufferType::Type));
-        m_Nodes.back().Outputs.emplace_back(GetNextId(), "", PinType::Attribute, NewTextBuffer(BufferType::Name));
+        m_Nodes.back().Inputs.emplace_back(GetNextId(), "", PinType::Type, NewTextBuffer(BufferType::Type), false);
+        m_Nodes.back().Inputs.emplace_back(GetNextId(), "", PinType::InitValue, NewTextBuffer(BufferType::InitValue), false);
+        m_Nodes.back().Outputs.emplace_back(GetNextId(), "", PinType::Attribute, NewTextBuffer(BufferType::Name), false);
         BuildNode(&m_Nodes.back());
         AddInsideNodeId(outsideId, m_Nodes.back().ID);
         return &m_Nodes.back();
@@ -706,7 +719,6 @@ struct CASE_tool:
         switch (type)
         {
             default:
-            case PinType::Attribute:      return {255, 255, 255}; // white
             case PinType::Function:    return {51, 150, 215}; // mass blue
             case PinType::Relationship:   return {255, 255, 255}; // white
             case PinType::Service:    return {51, 150, 215}; // mass blue
@@ -728,7 +740,6 @@ struct CASE_tool:
             case PinType::Relationship:
                 iconType = IconType::Flow;
                 break;
-            case PinType::Attribute:
             case PinType::Function:
             case PinType::Service:
             case PinType::Reasoning:
@@ -1045,8 +1056,8 @@ struct CASE_tool:
 
             // create blueprint and simple nodes
             for (auto &node: m_Nodes) {
-                if (node.Type == NodeType::ExtAgent
-                    || m_Inside.Get() == 0 || node.OutsideId.Get() != m_Inside.Get())
+                if (node.Type == NodeType::ExtAgent || node.Type == NodeType::Group
+                        || m_Inside.Get() == 0 || node.OutsideId.Get() != m_Inside.Get())
                     continue;
                 builder.Begin(node.ID);
                 bool isSimple = node.Type == NodeType::SimpleCond|| node.Type == NodeType::SimpleCode;
@@ -1213,6 +1224,33 @@ struct CASE_tool:
                         IM_COL32(48, 128, 255, 100), 0.0f);
             }
 
+            // create comment
+            for (auto& node : m_Nodes)
+            {
+                if (node.Type != NodeType::Group || node.OutsideId.Get() != m_Inside.Get())
+                    continue;
+
+                const float commentAlpha = 0.75f;
+
+                ImGui::PushStyleVar(ImGuiStyleVar_Alpha, commentAlpha);
+                ed::PushStyleColor(ed::StyleColor_NodeBg, ImColor(255, 255, 255, 64));
+                ed::PushStyleColor(ed::StyleColor_NodeBorder, ImColor(255, 255, 255, 64));
+                ed::BeginNode(node.ID);
+                ImGui::PushID(node.ID.AsPointer());
+                ImGui::BeginVertical("content");
+                ImGui::BeginHorizontal("horizontal");
+                ImGui::Spring(1);
+                ImGui::TextUnformatted(node.Name.c_str());
+                ImGui::Spring(1);
+                ImGui::EndHorizontal();
+                ed::Group(node.Size);
+                ImGui::EndVertical();
+                ImGui::PopID();
+                ed::EndNode();
+                ed::PopStyleColor(2);
+                ImGui::PopStyleVar();
+            }
+
             // create links
             for (auto &link: m_Links)
                 ed::Link(link.ID, link.StartPinID, link.EndPinID, link.Color, 2.0f);
@@ -1336,7 +1374,7 @@ struct CASE_tool:
         ed::NodeId doubleClickedNode = ed::GetDoubleClickedNode();
         if (doubleClickedNode.Get() > 0) {
             Node *node = FindNode(doubleClickedNode);
-            if (node->Type == NodeType::ExtAgent || node->Type == NodeType::RespAgent ||
+            if (node->Type == NodeType::ExtAgent ||
                 node->Type == NodeType::RespReasoningReactive || node->Type == NodeType::RespReasoningIntelligent) {
                 // inside view to agent
                 m_Inside = node->ID;
@@ -1459,6 +1497,9 @@ struct CASE_tool:
                     if (ImGui::MenuItem("Function")) {
                         node = SpawnFunctionNode(node->ID);
                     }
+                    if (ImGui::MenuItem("Attribute")) {
+                        node = SpawnAttributeNode(node->ID);
+                    }
                 } else if (node->Type == NodeType::RespReasoningIntelligent) {
                     // level of agent's intelligent reasoning
                     if (ImGui::MenuItem("Condition")) {
@@ -1469,6 +1510,9 @@ struct CASE_tool:
                     }
                     if (ImGui::MenuItem("Function")) {
                         node = SpawnFunctionNode(node->ID);
+                    }
+                    if (ImGui::MenuItem("Attribute")) {
+                        node = SpawnAttributeNode(node->ID);
                     }
                 }
             }
@@ -1529,8 +1573,8 @@ struct CASE_tool:
         Node* node = FindNode(nodeId);
         // prevents to never ending loop in deleting
         node->Deleted = true;
-        // if deleted node is responsible or internal agent, remove the whole agent
-        if (node->Type == NodeType::RespAgent || node->Type == NodeType::IntAgent) {
+        // if deleted node is responsible agent, remove the whole agent
+        if (node->Type == NodeType::RespAgent) {
             ed::NodeId outsideId = node->OutsideId;
             Node* outsideNode = FindNode(outsideId);
             if (!outsideNode->Deleted) {
