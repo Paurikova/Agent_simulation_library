@@ -87,6 +87,7 @@ CASE_tool::CASE_tool() : Application("CASE_tool"),
         m_PinIconSize(24),
         MANAGER_AGENT_ID(1),
         m_Nodes(),
+        m_Agents(),
         m_Links(),
         m_HeaderBackground(nullptr),
         m_SaveIcon(nullptr),
@@ -219,7 +220,8 @@ Node* CASE_tool::SpawnAgentNodeTree()
     m_Nodes.back().Inputs.emplace_back(GetNextId(), "", PinType::Relationship, NewTextBuffer(BufferType::Empty));
     m_Nodes.back().Outputs.emplace_back(GetNextId(), "", PinType::Relationship, NewTextBuffer(BufferType::Empty));
     BuildNode(&m_Nodes.back());
-
+    //add to list of all agents
+    m_Agents.push_back(m_Nodes.back().ID);
     return &m_Nodes.back();
 }
 
@@ -606,8 +608,8 @@ void CASE_tool::ShowLeftPane(float paneWidth)
     if (ImGui::Button("Zoom to Content"))
         ed::NavigateToContent();
     ImGui::Spring(0.0f);
-//        if (ImGui::Button("Generate Code"))
-//            GenerateCode();
+        if (ImGui::Button("Generate Code"))
+            GetData();
     ImGui::Spring();
     ImGui::EndHorizontal();
 
@@ -1354,9 +1356,15 @@ void CASE_tool::DeleteNode(ed::NodeId nodeId) {
             outsideNode->InsideIds.erase(id);
     }
     //delete node
-    //if node is ext agent, go up
-    if (node->Type == NodeType::ExtAgent)
+    //if node is ext agent, delete it from agent list and go up
+    if (node->Type == NodeType::ExtAgent) {
+        auto id = std::find_if(m_Agents.begin(), m_Agents.end(),
+                               [nodeId](auto &insideId) { return insideId == nodeId; });
+        if (id != m_Agents.end()) {
+            m_Agents.erase(id);
+        }
         m_Inside = 0;
+    }
     auto id = std::find_if(m_Nodes.begin(), m_Nodes.end(),
                            [nodeId](auto &node) { return node.ID == nodeId; });
     if (id != m_Nodes.end()) {
@@ -1399,6 +1407,89 @@ void CASE_tool::AddInsideNodeId(ed::NodeId outsideId, ed::NodeId insideId) {
 void CASE_tool::AddLinkToPin(ed::PinId pinId, ed::LinkId linkId) {
     Pin* pin = FindPin(pinId);
     pin->LinkIds.push_back(linkId);
+}
+
+void CASE_tool::GetData() {
+    // JSON object to hold the data
+    json data_json;
+
+    // Iterate through all external agents
+    for (ed::NodeId id : m_Agents) {
+        // Get the current agent node
+        Node *node = FindNode(id);
+        // Get the responsible agent node
+        Node *respAgent = FindNode(node->InsideIds.at(0));
+        // Set to hold associated services' IDs
+        std::unordered_set<unsigned long> associatedServicesId;
+
+        // Find associated services connected with the responsible agent
+        for (ed::NodeId respId: node->InsideIds) {
+            Node *respNode = FindNode(respId);
+            if (respNode->Type == NodeType::RespService) {
+                // Ensure the service is connected to the responsible agent
+                if (respNode->Inputs.at(0).LinkIds.empty() ||
+                    FindLink(respNode->Inputs.at(0).LinkIds.at(0))->StartPinID != respAgent->Outputs.at(0).ID)
+                    continue;
+                // Store associated service IDs
+                for (auto assocId : respNode->AssociatedIds) {
+                    associatedServicesId.insert(assocId.Get());
+                }
+            }
+        }
+
+        // Create JSON data from agent reasoning
+        json agent_json;
+        for (ed::NodeId respId: node->InsideIds) {
+            Node *respNode = FindNode(respId);
+            // Check if it's reactive reasoning
+            if (respNode->Type == NodeType::RespReasoningReactive) {
+                // Ensure node is connected to the responsible agent
+                if (respNode->Outputs.at(0).LinkIds.empty() ||
+                    FindLink(respNode->Outputs.at(0).LinkIds.at(0))->EndPinID != respAgent->Inputs.at(0).ID) {
+                    continue;
+                }
+                // JSON object to store reactive reasoning data
+                json reactive_json;
+                for (ed::NodeId interId : respNode->InsideIds) {
+                    Node* interNode = FindNode(interId);
+                    if (interNode->Type == NodeType::Attribute) {
+                        // If it's an attribute, add to the 'Attributes' array
+                        json attribute_json;
+                        attribute_json["type"] = interNode->Inputs.at(0).PinBuffer->Buffer;
+                        attribute_json["initValue"] = interNode->Inputs.at(1).PinBuffer->Buffer;
+                        attribute_json["name"] = interNode->Outputs.at(0).PinBuffer->Buffer;
+                        reactive_json["Attributes"].push_back(attribute_json);
+                    }
+                    if (interNode->Type == NodeType::ReasService) {
+                        // If it's a service connected to the responsible agent, add to the 'Functions' array
+                        auto it = associatedServicesId.find(interNode->ID.Get());
+                        if (interNode->Outputs.at(0).LinkIds.empty() || it == associatedServicesId.end())
+                            continue;
+                        json function_json;
+                        std::string serviceId = interNode->Outputs.at(0).PinBuffer->Buffer;
+                        function_json[serviceId] = FindPin(FindLink(interNode->Outputs.at(0).LinkIds.at(0))->EndPinID)->PinBuffer->Buffer;
+                        reactive_json["Functions"].push_back(function_json);
+                    }
+                }
+                // Add reactive reasoning data to the agent JSON object
+                agent_json["Reactive"] = reactive_json;
+            }
+        }
+
+        // Add agent data to the main JSON object
+        data_json[std::to_string(id.Get())] = agent_json;
+    }
+
+    // Save JSON to a file
+    //TODO: absolute path
+    std::ofstream file("/home/miska/CLionProjects/Agent_simulation_library/jsons/data.json");
+    if (!file.is_open()) {
+        // Throw an exception if file cannot be opened
+        throw std::runtime_error("Cannot write generated JSON into the file.");
+    }
+    file << std::setw(4) << data_json; // Pretty print JSON
+    // Close the file
+    file.close();
 }
 
 int Main(int argc, char** argv)

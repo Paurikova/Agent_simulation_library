@@ -6,6 +6,11 @@
 #include <algorithm>
 #include <utility>
 #include <stdexcept>
+#include <nlohmann/json.hpp>
+#include <fstream>
+#include <iostream>
+#include <iostream>
+#include <unordered_set>
 
 #include "application.h"
 #include "utilities/builders.h"
@@ -15,6 +20,7 @@
 
 namespace ed = ax::NodeEditor;
 namespace util = ax::NodeEditor::Utilities;
+using json = nlohmann::json;
 
 using namespace ax;
 
@@ -168,6 +174,7 @@ private:
     const int            m_PinIconSize = 24;
     const int            MANAGER_AGENT_ID = 1; // << if of agent manager
     std::vector<Node>    m_Nodes;
+    std::vector<ed::NodeId>  m_Agents;
     std::vector<Link>    m_Links;
     ImTextureID          m_HeaderBackground = nullptr;
     ImTextureID          m_SaveIcon = nullptr;
@@ -214,6 +221,7 @@ private:
      */
     Node *FindNode(ed::NodeId id);
 
+    Node *FindNode(ed::PinId id);
     /**
      * From imgui-node-editor-master.
      */
@@ -477,4 +485,15 @@ private:
      * @param nodeId deleted node id
      */
     void DeleteNode(ed::NodeId nodeId);
+
+    /**
+     * @brief Retrieves data from the current state of the application and saves it as JSON.
+     *
+     * This method iterates through all external agents in the application, retrieves their data,
+     * and constructs a JSON object representing the state of the system. The JSON data is then
+     * saved to a file in a specified location.
+     *
+     * @throws std::runtime_error if the file cannot be opened for writing.
+     */
+    void GetData();
 };
