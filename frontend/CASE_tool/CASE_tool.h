@@ -221,7 +221,6 @@ private:
      */
     Node *FindNode(ed::NodeId id);
 
-    Node *FindNode(ed::PinId id);
     /**
      * From imgui-node-editor-master.
      */
@@ -240,24 +239,24 @@ private:
     /**
      * From imgui-node-editor-master.
      */
-    bool CanCreateLink(Pin *a, Pin *b);
+    static bool CanCreateLink(Pin *a, Pin *b);
 
     /**
      * From imgui-node-editor-master.
      */
-    void BuildNode(Node *node);
+    static void BuildNode(Node *node);
 
     /**
      * Create new text buffer.
      * @param type buffer type
      * @return     created buffer
      */
-    TextBuffer* NewTextBuffer(BufferType type);
+    static TextBuffer* NewTextBuffer(BufferType type);
 
     /**
      * Set label of button.
      */
-    void SetButtonLabel(Button* button, const char* label);
+    static void SetButtonLabel(Button* button, const char* label);
 
     /**
      * Creates node for representation agents' relationships.
@@ -303,14 +302,14 @@ private:
      * @param type type of reasoning
      * @return     string form of reasoning type
      */
-    std::string GetReasoningTypeAsString(ReasoningType type);
+    static std::string GetReasoningTypeAsString(ReasoningType type);
 
     /**
      * Get type of node based of reasoning type.
      * @param type reasoning type
      * @return     type of node
      */
-    NodeType GetNodeTypeFromReasoningType(ReasoningType type);
+    static NodeType GetNodeTypeFromReasoningType(ReasoningType type);
 
     /**
      * Creates nodes for representation of agent's relationships and responsibilities.
@@ -444,7 +443,7 @@ private:
      * @param otherPin pin id from that we delete link id
      * @param linkId    deleted link id
      */
-    void DeleteLinkId(Pin* otherPin, ed::LinkId linkId);
+    static void DeleteLinkId(Pin* otherPin, ed::LinkId linkId);
 
     /**
      * From imgui-node-editor-master.
@@ -464,7 +463,7 @@ private:
     /**
      * From imgui-node-editor-master.
      */
-    void ShowStyleEditor(bool* show = nullptr);
+    static void ShowStyleEditor(bool* show = nullptr);
 
     /**
      * Add node to its outside node.

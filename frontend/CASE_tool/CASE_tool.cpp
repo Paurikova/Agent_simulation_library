@@ -1409,14 +1409,30 @@ void CASE_tool::AddLinkToPin(ed::PinId pinId, ed::LinkId linkId) {
     pin->LinkIds.push_back(linkId);
 }
 
+//TODO: petri net missing, agent relationships missing
 void CASE_tool::GetData() {
     // JSON object to hold the data
     json data_json;
-
+    // JSON object for agent hierarchy
+    json hierarchy_json;
     // Iterate through all external agents
     for (ed::NodeId id : m_Agents) {
         // Get the current agent node
         Node *node = FindNode(id);
+
+        // Add agent and his parent to the hierarchy JSON
+        if (id.Get() == 0) {
+            hierarchy_json[std::to_string(id.Get())] = nullptr;
+        }
+       else if (node->Inputs.at(0).LinkIds.empty()) {
+            // We don't want data about an agent that is not part of the hierarchy, except for the master agent
+            continue;
+       }
+        //find parent ID
+        Pin* parentPin = FindPin(FindLink(node->Inputs.at(0).LinkIds.at(0))->StartPinID);
+        hierarchy_json[std::to_string(id.Get())] = std::to_string(parentPin->Node->ID.Get());
+
+
         // Get the responsible agent node
         Node *respAgent = FindNode(node->InsideIds.at(0));
         // Set to hold associated services' IDs
@@ -1475,19 +1491,21 @@ void CASE_tool::GetData() {
                 agent_json["Reactive"] = reactive_json;
             }
         }
-
         // Add agent data to the main JSON object
         data_json[std::to_string(id.Get())] = agent_json;
     }
 
-    // Save JSON to a file
+    json output_json;
+    output_json["Hierarchy"] = hierarchy_json;
+    output_json["Data"] = data_json;
+    // Save JSONs to a file
     //TODO: absolute path
-    std::ofstream file("/home/miska/CLionProjects/Agent_simulation_library/jsons/data.json");
+    std::ofstream file("/home/miska/CLionProjects/Agent_simulation_library/jsons/output.json");
     if (!file.is_open()) {
         // Throw an exception if file cannot be opened
         throw std::runtime_error("Cannot write generated JSON into the file.");
     }
-    file << std::setw(4) << data_json; // Pretty print JSON
+    file << std::setw(4) << output_json; // Pretty print JSON
     // Close the file
     file.close();
 }
