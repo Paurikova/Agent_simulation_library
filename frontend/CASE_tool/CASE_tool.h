@@ -495,4 +495,5 @@ private:
      * @throws std::runtime_error if the file cannot be opened for writing.
      */
     void GetData();
+    void AddLinkedNodes(std::vector<ed::LinkId> &links, std::string key, json &data);
 };

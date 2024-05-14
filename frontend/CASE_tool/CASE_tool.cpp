@@ -1,6 +1,7 @@
 #include "CASE_tool.h"
 
 #include "imgui_internal.h"
+#include "../../library/include/types.h"
 
 static inline auto ImGui_GetItemRect() -> ImRect
 {
@@ -1306,6 +1307,10 @@ void CASE_tool::OnFrame(float deltaTime) {
 void CASE_tool::DeleteNode(ed::NodeId nodeId) {
     // find deleted node
     Node* node = FindNode(nodeId);
+    //we don't wanna delete master node
+    if ((node->Type == NodeType::ExtAgent && node->ID.Get() == 1) ||
+            (node->Type == NodeType::RespAgent && FindNode(node->OutsideId)->ID.Get() == 1))
+        return;
     // prevents to never ending loop in deleting
     node->Deleted = true;
     // if deleted node is responsible agent, remove the whole agent
@@ -1325,13 +1330,30 @@ void CASE_tool::DeleteNode(ed::NodeId nodeId) {
             nodeId = outsideId;
         }
     }
-    // if node is Service, delete service node that is associated with this node
-    if (node->Type == NodeType::RespService || node->Type == NodeType::ReasService) {
+    // if node is Responsible Service, delete service node that is associated with this node
+    if (node->Type == NodeType::RespService) {
         for (ed::NodeId id : node->AssociatedIds) {
             Node *associatedNode = FindNode(id);
             if (!associatedNode->Deleted) {
                 DeleteNode(id);
             }
+        }
+    }
+    // if node is Reasoning Service, delete it from associated list of its associated node
+    if (node->Type == NodeType::ReasService) {
+        // control, if node is deleted because its outside node is deleted or its associated node is deleted
+        // else we cannot delete reasoning service node
+        Node* outsideNode = FindNode(node->OutsideId);
+        Node* assocNode = FindNode(node->AssociatedIds.at(0));
+        if (!outsideNode->Deleted && !assocNode->Deleted) {
+            node->Deleted = false;
+            return;
+        }
+        if (!assocNode->Deleted) {
+            auto id = std::find_if(assocNode->AssociatedIds.begin(), assocNode->AssociatedIds.end(),
+                                   [nodeId](auto &insideId) { return insideId == nodeId; });
+            if (id != assocNode->AssociatedIds.end())
+                assocNode->AssociatedIds.erase(id);
         }
     }
     // if node is associated by other node, delete them as first
@@ -1350,10 +1372,12 @@ void CASE_tool::DeleteNode(ed::NodeId nodeId) {
     //delete node id from outside node
     if (node->OutsideId.Get() != 0) {
         Node* outsideNode = FindNode(node->OutsideId);
-        auto id = std::find_if(outsideNode->InsideIds.begin(), outsideNode->InsideIds.end(),
-                               [nodeId](auto &insideId) { return insideId == nodeId; });
-        if (id != outsideNode->InsideIds.end())
-            outsideNode->InsideIds.erase(id);
+        if (!outsideNode->Deleted) {
+            auto id = std::find_if(outsideNode->InsideIds.begin(), outsideNode->InsideIds.end(),
+                                   [nodeId](auto &insideId) { return insideId == nodeId; });
+            if (id != outsideNode->InsideIds.end())
+                outsideNode->InsideIds.erase(id);
+        }
     }
     //delete node
     //if node is ext agent, delete it from agent list and go up
@@ -1412,26 +1436,26 @@ void CASE_tool::AddLinkToPin(ed::PinId pinId, ed::LinkId linkId) {
 //TODO: petri net missing, agent relationships missing
 void CASE_tool::GetData() {
     // JSON object to hold the data
-    json data_json;
+    json data_json = {};
     // JSON object for agent hierarchy
-    json hierarchy_json;
+    json hierarchy_json = {};
     // Iterate through all external agents
     for (ed::NodeId id : m_Agents) {
         // Get the current agent node
         Node *node = FindNode(id);
 
         // Add agent and his parent to the hierarchy JSON
-        if (id.Get() == 0) {
+        if (id.Get() == 1) {
             hierarchy_json[std::to_string(id.Get())] = nullptr;
         }
        else if (node->Inputs.at(0).LinkIds.empty()) {
             // We don't want data about an agent that is not part of the hierarchy, except for the master agent
             continue;
-       }
-        //find parent ID
-        Pin* parentPin = FindPin(FindLink(node->Inputs.at(0).LinkIds.at(0))->StartPinID);
-        hierarchy_json[std::to_string(id.Get())] = std::to_string(parentPin->Node->ID.Get());
-
+       } else {
+            //find parent ID
+            Pin *parentPin = FindPin(FindLink(node->Inputs.at(0).LinkIds.at(0))->StartPinID);
+            hierarchy_json[std::to_string(id.Get())] = std::to_string(parentPin->Node->ID.Get());
+        }
 
         // Get the responsible agent node
         Node *respAgent = FindNode(node->InsideIds.at(0));
@@ -1454,7 +1478,7 @@ void CASE_tool::GetData() {
         }
 
         // Create JSON data from agent reasoning
-        json agent_json;
+        json agent_json = {};
         for (ed::NodeId respId: node->InsideIds) {
             Node *respNode = FindNode(respId);
             // Check if it's reactive reasoning
@@ -1465,37 +1489,104 @@ void CASE_tool::GetData() {
                     continue;
                 }
                 // JSON object to store reactive reasoning data
-                json reactive_json;
-                for (ed::NodeId interId : respNode->InsideIds) {
-                    Node* interNode = FindNode(interId);
-                    if (interNode->Type == NodeType::Attribute) {
-                        // If it's an attribute, add to the 'Attributes' array
-                        json attribute_json;
-                        attribute_json["type"] = interNode->Inputs.at(0).PinBuffer->Buffer;
-                        attribute_json["initValue"] = interNode->Inputs.at(1).PinBuffer->Buffer;
-                        attribute_json["name"] = interNode->Outputs.at(0).PinBuffer->Buffer;
-                        reactive_json["Attributes"].push_back(attribute_json);
-                    }
-                    if (interNode->Type == NodeType::ReasService) {
-                        // If it's a service connected to the responsible agent, add to the 'Functions' array
-                        auto it = associatedServicesId.find(interNode->ID.Get());
-                        if (interNode->Outputs.at(0).LinkIds.empty() || it == associatedServicesId.end())
+                json reactive_json = {};
+                json services_json = json::array();
+                for (ed::NodeId innerId : respNode->InsideIds) {
+                    Node* innerNode = FindNode(innerId);
+                    json node_json = {};
+                    //control if innerNode is Service type
+                    if (innerNode->Type == NodeType::ReasService) {
+                        auto it = associatedServicesId.find(innerNode->ID.Get());
+                        // Is it linked at responsible level?
+                        if (innerNode->Outputs.at(0).LinkIds.empty() || it == associatedServicesId.end())
                             continue;
-                        json function_json;
-                        std::string serviceId = interNode->Outputs.at(0).PinBuffer->Buffer;
-                        function_json[serviceId] = FindPin(FindLink(interNode->Outputs.at(0).LinkIds.at(0))->EndPinID)->PinBuffer->Buffer;
-                        reactive_json["Functions"].push_back(function_json);
                     }
+                    switch (innerNode->Type) {
+                        case (NodeType::Attribute):
+                            node_json[TYPE] = ATTRIBUTE_ID;
+                            node_json[TYPE_ATR] = innerNode->Inputs.at(0).PinBuffer->Buffer;
+                            node_json[INIT_VALUE] = innerNode->Inputs.at(1).PinBuffer->Buffer;
+                            node_json[NAME] = innerNode->Outputs.at(0).PinBuffer->Buffer;
+                            break;
+                        case (NodeType::Function):
+                            node_json[TYPE] = FUNCTION_ID;
+                            node_json[NAME] = innerNode->Inputs.at(0).PinBuffer->Buffer;
+                            break;
+                        case (NodeType::ReasService):
+                            node_json[TYPE] = SERVICE_ID;
+                            node_json[SERVICE] = innerNode->Outputs.at(0).PinBuffer->Buffer;
+                            AddLinkedNodes(innerNode->Outputs.at(0).LinkIds, LINKED, node_json);
+                            services_json.push_back(std::to_string(innerId.Get()));
+                            break;
+                        default:
+                            continue;
+                    }
+                    reactive_json[std::to_string(innerId.Get())] = node_json;
                 }
+                reactive_json[SERVICES] = services_json;
                 // Add reactive reasoning data to the agent JSON object
-                agent_json["Reactive"] = reactive_json;
+                agent_json[REACTIVE] = reactive_json;
+            }
+            if (respNode->Type == NodeType::RespReasoningIntelligent) {
+                // Ensure node is connected to the responsible agent
+                if (respNode->Outputs.at(0).LinkIds.empty() ||
+                    FindLink(respNode->Outputs.at(0).LinkIds.at(0))->EndPinID != respAgent->Inputs.at(0).ID) {
+                    continue;
+                }
+                // JSON object to store petri net reasoning data
+                json petriNet_json = {};
+                json services_json = json::array();
+                for (ed::NodeId innerId : respNode->InsideIds) {
+                    Node* innerNode = FindNode(innerId);
+                    json node_json = {};
+                    //control if innerNode is Service type
+                    if (innerNode->Type == NodeType::ReasService) {
+                        auto it = associatedServicesId.find(innerNode->ID.Get());
+                        if (innerNode->Outputs.at(0).LinkIds.empty() || it == associatedServicesId.end())
+                            continue;
+                    }
+                    switch(innerNode->Type) {
+                        case (NodeType::SimpleCond):
+                            node_json[TYPE] = CONDITION_ID;
+                            node_json[CONDITION] = innerNode->Inputs.at(0).PinButton->Label;
+                            AddLinkedNodes(innerNode->Outputs.at(0).LinkIds, IF, node_json);
+                            AddLinkedNodes(innerNode->Outputs.at(0).LinkIds, ELSE, node_json);
+                            break;
+                        case (NodeType::SimpleCode):
+                            node_json[TYPE] = CODE_ID;
+                            AddLinkedNodes(innerNode->Outputs.at(0).LinkIds, LINKED, node_json);
+                            break;
+                        case(NodeType::Function):
+                            node_json[TYPE] = FUNCTION_ID;
+                            node_json[NAME] = innerNode->Inputs.at(0).PinBuffer->Buffer;
+                            break;
+                        case (NodeType::ReasService):// If it's a service connected to the responsible agent
+                            node_json[TYPE] = SERVICE_ID;
+                            node_json[SERVICE] = innerNode->Outputs.at(0).PinBuffer->Buffer;
+                            AddLinkedNodes(innerNode->Outputs.at(0).LinkIds, LINKED, node_json);
+                            services_json.push_back(std::to_string(innerId.Get()));
+                            break;
+                        case (NodeType::Attribute):
+                            node_json[TYPE] = ATTRIBUTE_ID;
+                            node_json[TYPE_ATR] = innerNode->Inputs.at(0).PinBuffer->Buffer;
+                            node_json[INIT_VALUE] = innerNode->Inputs.at(1).PinBuffer->Buffer;
+                            node_json[NAME] = innerNode->Outputs.at(0).PinBuffer->Buffer;
+                            break;
+                        default:
+                            continue;
+                    }
+                    petriNet_json[std::to_string(innerId.Get())] = node_json;
+                }
+                petriNet_json[SERVICES] = services_json;
+                // Add reactive reasoning data to the agent JSON object
+                agent_json[PETRI_NET] = petriNet_json;
             }
         }
         // Add agent data to the main JSON object
         data_json[std::to_string(id.Get())] = agent_json;
     }
 
-    json output_json;
+    json output_json = {};
     output_json["Hierarchy"] = hierarchy_json;
     output_json["Data"] = data_json;
     // Save JSONs to a file
@@ -1508,6 +1599,13 @@ void CASE_tool::GetData() {
     file << std::setw(4) << output_json; // Pretty print JSON
     // Close the file
     file.close();
+}
+
+void CASE_tool::AddLinkedNodes(std::vector<ed::LinkId> &links, std::string key, json &data) {
+    data[key] = json::array();
+    for (auto id : links) {
+        data[key].push_back(FindPin(FindLink(id)->EndPinID)->Node->ID.Get());
+    }
 }
 
 int Main(int argc, char** argv)
