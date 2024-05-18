@@ -1,0 +1,4 @@
+#include "agent{}ReactiveReasoning.h"
+void Agent{}ReactiveReasoning::registerFunctions() {{
+    //functions
+}}

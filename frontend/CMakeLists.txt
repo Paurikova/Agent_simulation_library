@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.12)
 
 project(frontend)
-
+find_package(fmt 8.0.0 REQUIRED)
 # Define IMGUI_NODE_EDITOR_ROOT_DIR pointing to project root directory
 #ZMENA TERAZ
 get_filename_component(IMGUI_NODE_EDITOR_ROOT_DIR ${CMAKE_SOURCE_DIR} ABSOLUTE CACHE)
@@ -71,6 +71,8 @@ macro(add_frontend_executable name)
     find_package(imgui REQUIRED)
     find_package(imgui_node_editor REQUIRED)
     target_link_libraries(${name} PRIVATE imgui imgui_node_editor application)
+
+    target_link_libraries(${name} PRIVATE fmt application)
 
     set(_FrontendBinDir ${CMAKE_BINARY_DIR}/bin)
 

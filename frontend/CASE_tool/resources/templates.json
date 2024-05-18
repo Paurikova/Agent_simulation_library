@@ -1,0 +1,7 @@
+{
+  "Attribute" : "\n    {} {} = {};",
+  "FunctionDef" : "\n    void {}(int pSender, SimTime_t pExecTime);",
+  "FunctionImpl" : "\nvoid Agent{}ReactiveReasoning::{}(int pSender, SimTime_t pExecTime) {{\n    //add your code\n}}",
+  "FunctionReg" : "\n    registerFunction({}, [this](int pSender, SimTime_t pExecTime) {{\n        {}(pSender, pExecTime);\n    }});",
+  "ReactiveFileName" : "agent{}ReactiveReasoning"
+}

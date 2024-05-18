@@ -1,0 +1,13 @@
+#pragma once
+//TODO incluce
+#include "../../library/include/reactiveReasoning.h"
+#include <string>
+using namespace std;
+
+class Agent{}ReactiveReasoning : public ReactiveReasoning {{
+private:
+    //attributes
+    //functions
+public:
+    void registerFunctions() override;
+}};

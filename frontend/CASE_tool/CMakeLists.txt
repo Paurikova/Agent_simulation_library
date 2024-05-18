@@ -1,5 +1,7 @@
 add_frontend_executable(CASE_tool
         CASE_tool.cpp
+        agentGenerator.cpp
+        types.h
         utilities/builders.h
         utilities/drawing.h
         utilities/widgets.h

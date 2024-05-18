@@ -17,6 +17,7 @@
 #include "utilities/widgets.h"
 #include "imgui_project/imgui_node_editor.h"
 #include "imgui_internal.h"
+#include "agentGenerator.h"
 
 namespace ed = ax::NodeEditor;
 namespace util = ax::NodeEditor::Utilities;
@@ -184,6 +185,7 @@ private:
     ed::NodeId           m_ContextNodeId = 0; // << id of context node
     ed::NodeId           m_Inside = 0; // << id of the node we are currently on
     Button*              m_ActiveButton = nullptr; // << pointer to active button in condition node
+    AgentGenerator*      agentGenerator = new AgentGenerator();
 public:
     /**
      * Constructor.
@@ -494,6 +496,17 @@ private:
      *
      * @throws std::runtime_error if the file cannot be opened for writing.
      */
-    void GetData();
+    json GetData();
+
+    /**
+     * @brief Adds linked nodes to a JSON object.
+     *
+     * This function adds linked nodes represented by the provided links to a JSON object.
+     * The linked nodes are added under the specified key in the JSON object.
+     *
+     * @param links The vector of link IDs representing the links between nodes.
+     * @param key The key under which the linked nodes will be added in the JSON object.
+     * @param data The JSON object to which the linked nodes will be added.
+     */
     void AddLinkedNodes(std::vector<ed::LinkId> &links, std::string key, json &data);
 };

@@ -1,7 +1,7 @@
 #include "CASE_tool.h"
 
 #include "imgui_internal.h"
-#include "../../library/include/types.h"
+#include "types.h"
 
 static inline auto ImGui_GetItemRect() -> ImRect
 {
@@ -99,7 +99,6 @@ CASE_tool::CASE_tool() : Application("CASE_tool"),
         m_Inside(0),
         m_ActiveButton(nullptr)
 {
-
 }
 
 CASE_tool::~CASE_tool() {
@@ -610,7 +609,7 @@ void CASE_tool::ShowLeftPane(float paneWidth)
         ed::NavigateToContent();
     ImGui::Spring(0.0f);
         if (ImGui::Button("Generate Code"))
-            GetData();
+            agentGenerator->processJson(GetData());
     ImGui::Spring();
     ImGui::EndHorizontal();
 
@@ -1434,7 +1433,7 @@ void CASE_tool::AddLinkToPin(ed::PinId pinId, ed::LinkId linkId) {
 }
 
 //TODO: petri net missing, agent relationships missing
-void CASE_tool::GetData() {
+json CASE_tool::GetData() {
     // JSON object to hold the data
     json data_json = {};
     // JSON object for agent hierarchy
@@ -1445,13 +1444,11 @@ void CASE_tool::GetData() {
         Node *node = FindNode(id);
 
         // Add agent and his parent to the hierarchy JSON
-        if (id.Get() == 1) {
-            hierarchy_json[std::to_string(id.Get())] = nullptr;
-        }
-       else if (node->Inputs.at(0).LinkIds.empty()) {
+        if (id.Get() != 1 && node->Inputs.at(0).LinkIds.empty()) {
             // We don't want data about an agent that is not part of the hierarchy, except for the master agent
             continue;
-       } else {
+       } else if (id.Get() != 1) {
+            // we don't wanna register master agent to hierarchy
             //find parent ID
             Pin *parentPin = FindPin(FindLink(node->Inputs.at(0).LinkIds.at(0))->StartPinID);
             hierarchy_json[std::to_string(id.Get())] = std::to_string(parentPin->Node->ID.Get());
@@ -1491,6 +1488,7 @@ void CASE_tool::GetData() {
                 // JSON object to store reactive reasoning data
                 json reactive_json = {};
                 json services_json = json::array();
+                json attributes_json = json::array();
                 for (ed::NodeId innerId : respNode->InsideIds) {
                     Node* innerNode = FindNode(innerId);
                     json node_json = {};
@@ -1507,6 +1505,7 @@ void CASE_tool::GetData() {
                             node_json[TYPE_ATR] = innerNode->Inputs.at(0).PinBuffer->Buffer;
                             node_json[INIT_VALUE] = innerNode->Inputs.at(1).PinBuffer->Buffer;
                             node_json[NAME] = innerNode->Outputs.at(0).PinBuffer->Buffer;
+                            attributes_json.push_back(std::to_string(innerId.Get()));
                             break;
                         case (NodeType::Function):
                             node_json[TYPE] = FUNCTION_ID;
@@ -1524,6 +1523,7 @@ void CASE_tool::GetData() {
                     reactive_json[std::to_string(innerId.Get())] = node_json;
                 }
                 reactive_json[SERVICES] = services_json;
+                reactive_json[ATTRIBUTES] = attributes_json;
                 // Add reactive reasoning data to the agent JSON object
                 agent_json[REACTIVE] = reactive_json;
             }
@@ -1536,6 +1536,7 @@ void CASE_tool::GetData() {
                 // JSON object to store petri net reasoning data
                 json petriNet_json = {};
                 json services_json = json::array();
+                json attributes_json = json::array();
                 for (ed::NodeId innerId : respNode->InsideIds) {
                     Node* innerNode = FindNode(innerId);
                     json node_json = {};
@@ -1571,13 +1572,15 @@ void CASE_tool::GetData() {
                             node_json[TYPE_ATR] = innerNode->Inputs.at(0).PinBuffer->Buffer;
                             node_json[INIT_VALUE] = innerNode->Inputs.at(1).PinBuffer->Buffer;
                             node_json[NAME] = innerNode->Outputs.at(0).PinBuffer->Buffer;
+                            services_json.push_back(std::to_string(innerId.Get()));
                             break;
                         default:
                             continue;
                     }
-                    petriNet_json[std::to_string(innerId.Get())] = node_json;
+                    petriNet_json[innerId.Get()] = node_json;
                 }
                 petriNet_json[SERVICES] = services_json;
+                petriNet_json[ATTRIBUTES] = attributes_json;
                 // Add reactive reasoning data to the agent JSON object
                 agent_json[PETRI_NET] = petriNet_json;
             }
@@ -1587,24 +1590,15 @@ void CASE_tool::GetData() {
     }
 
     json output_json = {};
-    output_json["Hierarchy"] = hierarchy_json;
-    output_json["Data"] = data_json;
-    // Save JSONs to a file
-    //TODO: absolute path
-    std::ofstream file("/home/miska/CLionProjects/Agent_simulation_library/jsons/output.json");
-    if (!file.is_open()) {
-        // Throw an exception if file cannot be opened
-        throw std::runtime_error("Cannot write generated JSON into the file.");
-    }
-    file << std::setw(4) << output_json; // Pretty print JSON
-    // Close the file
-    file.close();
+    output_json[HIERARCHY] = hierarchy_json;
+    output_json[DATA] = data_json;
+    return output_json;
 }
 
 void CASE_tool::AddLinkedNodes(std::vector<ed::LinkId> &links, std::string key, json &data) {
     data[key] = json::array();
     for (auto id : links) {
-        data[key].push_back(FindPin(FindLink(id)->EndPinID)->Node->ID.Get());
+        data[key].push_back(std::to_string(FindPin(FindLink(id)->EndPinID)->Node->ID.Get()));
     }
 }
 
