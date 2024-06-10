@@ -1087,17 +1087,7 @@ void CASE_tool::OnFrame(float deltaTime) {
                 while (ed::QueryDeletedLink(&linkId)) {
                     // delete link only it it hasn't been already deleted by node
                     if (!deleted && ed::AcceptDeletedItem()) {
-                        auto id = std::find_if(m_Links.begin(), m_Links.end(),
-                                               [linkId](auto &link) { return link.ID == linkId; });
-                        if (id != m_Links.end()) {
-                            Link *link = FindLink(linkId);
-                            Pin *pin = FindPin(link->StartPinID);
-                            // delete link id from pin
-                            DeleteLink(*pin);
-                            pin = FindPin(link->EndPinID);
-                            // delete link in from pin
-                            DeleteLink(*pin);
-                        }
+                        DeleteLink(linkId);
                     }
                 }
             }
@@ -1363,10 +1353,10 @@ void CASE_tool::DeleteNode(ed::NodeId nodeId) {
     }
     // delete node links
     for(Pin& pin: node->Inputs) {
-        DeleteLink(pin);
+        DeleteLinks(pin);
     }
     for(Pin& pin: node->Outputs) {
-        DeleteLink(pin);
+        DeleteLinks(pin);
     }
     //delete node id from outside node
     if (node->OutsideId.Get() != 0) {
@@ -1395,24 +1385,24 @@ void CASE_tool::DeleteNode(ed::NodeId nodeId) {
     }
 }
 
-void CASE_tool::DeleteLink(Pin& pin) {
+void CASE_tool::DeleteLinks(Pin& pin) {
     //loop over all link id assocaited with the pin
     for (auto& linkId : pin.LinkIds) {
-        auto id = std::find_if(m_Links.begin(), m_Links.end(),
-                               [linkId](auto &link) { return link.ID == linkId; });
-        if (id != m_Links.end()) {
-            //find link
-            Link* link = FindLink(linkId);
-            //delete link id from associated pin
-            if (link->StartPinID.Get() != linkId.Get()) {
-                Pin* otherPin = FindPin(link->StartPinID);
-                DeleteLinkId(otherPin, linkId);
-            } else {
-                Pin* otherPin = FindPin(link->EndPinID);
-                DeleteLinkId(otherPin, linkId);
-            }
-            m_Links.erase(id);
-        }
+        DeleteLink(linkId);
+    }
+}
+
+void CASE_tool::DeleteLink(ed::LinkId linkId) {
+    auto id = std::find_if(m_Links.begin(), m_Links.end(),
+                           [linkId](auto &link) { return link.ID == linkId; });
+    if (id != m_Links.end()) {
+        Link* link = FindLink(linkId);
+        //delete link id from associated pins
+        Pin* pin = FindPin(link->StartPinID);
+        DeleteLinkId(pin, linkId);
+        pin = FindPin(link->EndPinID);
+        DeleteLinkId(pin, linkId);
+        m_Links.erase(id);
     }
 }
 

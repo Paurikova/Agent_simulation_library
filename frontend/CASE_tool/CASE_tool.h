@@ -436,9 +436,16 @@ private:
     /**
      * Delete links associated from pin.
      * We have to delete link ids from all ossiciated pins too.
-     * @param pin
+     * @param pin   Id of pin
      */
-    void DeleteLink(Pin& pin);
+    void DeleteLinks(Pin& pin);
+
+    /**
+     * Delete link associated from pin.
+     * We have to delete link ids from all ossiciated pins too.
+     * @param linkId deleted link id
+     */
+    void DeleteLink(ed::LinkId linkId);
 
     /**
      * Delete link id from pin list od its associated links.
