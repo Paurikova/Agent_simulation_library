@@ -10,6 +10,7 @@
 #include "schedule.h"
 #include "petriNetReasoning.h"
 #include "agentReasoning.h"
+
 /**
  * @brief Represents an agent in the simulation.
  *
@@ -124,9 +125,10 @@ public:
      *
      * @param pServiceId The ID of the service to check.
      * @param pSenderId The ID of the message sender.
+     * @param pControlled The ID of agent controlled before.
      * @return The ID of the agent providing the service, or -1 if no agent provides the service.
      */
-    AgentId_t getAgentIdProvidedService(ServiceId_t pServiceId, AgentId_t pSenderId);
+    AgentId_t getAgentIdProvidedService(ServiceId_t pServiceId, AgentId_t pSenderId, AgentId_t pControlled);
 
     /**
      * @brief Checks if a child agent with the specified ID exists.

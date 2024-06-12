@@ -93,11 +93,11 @@ void Agent::setParent(Agent* pPrent) {
     parent = pPrent;
 }
 
-AgentId_t Agent::getAgentIdProvidedService(ServiceId_t pServiceId, AgentId_t pSenderId) {
+AgentId_t Agent::getAgentIdProvidedService(ServiceId_t pServiceId, AgentId_t pSenderId, AgentId_t pControlled) {
     // Search among the agent's child
     for (const auto& pair : childs) {
         Agent* child = pair.second;
-        if (child->getId() == pSenderId) {
+        if (child->getId() == pSenderId || child->getId() == pControlled) {
             continue;
         }
         if (child->providedService(pServiceId)) {
@@ -111,7 +111,7 @@ AgentId_t Agent::getAgentIdProvidedService(ServiceId_t pServiceId, AgentId_t pSe
         if (child->getId() == pSenderId) {
             continue;
         }
-        AgentId_t id = child->getAgentIdProvidedService(pServiceId, pSenderId);
+        AgentId_t id = child->getAgentIdProvidedService(pServiceId, pSenderId, pControlled);
         if (id != -1) {
             return id;
         }

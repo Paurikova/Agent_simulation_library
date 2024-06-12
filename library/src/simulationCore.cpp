@@ -112,9 +112,11 @@ bool SimulationCore::agentExists(AgentId_t pAgentId) {
 void SimulationCore::addReceiver(Message* pMessage) {
     Agent* sender = agents[pMessage->sender];
     AgentId_t receiverId = -1;
+    AgentId_t controlled = -1;
     do {
         // Search for an agent ID providing the required service
-        receiverId = sender->getAgentIdProvidedService(pMessage->serviceId, sender->getId());
+        receiverId = sender->getAgentIdProvidedService(pMessage->serviceId, sender->getId(), controlled);
+        controlled = sender->getId();
         sender = sender->getParent();
         if (sender == nullptr)
             break;
