@@ -1,16 +1,34 @@
 #include "../include/petriNetReasoning.h"
 
-PetriNetReasoning::PetriNetReasoning() {
-    serviceIds = std::make_unique<std::vector<ServiceId_t>>();
-}
-
 void PetriNetReasoning::process(ServiceId_t pServiceId, AgentId_t pSender, SimTime_t pExecTime) {
-    ExecFunct_t funct = nullptr;
-    throw std::runtime_error(
-            "Function hasn't been implemented yet.");
+    auto it = serviceToNode.find(pServiceId);
+    if (it == serviceToNode.end()) {
+        throw std::runtime_error("Required service does not exist!");
+    }
+    sender = pSender;
+    execTime = pExecTime;
+    NodeId_t nodeId = serviceToNode.at(pServiceId);
+    while (nodeId != -1) {
+        auto it = nodeFunct.find(nodeId);
+        if (it != nodeFunct.end()) {
+            nodeId = it->second();
+        } else {
+            throw std::runtime_error("Required node id does not exist!");
+        }
+    }
 }
 
 bool PetriNetReasoning::providedService(ServiceId_t pServiceId) {
     // Searching of the value in the vector
-    return std::find(serviceIds->begin(), serviceIds->end(), pServiceId) == serviceIds->end();
+    auto it = serviceToNode.find(pServiceId);
+    return it != serviceToNode.end();
+}
+
+void PetriNetReasoning::initialization() {
+    registerNodes();
+}
+
+void PetriNetReasoning::registerNode(NodeId_t pId, ExecNode_t node) {
+    // Add the function pointer to the function map
+    nodeFunct[pId] = std::move(node);
 }

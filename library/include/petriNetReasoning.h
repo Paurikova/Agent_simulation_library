@@ -13,12 +13,16 @@
  */
 class PetriNetReasoning : public AgentReasoning {
 private:
-    std::unique_ptr<std::vector<ServiceId_t>> serviceIds; /**< Unique pointer to a vector of service IDs. */
+    std::unordered_map<ServiceId_t, NodeId_t> serviceToNode;
+    std::unordered_map<NodeId_t, ExecNode_t> nodeFunct; /**< Maps functions to service IDs. */
+protected:
+    AgentId_t sender = -1;
+    SimTime_t execTime = -1;
 public:
     /**
      * @brief Default constructor for PetriNetReasoning class.
      */
-    PetriNetReasoning();
+    PetriNetReasoning(){};
 
     /**
      * @brief Retrieves the execution function associated with a service ID.
@@ -36,6 +40,9 @@ public:
      * @return True if the service is provided, false otherwise.
      */
     bool providedService(ServiceId_t pServiceId) override;
+
+    void registerNode(NodeId_t pId, ExecNode_t node);
+    virtual void registerNodes() = 0;
 
     /**
     * @brief Initialization method.

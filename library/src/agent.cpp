@@ -108,7 +108,7 @@ AgentId_t Agent::getAgentIdProvidedService(ServiceId_t pServiceId, AgentId_t pSe
     // Recursively search among the children of each agent
     for (const auto& pair : childs) {
         Agent* child = pair.second;
-        if (child->getId() == pSenderId) {
+        if (child->getId() == pSenderId || child->getId() == pControlled) {
             continue;
         }
         AgentId_t id = child->getAgentIdProvidedService(pServiceId, pSenderId, pControlled);
