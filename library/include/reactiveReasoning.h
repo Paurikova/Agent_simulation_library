@@ -10,6 +10,29 @@ class ReactiveReasoning : public AgentReasoning {
 private:
     std::unordered_map<ServiceId_t, ExecFunct_t> functionMap; /**< Maps functions to service IDs. */
 
+protected:
+    /**
+     * @brief Registers a function for handling events.
+     *
+     * @param pServiceId The ID of the service.
+     * @param pFunc The execution function associated with the service ID.
+     */
+    void registerFunction(ServiceId_t pServiceId, ExecFunct_t pFunc);
+
+    /**
+     * @brief Unregisters a function associated with a service ID.
+     *
+     * @param pServiceId The ID of the service.
+     */
+    void unregisterFunction(ServiceId_t pServiceId);
+
+    /**
+    * @brief Registers functions for handling events.
+    *
+    * This method must be implemented by derived classes.
+    */
+    virtual void registerFunctions() = 0;
+
 public:
     /**
      * @brief Default constructor for ReactiveReasoning class.
@@ -32,28 +55,6 @@ public:
     * @return True if the service is provided, false otherwise.
     */
     bool providedService(ServiceId_t pServiceId) override;
-
-    /**
-     * @brief Registers a function for handling events.
-     *
-     * @param pServiceId The ID of the service.
-     * @param pFunc The execution function associated with the service ID.
-     */
-    void registerFunction(ServiceId_t pServiceId, ExecFunct_t pFunc);
-
-    /**
-     * @brief Unregisters a function associated with a service ID.
-     *
-     * @param pServiceId The ID of the service.
-     */
-    void unregisterFunction(ServiceId_t pServiceId);
-
-    /**
-    * @brief Registers functions for handling events.
-    *
-    * This method must be implemented by derived classes.
-    */
-    virtual void registerFunctions() = 0;
 
     /**
      * @brief Initialization method.

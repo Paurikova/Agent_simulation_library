@@ -9,6 +9,18 @@
 class AgentReasoning {
 private:
     std::unique_ptr<std::vector<Message*>> outBox ; /**< Outgoing message queue. */
+protected:
+    /**
+     * @brief Sends a message to another agent.
+     *
+     * @param pServiceId The ID of the service.
+     * @param pTime The time at which the message is sent.
+     * @param pSender The ID of the sender agent.
+     * @param pReceiver The ID of the receiver agent.
+     * @param pPriority The priority of the message (optional, default is -1).
+     */
+    void sendMessage(ServiceId_t pServiceId, SimTime_t pTime, AgentId_t pSender, AgentId_t pReceiver = -1, int pPriority = -1);
+
 public:
     /**
      * @brief Constructor for AgentReasoning class.
@@ -30,17 +42,6 @@ public:
     * @return True if the service is provided, false otherwise.
     */
     virtual bool providedService(ServiceId_t pServiceId) = 0;
-
-    /**
-     * @brief Sends a message to another agent.
-     *
-     * @param pServiceId The ID of the service.
-     * @param pTime The time at which the message is sent.
-     * @param pSender The ID of the sender agent.
-     * @param pReceiver The ID of the receiver agent.
-     * @param pPriority The priority of the message (optional, default is -1).
-     */
-    void sendMessage(ServiceId_t pServiceId, SimTime_t pTime, AgentId_t pSender, AgentId_t pReceiver = -1, int pPriority = -1);
 
     /**
      * @brief Returns a pointer to the top message in the outbox.

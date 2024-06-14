@@ -13,3 +13,4 @@ using ExecNode_t = std::function<NodeId_t()>; // type for function callback
 
 const AgentId_t SIMULATION_CORE_ID = 1;
 const AgentId_t REASONING_ID_START = 2;
+const NodeId_t UNDEFINATED_NODE =  -1;
