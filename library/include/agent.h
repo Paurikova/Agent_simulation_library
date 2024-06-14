@@ -23,6 +23,7 @@ private:
     std::unordered_map<AgentId_t, Agent*> childs; /**< The map of pointers to agent's childs. */
     SimTime_t currTime; /**< The current time in the simulation. */
     std::unique_ptr<Schedule> schedule ; /**< Schedule for managing agent's tasks. */
+protected:
     AgentReasoning* agentReasoning;
 private:
     /**

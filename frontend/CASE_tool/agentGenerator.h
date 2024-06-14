@@ -35,6 +35,12 @@ private:
     //TODO absolute path
     const std::string RESOURCE_PETRINET_PATH = "/home/miska/CLionProjects/Agent_simulation_library/frontend/CASE_tool/resources/petriNet"; /**< Default path to resources. */
 
+    // main templates
+    const std::string TEMPLATE_MAIN_JSON = "templatesMain.json"; /**< Default template JSON file name. */
+    //TODO absolute path
+    const std::string RESOURCE_MAIN_PATH = "/home/miska/CLionProjects/Agent_simulation_library/frontend/CASE_tool/resources"; /**< Default path to resources. */
+
+
     nlohmann::json outputJson; /**< JSON object to store output data. */
     nlohmann::json resources; /**< JSON object to store resource data. */
     std::map<int, int> node2Agent; /**< Map to store node-to-agent mappings. */
@@ -59,6 +65,8 @@ private:
     void processReactive(json data, int agentId);
 
     void processPetriNet(json data, int agentId);
+
+    void processMain(json data);
 
     /**
      * @brief Reads the content of a file and returns it as a string.

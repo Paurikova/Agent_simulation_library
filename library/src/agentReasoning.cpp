@@ -19,3 +19,7 @@ Message* AgentReasoning::getTopOutboxMessage() {
     outBox->pop_back(); // Remove the last message
     return topMessage;
 }
+
+void AgentReasoning::initMessage() {
+    // this function is defined only for simulation core reasoning
+}

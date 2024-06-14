@@ -3,9 +3,8 @@
 
 //ID = 1
 //parent = nullptr
-SimulationCore::SimulationCore(AgentReasoning* pAgentReasoning, SimTime_t pStartTime, SimTime_t pEndTime) : Agent(SIMULATION_CORE_ID, nullptr, pAgentReasoning) {
-    currTime = pStartTime;
-    endTime = pEndTime;
+SimulationCore::SimulationCore(AgentReasoning* pAgentReasoning) : Agent(SIMULATION_CORE_ID, nullptr, pAgentReasoning) {
+    currTime = -1;
     registerAgent(this);
     mainSchedule = std::make_unique<Schedule>();
 }
@@ -85,7 +84,10 @@ void SimulationCore::pushToMainSchedule(Message* pMessage) {
 }
 
 void SimulationCore::initSimulation() {
-    // empty
+    // send initial message by simulation core
+    agentReasoning->initMessage();
+    // receive initialization message
+    receiveAgentMessages(this);
 }
 
 void SimulationCore::receiveAgentMessages(Agent* agent) {

@@ -15,7 +15,6 @@
 class SimulationCore : public Agent{
 private:
     SimTime_t currTime; /**< Current simulation time. */
-    SimTime_t endTime; /**< End time of the simulation. */
     std::unordered_map<AgentId_t, Agent*> agents; /**< Map of agent IDs to agent objects. */
     std::unique_ptr<Schedule> mainSchedule; /**< Unique pointer to the main schedule. */
 
@@ -27,7 +26,7 @@ public:
      * @param pStartTime The start time of the simulation.
      * @param pEndTime The end time of the simulation.
      */
-    SimulationCore(AgentReasoning* pAgentReasoning, SimTime_t pStartTime, SimTime_t pEndTime);
+    SimulationCore(AgentReasoning* pAgentReasoning);
 
     /**
      * @brief Registers an agent with the simulation core.

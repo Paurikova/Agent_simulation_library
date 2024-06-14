@@ -54,4 +54,10 @@ public:
      * @brief Pure virtual function for initialization.
      */
     virtual void initialization() = 0;
+
+    /**
+     * @brief Initial message. This function has empty implementation.
+     * Initial message can send only simulation core.
+     */
+    virtual void initMessage();
 };

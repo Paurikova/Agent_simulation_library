@@ -16,6 +16,9 @@ AgentGenerator::AgentGenerator() {
     resources[PETRI_NET][TEMPLATE] = readJson(RESOURCE_PETRINET_PATH, TEMPLATE_PETRINET_JSON);
     resources[PETRI_NET][FILE_H] = readFile(RESOURCE_PETRINET_PATH, CLASS_PETRINET_H);
     resources[PETRI_NET][FILE_CPP] = readFile(RESOURCE_PETRINET_PATH, CLASS_PETRINET_CPP);
+
+    //main
+    resources[MAIN][TEMPLATE] = readJson(RESOURCE_MAIN_PATH, TEMPLATE_MAIN_JSON);
 }
 
 void AgentGenerator::processJson(json data) {
@@ -51,7 +54,8 @@ void AgentGenerator::processReactive(json data, AgentId_t agentId) {
     std::string agent_cpp = fmt::format(resources[REACTIVE][FILE_CPP], agentId, agentId);
 
     // Initialize positions for insertion points
-    size_t posAtr, posFun, posReg, posDef;
+    size_t posAtr, posFun, posReg, posDef, posOver;
+    std::string valuesToInsert;
 
     // Loop over attributes
     posAtr = agent_h.find(SEARCH_ATR);
@@ -59,7 +63,7 @@ void AgentGenerator::processReactive(json data, AgentId_t agentId) {
         // Retrieve attribute data
         json atr = data[atrId];
         // Generate values to insert for attributes
-        std::string valuesToInsert = fmt::format(resources[REACTIVE][TEMPLATE][TEMP_ATTRIBUTE], atr[TYPE_ATR], atr[NAME], atr[INIT_VALUE]);
+        valuesToInsert = fmt::format(resources[REACTIVE][TEMPLATE][TEMP_ATTRIBUTE], atr[TYPE_ATR], atr[NAME], atr[INIT_VALUE]);
         // Insert values into the header file
         agent_h.insert(posAtr + SEARCH_ATR.length(), valuesToInsert);
     }
@@ -78,7 +82,7 @@ void AgentGenerator::processReactive(json data, AgentId_t agentId) {
             // Retrieve function data
             json funct = data[linked];
             // Generate values to insert for function definition
-            std::string valuesToInsert = fmt::format(resources[REACTIVE][TEMPLATE][TEMP_FUNCTION_DEF], funct[NAME]);
+            valuesToInsert = fmt::format(resources[REACTIVE][TEMPLATE][TEMP_FUNCTION_DEF], funct[NAME]);
             // Insert function definition into the header file
             agent_h.insert(posFun + SEARCH_FUNCT.length(), valuesToInsert);
             // Generate values to insert for function implementation
@@ -92,6 +96,15 @@ void AgentGenerator::processReactive(json data, AgentId_t agentId) {
             // Insert function registration into the source file
             agent_cpp.insert(posReg + SEARCH_FUNCT.length(), valuesToInsert);
         }
+    }
+
+    // Insert initial message definition if the agent ID is 1 (manager)
+    if (agentId == MANAGER_ID) {
+        posOver = agent_h.find(SEARCH_OVERRIDE);
+        agent_h.insert(posOver + SEARCH_OVERRIDE.length(), resources[MAIN][TEMPLATE][TEMP_MAIN_INITMSG_DEF]);
+        // Generate values to insert for function registration
+        valuesToInsert = fmt::format(resources[MAIN][TEMPLATE][TEMP_MAIN_INITMSG_IMPL], agentId, "ReactiveReasoning");
+        agent_cpp.insert(posDef + SEARCH_H.length(), valuesToInsert);
     }
 
     // Save modified files
@@ -174,4 +187,8 @@ void AgentGenerator::saveFile(std::string path, std::string fileName, std::strin
 
 void AgentGenerator::processPetriNet(json data, int agentId) {
     //empty
+}
+
+void AgentGenerator::processMain(json data) {
+
 }

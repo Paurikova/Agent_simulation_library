@@ -4,6 +4,7 @@
 using AgentId_t = int; // type for agent ID
 
 const AgentId_t REASONING_ID_START = 1;
+const AgentId_t MANAGER_ID = 1;
 
 //json types
 //node types
@@ -26,6 +27,7 @@ const std::string FUNCTIONS = "Functions";
 //reasoning types
 const std::string REACTIVE = "Reactive";
 const std::string PETRI_NET = "PetriNet";
+const std::string MAIN = "Main";
 
 //Petri net reasoning
 //condition
@@ -44,6 +46,7 @@ const std::string DATA = "Data";
 
 const std::string SEARCH_ATR = "//attributes";
 const std::string SEARCH_FUNCT = "//functions";
+const std::string SEARCH_OVERRIDE = "override;";
 const std::string SEARCH_H = "ReactiveReasoning.h\"";
 
 const std::string TEMP_ATTRIBUTE = "Attribute";
@@ -51,6 +54,8 @@ const std::string TEMP_FUNCTION_DEF = "FunctionDef";
 const std::string TEMP_FUNCTION_IMPL = "FunctionImpl";
 const std::string TEMP_FUNCTION_REG = "FunctionReg";
 const std::string TEMP_REACTIVE_FILE_NAME = "ReactiveFileName";
+const std::string TEMP_MAIN_INITMSG_DEF = "InitMessageDef";
+const std::string TEMP_MAIN_INITMSG_IMPL = "InitMessageImpl";
 const std::string FILE_H = "File_h";
 const std::string FILE_CPP = "File_cpp";
 const std::string TEMPLATE = "Template";
