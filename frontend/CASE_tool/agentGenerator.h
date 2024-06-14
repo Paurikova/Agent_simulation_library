@@ -19,12 +19,22 @@ using json = nlohmann::json;
  */
 class AgentGenerator {
 private:
-    const std::string TEMPLATE_JSON = "templates.json"; /**< Default template JSON file name. */
-    const std::string CLASS_H = "templateClass_h.txt"; /**< Default template header file name. */
-    const std::string CLASS_CPP = "templateClass_cpp.txt"; /**< Default template source file name. */
-    const std::string OUTPUT_FILE = "output.json"; /**< Default output JSON file name. */
+    // reactive templates
+    const std::string TEMPLATE_REACTIVE_JSON = "templatesReactive.json"; /**< Default template JSON file name. */
+    const std::string CLASS_REACTIVE_H = "templateReactive_h.txt"; /**< Default template header file name. */
+    const std::string CLASS_REACTIVE_CPP = "templateReactive_cpp.txt"; /**< Default template source file name. */
+    const std::string OUTPUT_REACTIVE_FILE = "outputReactive.json"; /**< Default output JSON file name. */
     //TODO absolute path
-    const std::string RESOURCE_PATH = "/home/miska/CLionProjects/Agent_simulation_library/frontend/CASE_tool/resources"; /**< Default path to resources. */
+    const std::string RESOURCE_REACTIVE_PATH = "/home/miska/CLionProjects/Agent_simulation_library/frontend/CASE_tool/resources/reactive"; /**< Default path to resources. */
+
+    // petri nete templates
+    const std::string TEMPLATE_PETRINET_JSON = "templatesPetriNet.json"; /**< Default template JSON file name. */
+    const std::string CLASS_PETRINET_H = "templatePetriNet_h.txt"; /**< Default template header file name. */
+    const std::string CLASS_PETRINET_CPP = "templatePetriNet_cpp.txt"; /**< Default template source file name. */
+    const std::string OUTPUT_PETRINET_FILE = "outputPetriNet.json"; /**< Default output JSON file name. */
+    //TODO absolute path
+    const std::string RESOURCE_PETRINET_PATH = "/home/miska/CLionProjects/Agent_simulation_library/frontend/CASE_tool/resources/petriNet"; /**< Default path to resources. */
+
     nlohmann::json outputJson; /**< JSON object to store output data. */
     nlohmann::json resources; /**< JSON object to store resource data. */
     std::map<int, int> node2Agent; /**< Map to store node-to-agent mappings. */
@@ -47,6 +57,8 @@ private:
      * @param agentId The ID of the agent being processed.
      */
     void processReactive(json data, int agentId);
+
+    void processPetriNet(json data, int agentId);
 
     /**
      * @brief Reads the content of a file and returns it as a string.

@@ -53,3 +53,4 @@ const std::string TEMP_FUNCTION_REG = "FunctionReg";
 const std::string TEMP_REACTIVE_FILE_NAME = "ReactiveFileName";
 const std::string FILE_H = "File_h";
 const std::string FILE_CPP = "File_cpp";
+const std::string TEMPLATE = "Template";

@@ -2,19 +2,20 @@
 
 AgentGenerator::AgentGenerator() {
     // Open the JSON file containing resource data
-    resources = readJson(RESOURCE_PATH, TEMPLATE_JSON);
-
     // Read the content of the header file
-    std::string fileH = readFile(RESOURCE_PATH, CLASS_H);
-
     // Store the content of the header file in the resources map
-    resources[FILE_H] = fileH;
-
     // Read the content of the source file (cpp file)
-    std::string fileCpp = readFile(RESOURCE_PATH, CLASS_CPP);
-
     // Store the content of the source file in the resources map
-    resources[FILE_CPP] = fileCpp;
+
+    //reactive
+    resources[REACTIVE][TEMPLATE] = readJson(RESOURCE_REACTIVE_PATH, TEMPLATE_REACTIVE_JSON);
+    resources[REACTIVE][FILE_H] = readFile(RESOURCE_REACTIVE_PATH, CLASS_REACTIVE_H);
+    resources[REACTIVE][FILE_CPP] = readFile(RESOURCE_REACTIVE_PATH, CLASS_REACTIVE_CPP);
+
+    //petri net
+    resources[PETRI_NET][TEMPLATE] = readJson(RESOURCE_PETRINET_PATH, TEMPLATE_PETRINET_JSON);
+    resources[PETRI_NET][FILE_H] = readFile(RESOURCE_PETRINET_PATH, CLASS_PETRINET_H);
+    resources[PETRI_NET][FILE_CPP] = readFile(RESOURCE_PETRINET_PATH, CLASS_PETRINET_CPP);
 }
 
 void AgentGenerator::processJson(json data) {
@@ -36,8 +37,7 @@ void AgentGenerator::processJson(json data) {
             processReactive(value[REACTIVE], agentId);
         }
         if (value.contains(PETRI_NET)) {
-            // PETRI_NET handling not implemented yet
-            // Add implementation if needed in the future
+            processPetriNet(value[PETRI_NET], agentId);
         }
 
         // Increment the agent ID for the next agent
@@ -47,8 +47,8 @@ void AgentGenerator::processJson(json data) {
 
 void AgentGenerator::processReactive(json data, AgentId_t agentId) {
     // Deep copy the template files
-    std::string agent_h = fmt::format(resources[FILE_H], agentId);
-    std::string agent_cpp = fmt::format(resources[FILE_CPP], agentId, agentId);
+    std::string agent_h = fmt::format(resources[REACTIVE][FILE_H], agentId);
+    std::string agent_cpp = fmt::format(resources[REACTIVE][FILE_CPP], agentId, agentId);
 
     // Initialize positions for insertion points
     size_t posAtr, posFun, posReg, posDef;
@@ -59,7 +59,7 @@ void AgentGenerator::processReactive(json data, AgentId_t agentId) {
         // Retrieve attribute data
         json atr = data[atrId];
         // Generate values to insert for attributes
-        std::string valuesToInsert = fmt::format(resources[TEMP_ATTRIBUTE], atr[TYPE_ATR], atr[NAME], atr[INIT_VALUE]);
+        std::string valuesToInsert = fmt::format(resources[REACTIVE][TEMPLATE][TEMP_ATTRIBUTE], atr[TYPE_ATR], atr[NAME], atr[INIT_VALUE]);
         // Insert values into the header file
         agent_h.insert(posAtr + SEARCH_ATR.length(), valuesToInsert);
     }
@@ -78,26 +78,26 @@ void AgentGenerator::processReactive(json data, AgentId_t agentId) {
             // Retrieve function data
             json funct = data[linked];
             // Generate values to insert for function definition
-            std::string valuesToInsert = fmt::format(resources[TEMP_FUNCTION_DEF], funct[NAME]);
+            std::string valuesToInsert = fmt::format(resources[REACTIVE][TEMPLATE][TEMP_FUNCTION_DEF], funct[NAME]);
             // Insert function definition into the header file
             agent_h.insert(posFun + SEARCH_FUNCT.length(), valuesToInsert);
             // Generate values to insert for function implementation
-            valuesToInsert = fmt::format(resources[TEMP_FUNCTION_IMPL], agentId, funct[NAME]);
+            valuesToInsert = fmt::format(resources[REACTIVE][TEMPLATE][TEMP_FUNCTION_IMPL], agentId, funct[NAME]);
             // Insert function implementation into the source file
             agent_cpp.insert(posDef + SEARCH_H.length(), valuesToInsert);
             // Find registration position in the source file
             posReg = agent_cpp.find(SEARCH_FUNCT);
             // Generate values to insert for function registration
-            valuesToInsert = fmt::format(resources[TEMP_FUNCTION_REG], service[SERVICE], funct[NAME]);
+            valuesToInsert = fmt::format(resources[REACTIVE][TEMPLATE][TEMP_FUNCTION_REG], service[SERVICE], funct[NAME]);
             // Insert function registration into the source file
             agent_cpp.insert(posReg + SEARCH_FUNCT.length(), valuesToInsert);
         }
     }
 
     // Save modified files
-    std::string fileName = fmt::format(resources[TEMP_REACTIVE_FILE_NAME], agentId);
-    saveFile(RESOURCE_PATH, fileName + ".h", agent_h);
-    saveFile(RESOURCE_PATH, fileName + ".cpp", agent_cpp);
+    std::string fileName = fmt::format(resources[REACTIVE][TEMPLATE][TEMP_REACTIVE_FILE_NAME], agentId);
+    saveFile(RESOURCE_REACTIVE_PATH, fileName + ".h", agent_h);
+    saveFile(RESOURCE_REACTIVE_PATH, fileName + ".cpp", agent_cpp);
 }
 
 std::string AgentGenerator::readFile(std::string path, std::string name) {
@@ -170,4 +170,8 @@ void AgentGenerator::saveFile(std::string path, std::string fileName, std::strin
 
     // Close the file
     outfile.close();
+}
+
+void AgentGenerator::processPetriNet(json data, int agentId) {
+    //empty
 }

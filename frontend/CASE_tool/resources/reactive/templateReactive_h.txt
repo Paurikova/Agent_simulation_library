@@ -8,6 +8,6 @@ class Agent{}ReactiveReasoning : public ReactiveReasoning {{
 private:
     //attributes
     //functions
-public:
+    //registration
     void registerFunctions() override;
 }};
