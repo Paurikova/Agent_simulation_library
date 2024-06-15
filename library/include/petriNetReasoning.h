@@ -4,9 +4,12 @@
 #include <memory>
 #include <vector>
 #include <algorithm>
+#include <deque>
+#include <unordered_set>
 
 #include "types.h"
 #include "agentReasoning.h"
+#include "uniqueDeque.h"
 
 /**
  * @brief Class representing Petri net reasoning functionality, derived from AgentReasoning.
