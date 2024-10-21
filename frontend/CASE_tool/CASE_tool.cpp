@@ -42,11 +42,31 @@ TextBuffer::TextBuffer(BufferType type) : Type(type), Buffer{} {
     }
 }
 
-Button::Button(const char* label): Label(label) {}
-
-Button::~Button() {
-    delete[] Label;
+json TextBuffer::Serialize() const {
+    return {
+            { BUFFER_TYPE, static_cast<int>(Type) },  // Serialize enum as int
+            { BUFFER_BUFFER, std::string(Buffer) }            // Convert char array to std::string
+    };
 }
+
+TextBuffer::TextBuffer(const json& data) : Type(static_cast<BufferType>(data.at(BUFFER_TYPE).get<int>())), // Initialize Type
+            Buffer{} // Initialize Buffer to an empty string
+    {
+    // Copy the buffer string from JSON data
+    std::string bufferStr = data.at(BUFFER_BUFFER).get<std::string>();
+    std::strncpy(Buffer, bufferStr.c_str(), sizeof(Buffer) - 1);
+    Buffer[sizeof(Buffer) - 1] = '\0'; // Ensure null termination
+}
+
+Button::Button(std::string label): Label(label.c_str()) {}
+
+json Button::Serialize() const {
+    return {
+            { BUTTON_LABEL, std::string(Label) } // Convert const char* to std::string
+    };
+}
+
+Button::Button(const json& data): Label(data.at(BUTTON_LABEL).get<std::string>()){}
 
 Pin::Pin(int id, const char* name, PinType type, TextBuffer* buffer, bool active):
         ID(id), Node(nullptr), Name(name), Type(type), Kind(PinKind::Input), PinBuffer(buffer), IsActive(active),
@@ -54,15 +74,158 @@ Pin::Pin(int id, const char* name, PinType type, TextBuffer* buffer, bool active
 {
 }
 
-Node::Node(int id, const char* name, NodeType type, ed::NodeId outsideId, ImColor color):
-        ID(id), Name(name), Color(color), Type(type), Size(0, 0), OutsideId(outsideId),
-        Deleted(false)
+json Pin::Serialize() const {
+    json jsonData = {
+            {PIN_ID, ID.Get()},
+            {PIN_NAME, Name},
+            {PIN_TYPE, static_cast<int>(Type)},
+            {PIN_KIND, static_cast<int>(Kind)},
+            {PIN_IS_ACTIVE, IsActive},
+            {PIN_LINK_IDS, json::array()},
+            {PIN_BUFFER, PinBuffer->Serialize()}
+    };
+    // Populate LinkIds
+    for (const auto& linkId : LinkIds) {
+        jsonData[PIN_LINK_IDS].push_back(linkId.Get());
+    }
+    // Serialize PinButton if it exists
+    if (PinButton) {
+        jsonData[PIN_BUTTON] = PinButton->Serialize();
+    }
+    return jsonData;
+}
+
+Pin::Pin(const json& data, struct Node* node) : ID(ed::PinId(data.at(PIN_ID).get<int>())),
+                                                Name(data.at(PIN_NAME).get<std::string>()),
+                                                Type(static_cast<PinType>(data.at(PIN_TYPE).get<int>())),
+                                                IsActive(data.at(PIN_IS_ACTIVE).get<bool>()),
+                                                Node(node),
+                                                LinkIds(), // Initialize LinkIds
+                                                PinButton(nullptr) // Initialize PinButton
 {
+    // Create the TextBuffer from JSON
+    PinBuffer = new TextBuffer(data.at(PIN_BUFFER)); // Assuming PinBuffer is a pointer
+
+    // Deserialize LinkIds
+    for (const auto& linkId : data.at(PIN_LINK_IDS)) {
+        LinkIds.push_back(ed::LinkId(linkId.get<int>()));
+    }
+    // Deserialize PinButton if it exists
+    if (data.contains(PIN_BUTTON)) {
+        PinButton = new Button(data.at(PIN_BUTTON)); // Handle memory management
+    }
+}
+
+Node::Node(int id, std::string name, NodeType type, ed::NodeId outsideId, ImColor color, AgentId_t agentId):
+        ID(id), AgentId(agentId), Name(name), Color(color), Type(type), Size(0, 0), OutsideId(outsideId), Deleted(false)
+{
+}
+
+json Node::Serialize() const {
+    json jsonData = {
+            {NODE_ID, ID.Get()},
+            {NODE_AGENT_ID, AgentId},
+            {NODE_NAME, Name},
+            {NODE_OUTSIDE_ID, OutsideId.Get()},
+            {NODE_COLOR, {Color.Value.x, Color.Value.y, Color.Value.z}},
+            {NODE_TYPE, static_cast<int>(Type)},
+            {NODE_SIZE, {Size.x, Size.y}},
+            {NODE_DELETED, Deleted},
+            {NODE_INPUTS, serializeVector(Inputs)},
+            {NODE_OUTPUTS, serializeVector(Outputs)},
+            {NODE_INSIDE_IDS, serializeNodeIds(InsideIds)},
+            {NODE_ASSOCIATED_IDS, serializeNodeIds(AssociatedIds)}
+    };
+    if (!State.empty()) {
+        jsonData.push_back({NODE_STATE, State});
+    }
+    if (!SavedState.empty()) {
+        jsonData.push_back({NODE_SAVED_STATE, SavedState});
+    }
+    return jsonData;
+}
+
+// Helper function to serialize a vector of Pins
+json Node::serializeVector(const std::vector<Pin>& pins) const {
+    json array = json::array();
+    for (const auto& pin : pins) {
+        array.push_back(pin.Serialize());
+    }
+    return array;
+}
+
+// Helper function to serialize a vector of Node IDs
+json Node::serializeNodeIds(const std::vector<ed::NodeId>& ids) const {
+    json array = json::array();
+    for (const auto& id : ids) {
+        array.push_back(id.Get());
+    }
+    return array;
+}
+
+Node::Node(const json& data)
+        : ID(ed::NodeId(data.at(NODE_ID).get<int>())),
+          AgentId(data.at(NODE_AGENT_ID).get<AgentId_t>()),
+          Name(data.at(NODE_NAME).get<std::string>()),
+          OutsideId(ed::NodeId(data.at(NODE_OUTSIDE_ID).get<int>())),
+          Color(ImColor(data.at(NODE_COLOR)[0].get<float>(),
+                        data.at(NODE_COLOR)[1].get<float>(),
+                        data.at(NODE_COLOR)[2].get<float>())),
+          Type(static_cast<NodeType>(data.at(NODE_TYPE).get<int>())),
+          Deleted(data.at(NODE_DELETED).get<bool>()),
+          Size({data.at(NODE_SIZE)[0].get<float>(), data.at(NODE_SIZE)[1].get<float>()})
+{
+    if (data.contains(NODE_STATE)) {
+        State = data.at(NODE_STATE).get<std::string>();
+
+    }
+    if (data.contains(NODE_SAVED_STATE)) {
+        SavedState = data.at(NODE_SAVED_STATE).get<std::string>();
+
+    }
+    // Deserialize Inputs
+    for (const auto& pinData : data.at(NODE_INPUTS)) {
+        Inputs.push_back(Pin(pinData, this)); // Assuming Pin has a fromJson method
+    }
+
+    // Deserialize Outputs
+    for (const auto& pinData : data.at(NODE_OUTPUTS)) {
+        Outputs.push_back(Pin(pinData, this)); // Assuming Pin has a fromJson method
+    }
+
+    // Deserialize InsideIds
+    for (const auto& id : data.at(NODE_INSIDE_IDS)) {
+        InsideIds.push_back(ed::NodeId(id.get<int>()));
+    }
+
+    // Deserialize AssociatedIds
+    for (const auto& id : data.at(NODE_ASSOCIATED_IDS)) {
+        AssociatedIds.push_back(ed::NodeId(id.get<int>()));
+    }
 }
 
 Link::Link(ed::LinkId id, ed::PinId startPinId, ed::PinId endPinId):
         ID(id), StartPinID(startPinId), EndPinID(endPinId), Color(255, 255, 255)
 {
+}
+
+json Link::Serialize() const {
+    return {
+            {LINK_ID, ID.Get()},
+            {LINK_START_PIN_ID, StartPinID.Get()},
+            {LINK_END_PIN_ID, EndPinID.Get()},
+            {LINK_COLOR, {Color.Value.x, Color.Value.y, Color.Value.z}} // Serialize ImColor as an array
+    };
+}
+
+Link::Link(const json& data)
+        : ID(ed::LinkId(data.at(LINK_ID).get<int>())),
+          StartPinID(ed::PinId(data.at(LINK_START_PIN_ID).get<int>())),
+          EndPinID(ed::PinId(data.at(LINK_END_PIN_ID).get<int>()))
+{
+    Color = ImColor(data.at(LINK_COLOR)[0].get<float>(),
+                          data.at(LINK_COLOR)[1].get<float>(),
+                          data.at(LINK_COLOR)[2].get<float>());
 }
 
 bool NodeIdLess::operator()(const ed::NodeId& lhs, const ed::NodeId& rhs) const
@@ -131,6 +294,10 @@ void CASE_tool::ReleaseTextures() {
 
 int CASE_tool::GetNextId() {
     return m_NextId++;
+}
+
+AgentId_t CASE_tool::GetNextAgentId() {
+    return m_NextAgentId++;
 }
 
 void CASE_tool::TouchNode(ed::NodeId id) {
@@ -216,7 +383,8 @@ void CASE_tool::SetButtonLabel(Button* button, const char* label) {
 
 Node* CASE_tool::SpawnAgentNodeTree()
 {
-    m_Nodes.emplace_back(GetNextId(), "Agent Relationships", NodeType::ExtAgent, 0);
+    AgentId_t agentId = GetNextAgentId();
+    m_Nodes.emplace_back(GetNextId(), "Agent Relationships " + std::to_string(agentId), NodeType::ExtAgent, 0, ImColor(255, 255, 255), agentId);
     m_Nodes.back().Inputs.emplace_back(GetNextId(), "", PinType::Relationship, NewTextBuffer(BufferType::Empty));
     m_Nodes.back().Outputs.emplace_back(GetNextId(), "", PinType::Relationship, NewTextBuffer(BufferType::Empty));
     BuildNode(&m_Nodes.back());
@@ -227,7 +395,7 @@ Node* CASE_tool::SpawnAgentNodeTree()
 
 Node* CASE_tool::SpawnAgentNodeResponsibilities(ed::NodeId outsideId)
 {
-    m_Nodes.emplace_back(GetNextId(), "Agent Responsibilities", NodeType::RespAgent, outsideId);
+    m_Nodes.emplace_back(GetNextId(), "Agent Responsibilities", NodeType::RespAgent, outsideId, ImColor(255, 255, 255));
     m_Nodes.back().Inputs.emplace_back(GetNextId(), "Reasoning", PinType::Reasoning, NewTextBuffer(BufferType::Empty));
     m_Nodes.back().Outputs.emplace_back(GetNextId(), "Services", PinType::Service, NewTextBuffer(BufferType::Empty));
     BuildNode(&m_Nodes.back());
@@ -237,7 +405,7 @@ Node* CASE_tool::SpawnAgentNodeResponsibilities(ed::NodeId outsideId)
 
 Node* CASE_tool::SpawnReasoningAttributes(ed::NodeId outsideId)
 {
-    m_Nodes.emplace_back(GetNextId(), "Attributes", NodeType::Group, outsideId);
+    m_Nodes.emplace_back(GetNextId(), "Attributes", NodeType::Group, outsideId, ImColor(255, 255, 255));
     m_Nodes.back().Size = ImVec2(280, 500);
     return &m_Nodes.back();
 }
@@ -323,7 +491,7 @@ void CASE_tool::SpawnAgent(ImVec2 position) {
     // relationships
     Node* node = SpawnAgentNodeTree(); ed::SetNodePosition(node->ID, position);
     // responsibilities
-    node = SpawnAgentNodeResponsibilities(node->ID); ed::SetNodePosition(node->ID, position);
+    node = SpawnAgentNodeResponsibilities(node->ID);
 }
 
 Node* CASE_tool::SpawnServiceIdNodeResponsibilities(ed::NodeId outsideId)
@@ -384,7 +552,7 @@ Node* CASE_tool::SpawnConditionNode(ed::NodeId outsideId)
     m_Nodes.emplace_back(GetNextId(), "", NodeType::SimpleCond, outsideId,ImColor(128, 195, 248));
     m_Nodes.back().Inputs.emplace_back(GetNextId(), "", PinType::Function, NewTextBuffer(BufferType::Empty));
     //An option for user choice of condition from menu
-    m_Nodes.back().Inputs.back().PinButton = new Button("Condition");
+    m_Nodes.back().Inputs.back().PinButton = new Button(std::string ("Condition"));
     m_Nodes.back().Outputs.emplace_back(GetNextId(), "IF", PinType::Function, NewTextBuffer(BufferType::Empty));
     m_Nodes.back().Outputs.emplace_back(GetNextId(), "ElSE", PinType::Function, NewTextBuffer(BufferType::Empty));
     AddInsideNodeId(outsideId, m_Nodes.back().ID);
@@ -527,73 +695,6 @@ void CASE_tool::DrawPinIcon(const Pin& pin, bool connected, int alpha) const
     ax::Widgets::Icon(ImVec2(static_cast<float>(m_PinIconSize), static_cast<float>(m_PinIconSize)), iconType, connected, color, ImColor(32, 32, 32, alpha));
 }
 
-void CASE_tool::ShowStyleEditor(bool* show)
-{
-    if (!ImGui::Begin("Style", show))
-    {
-        ImGui::End();
-        return;
-    }
-
-    auto paneWidth = ImGui::GetContentRegionAvail().x;
-
-    auto& editorStyle = ed::GetStyle();
-    ImGui::BeginHorizontal("Style buttons", ImVec2(paneWidth, 0), 1.0f);
-    ImGui::TextUnformatted("Values");
-    ImGui::Spring();
-    if (ImGui::Button("Reset to defaults"))
-        editorStyle = ed::Style();
-    ImGui::EndHorizontal();
-    ImGui::Spacing();
-    ImGui::DragFloat4("Node Padding", &editorStyle.NodePadding.x, 0.1f, 0.0f, 40.0f);
-    ImGui::DragFloat("Node Rounding", &editorStyle.NodeRounding, 0.1f, 0.0f, 40.0f);
-    ImGui::DragFloat("Node Border Width", &editorStyle.NodeBorderWidth, 0.1f, 0.0f, 15.0f);
-    ImGui::DragFloat("Hovered Node Border Width", &editorStyle.HoveredNodeBorderWidth, 0.1f, 0.0f, 15.0f);
-    ImGui::DragFloat("Hovered Node Border Offset", &editorStyle.HoverNodeBorderOffset, 0.1f, -40.0f, 40.0f);
-    ImGui::DragFloat("Selected Node Border Width", &editorStyle.SelectedNodeBorderWidth, 0.1f, 0.0f, 15.0f);
-    ImGui::DragFloat("Selected Node Border Offset", &editorStyle.SelectedNodeBorderOffset, 0.1f, -40.0f, 40.0f);
-    ImGui::DragFloat("Pin Rounding", &editorStyle.PinRounding, 0.1f, 0.0f, 40.0f);
-    ImGui::DragFloat("Pin Border Width", &editorStyle.PinBorderWidth, 0.1f, 0.0f, 15.0f);
-    ImGui::DragFloat("Link Strength", &editorStyle.LinkStrength, 1.0f, 0.0f, 500.0f);
-    ImGui::DragFloat("Scroll Duration", &editorStyle.ScrollDuration, 0.001f, 0.0f, 2.0f);
-    ImGui::DragFloat("Flow Marker Distance", &editorStyle.FlowMarkerDistance, 1.0f, 1.0f, 200.0f);
-    ImGui::DragFloat("Flow Speed", &editorStyle.FlowSpeed, 1.0f, 1.0f, 2000.0f);
-    ImGui::DragFloat("Flow Duration", &editorStyle.FlowDuration, 0.001f, 0.0f, 5.0f);
-    ImGui::DragFloat("Group Rounding", &editorStyle.GroupRounding, 0.1f, 0.0f, 40.0f);
-    ImGui::DragFloat("Group Border Width", &editorStyle.GroupBorderWidth, 0.1f, 0.0f, 15.0f);
-
-    ImGui::Separator();
-
-    static ImGuiColorEditFlags edit_mode = ImGuiColorEditFlags_DisplayRGB;
-    ImGui::BeginHorizontal("Color Mode", ImVec2(paneWidth, 0), 1.0f);
-    ImGui::TextUnformatted("Filter Colors");
-    ImGui::Spring();
-    ImGui::RadioButton("RGB", &edit_mode, ImGuiColorEditFlags_DisplayRGB);
-    ImGui::Spring(0);
-    ImGui::RadioButton("HSV", &edit_mode, ImGuiColorEditFlags_DisplayHSV);
-    ImGui::Spring(0);
-    ImGui::RadioButton("HEX", &edit_mode, ImGuiColorEditFlags_DisplayHex);
-    ImGui::EndHorizontal();
-
-    static ImGuiTextFilter filter;
-    filter.Draw("##filter", paneWidth);
-
-    ImGui::Spacing();
-
-    ImGui::PushItemWidth(-160);
-    for (int i = 0; i < ed::StyleColor_Count; ++i)
-    {
-        auto name = ed::GetStyleColorName((ed::StyleColor)i);
-        if (!filter.PassFilter(name))
-            continue;
-
-        ImGui::ColorEdit4(name, &editorStyle.Colors[i].x, edit_mode);
-    }
-    ImGui::PopItemWidth();
-
-    ImGui::End();
-}
-
 void CASE_tool::ShowLeftPane(float paneWidth)
 {
     auto& io = ImGui::GetIO();
@@ -602,19 +703,42 @@ void CASE_tool::ShowLeftPane(float paneWidth)
 
     paneWidth = ImGui::GetContentRegionAvail().x;
 
-    static bool showStyleEditor = false;
+    static bool showProjectEditor = false;
+    static bool showGenerateCodeEditor = false;
+    static bool showErrorMessageEditor = false;
+
     ImGui::BeginHorizontal("Style Editor", ImVec2(paneWidth, 0));
     ImGui::Spring(0.0f, 0.0f);
     if (ImGui::Button("Zoom to Content"))
         ed::NavigateToContent();
     ImGui::Spring(0.0f);
         if (ImGui::Button("Generate Code"))
-            agentGenerator->processJson(GetData());
+            showGenerateCodeEditor = true;
+        if (ImGui::Button("Project")) {
+            showProjectEditor = true;
+        }
     ImGui::Spring();
     ImGui::EndHorizontal();
 
-    if (showStyleEditor)
-        ShowStyleEditor(&showStyleEditor);
+    if (showProjectEditor) {
+        try {
+            ShowProjectEditor(&showProjectEditor);
+        } catch (const std::runtime_error& e) {
+            showErrorMessageEditor = true;
+        }
+    }
+
+    if (showGenerateCodeEditor) {
+        try {
+            ShowGenerateCodeEditor(&showGenerateCodeEditor);
+        } catch (const std::runtime_error& e) {
+            showErrorMessageEditor = true;
+        }
+    }
+
+    if (showErrorMessageEditor) {
+        ShowErrorMessageEditor(&showErrorMessageEditor);
+    }
 
     ImGui::GetWindowDrawList()->AddRectFilled(
             ImGui::GetCursorScreenPos(),
@@ -714,7 +838,7 @@ void CASE_tool::BlueprintAndSimpleInputs(Node& node, Pin* newLinkPin, util::Blue
 
         //Button definition for condition node
         if (node.Type == NodeType::SimpleCond) {
-            if (ImGui::Button(input.PinButton->Label)) {
+            if (ImGui::Button(input.PinButton->Label.c_str())) {
                 m_ActiveButton = input.PinButton;
             }
         }
@@ -1422,6 +1546,84 @@ void CASE_tool::AddLinkToPin(ed::PinId pinId, ed::LinkId linkId) {
     pin->LinkIds.push_back(linkId);
 }
 
+json CASE_tool::Serialize() {
+    json data_json = {
+            {CASE_TOOL_NODES, SerializeNodes()},
+            {CASE_TOOL_LINKS, SerializeLinks()},
+            {CASE_TOOL_AGENTS, SerializeAgents()},
+            {CASE_TOOL_NEXT_ID, m_NextId},
+            {CASE_TOOL_NEXT_AGENT_ID, m_NextAgentId}
+    };
+    return data_json;
+}
+
+void CASE_tool::Deserialize(const json &data) {
+    m_NextId = data.at(CASE_TOOL_NEXT_ID).get<int>();
+    m_NextAgentId = data.at(CASE_TOOL_NEXT_AGENT_ID).get<int>();
+    m_Nodes.clear();
+    m_Nodes = DeserializeNodes(data.at(CASE_TOOL_NODES));
+    m_Agents.clear();
+    m_Agents = DeserializeAgents(data.at(CASE_TOOL_AGENTS));
+    m_Links.clear();
+    m_Links = DeserializeLinks(data.at(CASE_TOOL_LINKS));
+
+    m_Inside = 0;
+}
+
+// Helper function to serialize nodes
+json CASE_tool::SerializeNodes() const {
+    json nodes_array = json::array();
+    for (const Node& node : m_Nodes) {
+        nodes_array.push_back(node.Serialize());
+    }
+    return nodes_array;
+}
+
+// Helper function to serialize links
+json CASE_tool::SerializeLinks() const {
+    json links_array = json::array();
+    for (const Link& link : m_Links) {
+        links_array.push_back(link.Serialize());
+    }
+    return links_array;
+}
+
+// Helper function to serialize agents
+json CASE_tool::SerializeAgents() const {
+    json agents_array = json::array();
+    for (const ed::NodeId& id : m_Agents) {
+        agents_array.push_back(id.Get());
+    }
+    return agents_array;
+}
+
+// Helper function to deserialize nodes
+std::vector<Node> CASE_tool::DeserializeNodes(const json& nodes_data) {
+    std::vector<Node> nodes;
+    for (const auto& node_data : nodes_data) {
+        nodes.emplace_back(Node(node_data)); // Assuming Node has a constructor that takes json
+    }
+    return nodes;
+}
+
+// Helper function to deserialize links
+std::vector<Link> CASE_tool::DeserializeLinks(const json& links_data) {
+    std::vector<Link> links;
+    for (const auto& link_data : links_data) {
+        links.emplace_back(Link(link_data)); // Assuming Link has a constructor that takes json
+    }
+    return links;
+}
+
+// Helper function to deserialize agents
+std::vector<ed::NodeId> CASE_tool::DeserializeAgents(const json& agents_data) {
+    std::vector<ed::NodeId> agents;
+    for (const auto& agent_id : agents_data) {
+        agents.emplace_back(ed::NodeId(agent_id.get<int>())); // Assuming ed::NodeId has a constructor that takes int
+    }
+    return agents;
+}
+
 //TODO: petri net missing, agent relationships missing
 json CASE_tool::GetData() {
     // JSON object to hold the data
@@ -1432,7 +1634,6 @@ json CASE_tool::GetData() {
     for (ed::NodeId id : m_Agents) {
         // Get the current agent node
         Node *node = FindNode(id);
-
         // Add agent and his parent to the hierarchy JSON
         if (id.Get() != 1 && node->Inputs.at(0).LinkIds.empty()) {
             // We don't want data about an agent that is not part of the hierarchy, except for the master agent
@@ -1442,7 +1643,7 @@ json CASE_tool::GetData() {
             //find parent ID
             Pin *parentPin = FindPin(FindLink(node->Inputs.at(0).LinkIds.at(0))->StartPinID);
             hierarchy_json[std::to_string(id.Get())] = std::to_string(parentPin->Node->ID.Get());
-        }
+       }
 
         // Get the responsible agent node
         Node *respAgent = FindNode(node->InsideIds.at(0));
@@ -1466,6 +1667,8 @@ json CASE_tool::GetData() {
 
         // Create JSON data from agent reasoning
         json agent_json = {};
+        // Add Agent Id
+        agent_json[AGENT_ID] = node->AgentId;
         for (ed::NodeId respId: node->InsideIds) {
             Node *respNode = FindNode(respId);
             // Check if it's reactive reasoning
@@ -1590,6 +1793,70 @@ void CASE_tool::AddLinkedNodes(std::vector<ed::LinkId> &links, std::string key, 
     for (auto id : links) {
         data[key].push_back(std::to_string(FindPin(FindLink(id)->EndPinID)->Node->ID.Get()));
     }
+}
+
+
+void CASE_tool::ShowProjectEditor(bool* show) {
+    if (!ImGui::Begin("Project options", show)) {
+        ImGui::End();
+        return;
+    }
+    static char strFileName[128] = "Input";
+    ImGui::InputText("File Name", strFileName, IM_ARRAYSIZE(strFileName));
+    static char strFilePath[128] = "Input";
+    ImGui::InputText("File Path", strFilePath, IM_ARRAYSIZE(strFilePath));
+    try {
+        if (ImGui::Button("Load")) {
+            *show = false;
+            Deserialize(fileManager->readJson(strFilePath, strFileName));
+        }
+        if (ImGui::Button("Save")) {
+            *show = false;
+            fileManager->saveJson(strFilePath, strFileName, Serialize());
+        }
+    } catch (const std::runtime_error &e) {
+        ImGui::End();
+        throw e;
+    }
+    ImGui::End();
+}
+
+
+void CASE_tool::ShowGenerateCodeEditor(bool* show) {
+    if (!ImGui::Begin("Generate code options", show)) {
+        ImGui::End();
+        return;
+    }
+    static char strFilePath[128] = "Input";
+    ImGui::InputText("File Path", strFilePath, IM_ARRAYSIZE(strFilePath));
+    try {
+        if (ImGui::Button("Generate")) {
+            *show = false;
+            agentGenerator->processJson(GetData(), strFilePath);
+        }
+    } catch (const std::runtime_error &e) {
+        ImGui::End();
+        throw e;
+    }
+    ImGui::End();
+}
+
+
+void CASE_tool::ShowErrorMessageEditor(bool* show) {
+    if (!ImGui::Begin("Message window", show)) {
+        ImGui::End();
+        return;
+    }
+    ImGui::Text("Error during file processing");
+    if (ImGui::Button("OK")) {
+        *show = false;
+    }
+    ImGui::End();
+}
+
+ed::LinkId CASE_tool::GetNextLinkId()
+{
+    return ed::LinkId(GetNextId());
 }
 
 int Main(int argc, char** argv)

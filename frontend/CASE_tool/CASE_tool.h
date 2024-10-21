@@ -9,8 +9,8 @@
 #include <nlohmann/json.hpp>
 #include <fstream>
 #include <iostream>
-#include <iostream>
 #include <unordered_set>
+#include <unordered_map>
 
 #include "application.h"
 #include "utilities/builders.h"
@@ -82,17 +82,21 @@ struct Node;
 struct TextBuffer {
     BufferType Type;
     char Buffer[128];
-
     explicit TextBuffer(BufferType type);
+    // Deserialize
+    explicit TextBuffer(const json& data);
+    json Serialize() const;
 };
 
 /**
  * Structure for condition node.
  */
 struct Button {
-    const char* Label;
-    explicit Button(const char* label);
-    ~Button();
+    std::string Label = "";
+    explicit Button(std::string label);
+    // Deserialize
+    explicit Button(const json& data);
+    json Serialize() const;
 };
 
 /**
@@ -111,6 +115,9 @@ struct Pin {
     Button*     PinButton;
 
     Pin(int id, const char* name, PinType type, TextBuffer* buffer, bool active = true);
+    // Deserialize
+    Pin(const json& data, struct Node* node);
+    json Serialize() const;
 };
 
 /**
@@ -119,6 +126,7 @@ struct Pin {
  */
 struct Node {
     ed::NodeId ID;
+    AgentId_t AgentId;
     std::string Name;
     std::vector<Pin> Inputs;
     std::vector<Pin> Outputs;
@@ -132,8 +140,14 @@ struct Node {
 
     std::string State;
     std::string SavedState;
-
-    Node(int id, const char* name, NodeType type, ed::NodeId outsideId, ImColor color = ImColor(255, 255, 255));
+    Node(int id, std::string name, NodeType type, ed::NodeId outsideId, ImColor color, AgentId_t agentId = -1);
+    // Deserialize
+    Node(const json& data);
+    json Serialize() const;
+    
+private:
+    json serializeVector(const std::vector<Pin>& pins) const;
+    json serializeNodeIds(const std::vector<ed::NodeId>& ids) const;
 };
 
 /**
@@ -146,6 +160,9 @@ struct Link {
     ImColor Color;
 
     Link(ed::LinkId id, ed::PinId startPinId, ed::PinId endPinId);
+    // Deserialize
+    Link(const json& data);
+    json Serialize() const;
 };
 
 /**
@@ -169,9 +186,13 @@ bool Splitter(bool split_vertically, float thickness, float* size1, float* size2
 
 struct CASE_tool : public Application {
     using Application::Application;
+    const std::string RESOURCE_PATH = "/home/miska/CLionProjects/Agent_simulation_library/frontend/CASE_tool/resources"; /**< Default path to resources. */
+    typedef int AgentId;
+
 private:
     ed::EditorContext* m_Editor;
     int                  m_NextId = 1;
+    AgentId_t            m_NextAgentId = 1;
     const int            m_PinIconSize = 24;
     const int            MANAGER_AGENT_ID = 1; // << if of agent manager
     std::vector<Node>    m_Nodes;
@@ -185,13 +206,14 @@ private:
     ed::NodeId           m_ContextNodeId = 0; // << id of context node
     ed::NodeId           m_Inside = 0; // << id of the node we are currently on
     Button*              m_ActiveButton = nullptr; // << pointer to active button in condition node
-    AgentGenerator*      agentGenerator = new AgentGenerator();
+    std::unique_ptr<AgentGenerator> agentGenerator = std::make_unique<AgentGenerator>();
+    std::unique_ptr<FileManager> fileManager = std::make_unique<FileManager>();
 public:
     /**
      * Constructor.
      */
     CASE_tool();
-
+    
     /**
      * Destructor.
      */
@@ -203,10 +225,16 @@ private:
     void ReleaseTextures();
 
     /**
-     * Get next agent Id.
+     * Get next node Id.
      * @return ID
      */
     int GetNextId();
+
+    /**
+     * Get next agent Id.
+     * @return ID
+     */
+    int GetNextAgentId();
 
     /**
      * From imgui-node-editor-master.
@@ -470,11 +498,6 @@ private:
     void DrawPinIcon(const Pin& pin, bool connected, int alpha) const;
 
     /**
-     * From imgui-node-editor-master.
-     */
-    static void ShowStyleEditor(bool* show = nullptr);
-
-    /**
      * Add node to its outside node.
      * @param outsideId outside node id
      * @param insideId  added node id
@@ -494,6 +517,56 @@ private:
      */
     void DeleteNode(ed::NodeId nodeId);
 
+    /**
+     * This method converts the internal state of the CASE_tool object, including nodes,
+     * links, agents, and IDs, into a JSON format suitable for saving or transferring.
+     *
+     * @return json
+     */
+    json Serialize();
+
+    /**
+    * Loads project data from a JSON object.
+    * @param data The JSON object containing project data to load.
+    */
+    void Deserialize(const json& data);
+
+    /**
+     * Helper function to serialize nodes.
+     * @return serialized nodes
+     */
+    json SerializeNodes() const;
+
+    /**
+     * Helper function to serialize links.
+     * @return serialized links
+     */
+    json SerializeLinks() const;
+
+    /**
+     * Helper function to serialize agents.
+     * @return serialized agents
+     */
+    json SerializeAgents() const;
+
+    /**
+    * Helper function to deserialize nodes.
+    * @return deserialized nodes
+    */
+    std::vector<Node> DeserializeNodes(const json& nodes_data);
+
+    /**
+     * Helper function to deserialize links.
+     * @return deserialized links
+     */
+    std::vector<Link> DeserializeLinks(const json& links_data);
+    
+    /**
+     * Helper function to deserialize agents.
+     * @return deserialized agents
+     */
+    std::vector<ed::NodeId> DeserializeAgents(const json& agents_data);
+    
     /**
      * @brief Retrieves data from the current state of the application and saves it as JSON.
      *
@@ -516,4 +589,11 @@ private:
      * @param data The JSON object to which the linked nodes will be added.
      */
     void AddLinkedNodes(std::vector<ed::LinkId> &links, std::string key, json &data);
+
+    void ShowProjectEditor(bool* show = nullptr);
+    void ShowGenerateCodeEditor(bool* show = nullptr);
+    void ShowErrorMessageEditor(bool* show = nullptr);
+
+    ed::LinkId GetNextLinkId();
+    //void LoadProject(json input);
 };

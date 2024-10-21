@@ -8,4 +8,5 @@ add_frontend_executable(CASE_tool
         utilities/builders.cpp
         utilities/drawing.cpp
         utilities/widgets.cpp
+        fileManager.cpp
 )

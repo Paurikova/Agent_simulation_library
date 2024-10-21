@@ -2,8 +2,6 @@
 
 #include <vector>
 #include <utility>
-#include <iostream>
-#include <fstream>
 #include <nlohmann/json.hpp>
 #include <iostream>
 #include <fmt/format.h>
@@ -11,6 +9,7 @@
 #include <string>
 
 #include "types.h"
+#include "fileManager.h"
 
 using json = nlohmann::json;
 
@@ -40,7 +39,7 @@ private:
     //TODO absolute path
     const std::string RESOURCE_MAIN_PATH = "/home/miska/CLionProjects/Agent_simulation_library/frontend/CASE_tool/resources"; /**< Default path to resources. */
 
-
+    std::unique_ptr<FileManager> fileManager;
     nlohmann::json outputJson; /**< JSON object to store output data. */
     nlohmann::json resources; /**< JSON object to store resource data. */
     std::map<int, int> node2Agent; /**< Map to store node-to-agent mappings. */
@@ -54,7 +53,7 @@ public:
      * @brief Processes the input JSON data to generate agent files.
      * @param data The input JSON data.
      */
-    void processJson(json data);
+    void processJson(json data, std::string path);
 
 private:
     /**
@@ -62,33 +61,9 @@ private:
      * @param data The reactive agent JSON data.
      * @param agentId The ID of the agent being processed.
      */
-    void processReactive(json data, int agentId);
+    void processReactive(json data, std::string path, int agentId);
 
-    void processPetriNet(json data, int agentId);
+    void processPetriNet(json data, std::string path, int agentId);
 
     void processMain(json data);
-
-    /**
-     * @brief Reads the content of a file and returns it as a string.
-     * @param path The path to the file.
-     * @param name The name of the file.
-     * @return The content of the file as a string.
-     */
-    std::string readFile(std::string path, std::string name);
-
-    /**
-     * @brief Reads and parses a JSON file.
-     * @param path The path to the JSON file.
-     * @param name The name of the JSON file.
-     * @return The parsed JSON data.
-     */
-    json readJson(std::string path, std::string name);
-
-    /**
-     * @brief Saves data to a file.
-     * @param path The path to the directory where the file will be saved.
-     * @param fileName The name of the file.
-     * @param data The data to be written to the file.
-     */
-    void saveFile(std::string path, std::string fileName, std::string data);
 };

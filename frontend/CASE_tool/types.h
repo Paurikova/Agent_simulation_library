@@ -3,8 +3,53 @@
 //TODO clean it
 using AgentId_t = int; // type for agent ID
 
-const AgentId_t REASONING_ID_START = 1;
 const AgentId_t MANAGER_ID = 1;
+
+//node attributes
+const std::string NODE_ID = "ID";
+const std::string NODE_AGENT_ID = "AgentId";
+const std::string NODE_NAME = "Name";
+const std::string NODE_OUTSIDE_ID = "OutsideId";
+const std::string NODE_COLOR = "Color";
+const std::string NODE_TYPE = "Type";
+const std::string NODE_SIZE = "Size";
+const std::string NODE_DELETED = "Deleted";
+const std::string NODE_STATE = "State";
+const std::string NODE_SAVED_STATE = "SavedState";
+const std::string NODE_INPUTS = "Inputs";
+const std::string NODE_OUTPUTS = "Outputs";
+const std::string NODE_INSIDE_IDS = "InsideIds";
+const std::string NODE_ASSOCIATED_IDS = "AssociatedIds";
+
+//pin attributes
+const std::string PIN_ID = "ID";
+const std::string PIN_NAME = "Name";
+const std::string PIN_TYPE = "Type";
+const std::string PIN_KIND = "Kind";
+const std::string PIN_IS_ACTIVE = "IsActive";
+const std::string PIN_LINK_IDS = "LinkIds";
+const std::string PIN_BUTTON = "PinButton";
+const std::string PIN_BUFFER = "PinBuffer";
+
+//button attributes
+const std::string BUTTON_LABEL = "Label";
+
+//buffer attributes
+const std::string BUFFER_TYPE = "Type";
+const std::string BUFFER_BUFFER = "Buffer";
+
+//Link attributes
+const std::string LINK_ID = "ID";
+const std::string LINK_START_PIN_ID = "StartPinID";
+const std::string LINK_END_PIN_ID = "EndPinID";
+const std::string LINK_COLOR = "Color";
+
+//json types
+const std::string CASE_TOOL_NODES = "m_Nodes";
+const std::string CASE_TOOL_LINKS = "m_Links";
+const std::string CASE_TOOL_AGENTS = "m_Agents";
+const std::string CASE_TOOL_NEXT_ID = "m_NextId";
+const std::string CASE_TOOL_NEXT_AGENT_ID = "m_NextAgentId";
 
 //json types
 //node types
@@ -26,6 +71,7 @@ const std::string FUNCTIONS = "Functions";
 
 //reasoning types
 const std::string REACTIVE = "Reactive";
+const std::string AGENT_ID = "Id";
 const std::string PETRI_NET = "PetriNet";
 const std::string MAIN = "Main";
 

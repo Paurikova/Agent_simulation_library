@@ -7,48 +7,46 @@ AgentGenerator::AgentGenerator() {
     // Read the content of the source file (cpp file)
     // Store the content of the source file in the resources map
 
+    fileManager = std::make_unique<FileManager>();
     //reactive
-    resources[REACTIVE][TEMPLATE] = readJson(RESOURCE_REACTIVE_PATH, TEMPLATE_REACTIVE_JSON);
-    resources[REACTIVE][FILE_H] = readFile(RESOURCE_REACTIVE_PATH, CLASS_REACTIVE_H);
-    resources[REACTIVE][FILE_CPP] = readFile(RESOURCE_REACTIVE_PATH, CLASS_REACTIVE_CPP);
+    resources[REACTIVE][TEMPLATE] = fileManager->readJson(RESOURCE_REACTIVE_PATH, TEMPLATE_REACTIVE_JSON);
+    resources[REACTIVE][FILE_H] = fileManager->readFile(RESOURCE_REACTIVE_PATH, CLASS_REACTIVE_H);
+    resources[REACTIVE][FILE_CPP] = fileManager->readFile(RESOURCE_REACTIVE_PATH, CLASS_REACTIVE_CPP);
 
     //petri net
-    resources[PETRI_NET][TEMPLATE] = readJson(RESOURCE_PETRINET_PATH, TEMPLATE_PETRINET_JSON);
-    resources[PETRI_NET][FILE_H] = readFile(RESOURCE_PETRINET_PATH, CLASS_PETRINET_H);
-    resources[PETRI_NET][FILE_CPP] = readFile(RESOURCE_PETRINET_PATH, CLASS_PETRINET_CPP);
+    resources[PETRI_NET][TEMPLATE] = fileManager->readJson(RESOURCE_PETRINET_PATH, TEMPLATE_PETRINET_JSON);
+    resources[PETRI_NET][FILE_H] = fileManager->readFile(RESOURCE_PETRINET_PATH, CLASS_PETRINET_H);
+    resources[PETRI_NET][FILE_CPP] = fileManager->readFile(RESOURCE_PETRINET_PATH, CLASS_PETRINET_CPP);
 
     //main
-    resources[MAIN][TEMPLATE] = readJson(RESOURCE_MAIN_PATH, TEMPLATE_MAIN_JSON);
+    resources[MAIN][TEMPLATE] = fileManager->readJson(RESOURCE_MAIN_PATH, TEMPLATE_MAIN_JSON);
 }
 
-void AgentGenerator::processJson(json data) {
+void AgentGenerator::processJson(json data, std::string path) {
     // Extract relevant JSON objects
     json source = data[DATA];
     json hierarchy = data[HIERARCHY];
 
     // Initialize the starting ID for agents
-    AgentId_t agentId = REASONING_ID_START;
-
+    AgentId_t agentId;
     // Iterate through each agent in the source data
     for (auto& [key, value] : source.items()) {
+        agentId = value[AGENT_ID];
         // Map the node ID to the corresponding agent ID
         node2Agent[std::stoi(key)] = agentId;
 
         // Process the agent based on its type
         if (value.contains(REACTIVE)) {
             // Process a reactive agent
-            processReactive(value[REACTIVE], agentId);
+            processReactive(value[REACTIVE], path, agentId);
         }
         if (value.contains(PETRI_NET)) {
-            processPetriNet(value[PETRI_NET], agentId);
+            processPetriNet(value[PETRI_NET], path, agentId);
         }
-
-        // Increment the agent ID for the next agent
-        agentId++;
     }
 }
 
-void AgentGenerator::processReactive(json data, AgentId_t agentId) {
+void AgentGenerator::processReactive(json data, std::string path, AgentId_t agentId) {
     // Deep copy the template files
     std::string agent_h = fmt::format(resources[REACTIVE][FILE_H], agentId);
     std::string agent_cpp = fmt::format(resources[REACTIVE][FILE_CPP], agentId, agentId);
@@ -109,83 +107,12 @@ void AgentGenerator::processReactive(json data, AgentId_t agentId) {
 
     // Save modified files
     std::string fileName = fmt::format(resources[REACTIVE][TEMPLATE][TEMP_REACTIVE_FILE_NAME], agentId);
-    saveFile(RESOURCE_REACTIVE_PATH, fileName + ".h", agent_h);
-    saveFile(RESOURCE_REACTIVE_PATH, fileName + ".cpp", agent_cpp);
+    fileManager->saveFile(path, fileName + ".h", agent_h);
+    fileManager->saveFile(RESOURCE_REACTIVE_PATH, fileName + ".cpp", agent_cpp);
 }
 
-std::string AgentGenerator::readFile(std::string path, std::string name) {
-    // Concatenate the path and name to form the full file name
-    std::string fullName = fmt::format("{}/{}", path, name);
 
-    // Open the file
-    std::ifstream fileSource(fullName);
-
-    // Check if the file is successfully opened
-    if (!fileSource.is_open()) {
-        // Throw a runtime error if the file cannot be opened
-        throw std::runtime_error(fmt::format("Error: Unable to open file {}.", fullName));
-    }
-
-    // Read the content of the file into a string
-    std::string file_str((std::istreambuf_iterator<char>(fileSource)), std::istreambuf_iterator<char>());
-
-    // Close the file
-    fileSource.close();
-
-    // Return the file content as a string
-    return file_str;
-}
-
-json AgentGenerator::readJson(std::string path, std::string name) {
-    // Concatenate the path and name to form the full file name
-    std::string fullName = fmt::format("{}/{}", path, name);
-
-    // Open the JSON file
-    std::ifstream fileSource(fullName);
-
-    // Check if the file is successfully opened
-    if (!fileSource.is_open()) {
-        // Throw a runtime error if the file cannot be opened
-        throw std::runtime_error(fmt::format("Error: Unable to open file {}.", fullName));
-    }
-
-    // JSON object to store the parsed data
-    json source_json;
-
-    // Parse the JSON file and store the data in the JSON object
-    fileSource >> source_json;
-
-    // Close the file
-    fileSource.close();
-
-    // Return the parsed JSON object
-    return source_json;
-}
-
-void AgentGenerator::saveFile(std::string path, std::string fileName, std::string data) {
-    // Concatenate the path and file name to form the full file name
-    std::string fullName = fmt::format("{}/{}", path, fileName);
-
-    // Create an ofstream object
-    std::ofstream outfile;
-
-    // Open the file (this will create the file if it doesn't exist)
-    outfile.open(fullName);
-
-    // Check if the file is successfully opened
-    if (!outfile.is_open()) {
-        // Throw a runtime error if the file cannot be opened
-        throw std::runtime_error(fmt::format("Error: Unable to open file {}.", fullName));
-    }
-
-    // Write data to the file
-    outfile << data;
-
-    // Close the file
-    outfile.close();
-}
-
-void AgentGenerator::processPetriNet(json data, int agentId) {
+void AgentGenerator::processPetriNet(json data, std::string path, int agentId) {
     //empty
 }
 
