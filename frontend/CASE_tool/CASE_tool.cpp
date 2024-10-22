@@ -1267,7 +1267,6 @@ void CASE_tool::OnFrame(float deltaTime) {
         ImGui::EndPopup();
     }
 
-    //TODO: definition condition for petri net
     if (ImGui::BeginPopup("Conditions")) {
         if (ImGui::MenuItem("Conditions1")) {
             SetButtonLabel(m_ActiveButton, "Conditions1");
@@ -1730,47 +1729,71 @@ json CASE_tool::GetData() {
                 json petriNet_json = {};
                 json services_json = json::array();
                 json attributes_json = json::array();
+                // Find all service nodes and attributes
                 for (ed::NodeId innerId : respNode->InsideIds) {
                     Node* innerNode = FindNode(innerId);
-                    json node_json = {};
-                    //control if innerNode is Service type
+                    if (innerNode->Type != NodeType::ReasService || innerNode->Type != NodeType::Attribute) {
+                        continue;
+                    }
+                    // If innerNode is Service type, is it correctly connected ?
                     if (innerNode->Type == NodeType::ReasService) {
                         auto it = associatedServicesId.find(innerNode->ID.Get());
                         if (innerNode->Outputs.at(0).LinkIds.empty() || it == associatedServicesId.end())
                             continue;
                     }
-                    switch(innerNode->Type) {
-                        case (NodeType::SimpleCond):
-                            node_json[TYPE] = CONDITION_ID;
-                            node_json[CONDITION] = innerNode->Inputs.at(0).PinButton->Label;
-                            AddLinkedNodes(innerNode->Outputs.at(0).LinkIds, IF, node_json);
-                            AddLinkedNodes(innerNode->Outputs.at(0).LinkIds, ELSE, node_json);
-                            break;
-                        case (NodeType::SimpleCode):
-                            node_json[TYPE] = CODE_ID;
-                            AddLinkedNodes(innerNode->Outputs.at(0).LinkIds, LINKED, node_json);
-                            break;
-                        case(NodeType::Function):
-                            node_json[TYPE] = FUNCTION_ID;
-                            node_json[NAME] = innerNode->Inputs.at(0).PinBuffer->Buffer;
-                            break;
-                        case (NodeType::ReasService):// If it's a service connected to the responsible agent
-                            node_json[TYPE] = SERVICE_ID;
-                            node_json[SERVICE] = innerNode->Outputs.at(0).PinBuffer->Buffer;
-                            AddLinkedNodes(innerNode->Outputs.at(0).LinkIds, LINKED, node_json);
-                            services_json.push_back(std::to_string(innerId.Get()));
-                            break;
-                        case (NodeType::Attribute):
-                            node_json[TYPE] = ATTRIBUTE_ID;
-                            node_json[TYPE_ATR] = innerNode->Inputs.at(0).PinBuffer->Buffer;
-                            node_json[INIT_VALUE] = innerNode->Inputs.at(1).PinBuffer->Buffer;
-                            node_json[NAME] = innerNode->Outputs.at(0).PinBuffer->Buffer;
-                            services_json.push_back(std::to_string(innerId.Get()));
-                            break;
-                        default:
-                            continue;
+                    json node_json = {};
+                    node_json[ID] = innerNode->ID.Get();
+                    if (innerNode->Type == NodeType::ReasService) {// If it's a service connected to the responsible agent
+                        node_json[TYPE] = SERVICE_ID;
+                        node_json[SERVICE] = innerNode->Outputs.at(0).PinBuffer->Buffer;
+                        AddLinkedNodes(innerNode->Outputs.at(0).LinkIds, LINKED, node_json);
+                        services_json.push_back(std::to_string(innerId.Get()));
+                        // Save connected nodes
+                        Pin *pin = &innerNode->Outputs.at(0); // There is only one output
+                        std::deque<Node *> dequeNodes = GetEndNodes(&innerNode->Outputs.at(0));
+                        deque.insert(deque.end(), dequeNodes.begin(), dequeNodes.end());
+                    } else if (innerNode->Type == NodeType::Attribute) {
+                        node_json[TYPE] = ATTRIBUTE_ID;
+                        node_json[TYPE_ATR] = innerNode->Inputs.at(0).PinBuffer->Buffer;
+                        node_json[INIT_VALUE] = innerNode->Inputs.at(1).PinBuffer->Buffer;
+                        node_json[NAME] = innerNode->Outputs.at(0).PinBuffer->Buffer;
+                        services_json.push_back(std::to_string(innerId.Get()));
                     }
-                    petriNet_json[innerId.Get()] = node_json;
+                    petriNet_json[std::to_string(innerId.Get())] = node_json;
+                }
+
+                // Iterate through all con
+
+                switch(innerNode->Type) {
+                    case (NodeType::SimpleCond):
+                        node_json[TYPE] = CONDITION_ID;
+                        node_json[CONDITION] = innerNode->Inputs.at(0).PinButton->Label;
+                        AddLinkedNodes(innerNode->Outputs.at(0).LinkIds, IF, node_json);
+                        AddLinkedNodes(innerNode->Outputs.at(0).LinkIds, ELSE, node_json);
+                        break;
+                    case (NodeType::SimpleCode):
+                        node_json[TYPE] = CODE_ID;
+                        AddLinkedNodes(innerNode->Outputs.at(0).LinkIds, LINKED, node_json);
+                        break;
+                    case (NodeType::Function):
+                        node_json[TYPE] = FUNCTION_ID;
+                        node_json[NAME] = innerNode->Inputs.at(0).PinBuffer->Buffer;
+                        break;
+                    case (NodeType::ReasService):// If it's a service connected to the responsible agent
+                        node_json[TYPE] = SERVICE_ID;
+                        node_json[SERVICE] = innerNode->Outputs.at(0).PinBuffer->Buffer;
+                        AddLinkedNodes(innerNode->Outputs.at(0).LinkIds, LINKED, node_json);
+                        services_json.push_back(std::to_string(innerId.Get()));
+                        break;
+                    case (NodeType::Attribute):
+                        node_json[TYPE] = ATTRIBUTE_ID;
+                        node_json[TYPE_ATR] = innerNode->Inputs.at(0).PinBuffer->Buffer;
+                        node_json[INIT_VALUE] = innerNode->Inputs.at(1).PinBuffer->Buffer;
+                        node_json[NAME] = innerNode->Outputs.at(0).PinBuffer->Buffer;
+                        services_json.push_back(std::to_string(innerId.Get()));
+                        break;
+                    default:
+                        continue;
                 }
                 petriNet_json[SERVICES] = services_json;
                 petriNet_json[ATTRIBUTES] = attributes_json;
@@ -1788,11 +1811,38 @@ json CASE_tool::GetData() {
     return output_json;
 }
 
+void CASE_tool::PetriNetNode(std::deque<Node*> deque) {
+    while (!deque.empty()) {
+        Node* node = deque.front();
+        deque.pop_front();
+        // Iterate through all outputs
+        for (Pin pin : node->Outputs) {
+            std::deque<Node *> dequeNodes = GetEndNodes(&pin);
+            deque.insert(deque.end(), dequeNodes.begin(), dequeNodes.end());
+        }
+    }
+
+
+
+}
+
 void CASE_tool::AddLinkedNodes(std::vector<ed::LinkId> &links, std::string key, json &data) {
     data[key] = json::array();
     for (auto id : links) {
         data[key].push_back(std::to_string(FindPin(FindLink(id)->EndPinID)->Node->ID.Get()));
     }
+}
+
+std::deque<Node*> CASE_tool::GetEndNodes(Pin* pin) {
+    std::deque<Node*> deque;
+    // Iterate through all connected links
+    for(ed::LinkId linkId : pin->LinkIds)  {
+        Link* link = FindLink(linkId);
+        Pin* endPin = FindPin(link->EndPinID);
+        // Save found end node
+        deque.push_back(endPin->Node);
+    }
+    return deque;
 }
 
 

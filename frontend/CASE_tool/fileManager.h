@@ -3,7 +3,6 @@
 #include <fmt/format.h>
 #include <iostream>
 #include <fstream>
-#include "logger/logger.h"
 
 using json = nlohmann::json;
 

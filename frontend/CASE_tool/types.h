@@ -65,6 +65,7 @@ const std::string TYPE = "Type";
 const std::string INIT_VALUE = "InitValue";
 const std::string NAME = "Name";
 const std::string ATTRIBUTES = "Attributes";
+const std::string ID = "ID";
 
 //functions
 const std::string FUNCTIONS = "Functions";

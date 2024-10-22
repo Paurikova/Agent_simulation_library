@@ -113,7 +113,9 @@ void AgentGenerator::processReactive(json data, std::string path, AgentId_t agen
 
 
 void AgentGenerator::processPetriNet(json data, std::string path, int agentId) {
-    //empty
+    // Deep copy the template files
+    std::string agent_h = fmt::format(resources[PETRI_NET][FILE_H], agentId);
+    std::string agent_cpp = fmt::format(resources[PETRI_NET][FILE_CPP], agentId, agentId);
 }
 
 void AgentGenerator::processMain(json data) {

@@ -21,7 +21,7 @@ using namespace nlohmann;
 
 int main(int argc, char** argv) {
     SimCoreReactiveReasoning* simCoreReasoning = new SimCoreReactiveReasoning();
-    SimulationCore* manager = new SimulationCore(simCoreReasoning, 0,10);
+    SimulationCore* manager = new SimulationCore(simCoreReasoning);
     Agent1PetriNetReasoning* agent1Reasoning = new Agent1PetriNetReasoning();
     Agent* agent1 = new Agent(2, manager, agent1Reasoning);
     manager->registerAgent(agent1);
@@ -39,8 +39,8 @@ int main(int argc, char** argv) {
 
 
     //add Message to agent1 schedule
-    Message m1 = {5.,1,1,1,2};
-    manager->pushToMainSchedule(&m1);
+//    Message m1 = {5.,1,1,1,2};
+//    manager->pushToMainSchedule(&m1);
 //    Message m2 = {2.,1,2,1,-1};
 //    manager->pushToMainSchedule(&m2);
 //    Message m3 = {4.,2,1,-1,3};

@@ -1,5 +1,6 @@
 #pragma once
 #define IMGUI_DEFINE_MATH_OPERATORS
+#include <deque>
 #include <string>
 #include <vector>
 #include <map>
@@ -593,7 +594,7 @@ private:
     void ShowProjectEditor(bool* show = nullptr);
     void ShowGenerateCodeEditor(bool* show = nullptr);
     void ShowErrorMessageEditor(bool* show = nullptr);
-
+    std::deque<Node*> GetEndNodes(Pin* pin);
     ed::LinkId GetNextLinkId();
     //void LoadProject(json input);
 };
