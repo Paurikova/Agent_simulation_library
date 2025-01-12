@@ -146,7 +146,7 @@ static bool Splitter(bool split_vertically, float thickness, float* size1, float
     return SplitterBehavior(bb, id, split_vertically ? ImGuiAxis_X : ImGuiAxis_Y, size1, size2, min_size1, min_size2, 0.0f);
 }
 
-struct Example:
+struct Case_Tool:
     public Application
 {
     using Application::Application;
@@ -499,7 +499,7 @@ struct Example:
 
         config.LoadNodeSettings = [](ed::NodeId nodeId, char* data, void* userPointer) -> size_t
         {
-            auto self = static_cast<Example*>(userPointer);
+            auto self = static_cast<Case_Tool*>(userPointer);
 
             auto node = self->FindNode(nodeId);
             if (!node)
@@ -512,7 +512,7 @@ struct Example:
 
         config.SaveNodeSettings = [](ed::NodeId nodeId, const char* data, size_t size, ed::SaveReasonFlags reason, void* userPointer) -> bool
         {
-            auto self = static_cast<Example*>(userPointer);
+            auto self = static_cast<Case_Tool*>(userPointer);
 
             auto node = self->FindNode(nodeId);
             if (!node)
@@ -1832,7 +1832,7 @@ struct Example:
 
 int Main(int argc, char** argv)
 {
-    Example exampe("Blueprints", argc, argv);
+    Case_Tool exampe("Blueprints", argc, argv);
 
     if (exampe.Create())
         return exampe.Run();

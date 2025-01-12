@@ -69,7 +69,7 @@ json Button::Serialize() const {
 Button::Button(const json& data): Label(data.at(BUTTON_LABEL).get<std::string>()){}
 
 Pin::Pin(int id, const char* name, PinType type, TextBuffer* buffer, bool active):
-        ID(id), Node(nullptr), Name(name), Type(type), Kind(PinKind::Input), PinBuffer(buffer), IsActive(active),
+        ID(id), NodeId(-1), Name(name), Type(type), Kind(PinKind::Input), PinBuffer(buffer), IsActive(active),
         PinButton{}
 {
 }
@@ -95,11 +95,11 @@ json Pin::Serialize() const {
     return jsonData;
 }
 
-Pin::Pin(const json& data, struct Node* node) : ID(ed::PinId(data.at(PIN_ID).get<int>())),
+Pin::Pin(const json& data, ed::NodeId nodeId) : ID(ed::PinId(data.at(PIN_ID).get<int>())),
                                                 Name(data.at(PIN_NAME).get<std::string>()),
                                                 Type(static_cast<PinType>(data.at(PIN_TYPE).get<int>())),
                                                 IsActive(data.at(PIN_IS_ACTIVE).get<bool>()),
-                                                Node(node),
+                                                NodeId(nodeId),
                                                 LinkIds(), // Initialize LinkIds
                                                 PinButton(nullptr) // Initialize PinButton
 {
@@ -185,12 +185,12 @@ Node::Node(const json& data)
     }
     // Deserialize Inputs
     for (const auto& pinData : data.at(NODE_INPUTS)) {
-        Inputs.push_back(Pin(pinData, this)); // Assuming Pin has a fromJson method
+        Inputs.push_back(Pin(pinData, ID)); // Assuming Pin has a fromJson method
     }
 
     // Deserialize Outputs
     for (const auto& pinData : data.at(NODE_OUTPUTS)) {
-        Outputs.push_back(Pin(pinData, this)); // Assuming Pin has a fromJson method
+        Outputs.push_back(Pin(pinData, ID)); // Assuming Pin has a fromJson method
     }
 
     // Deserialize InsideIds
@@ -355,7 +355,7 @@ bool CASE_tool::IsPinLinked(ed::PinId id) {
 }
 
 bool CASE_tool::CanCreateLink(Pin *a, Pin *b) {
-    if (!a || !b || a == b || !a->IsActive || !b->IsActive || a->Kind == b->Kind || a->Type != b->Type || a->Node == b->Node)
+    if (!a || !b || a == b || !a->IsActive || !b->IsActive || a->Kind == b->Kind || a->Type != b->Type || a->NodeId != b->NodeId)
         return false;
 
     return true;
@@ -363,12 +363,12 @@ bool CASE_tool::CanCreateLink(Pin *a, Pin *b) {
 
 void CASE_tool::BuildNode(Node *node) {
     for (auto &input: node->Inputs) {
-        input.Node = node;
+        input.NodeId = node->ID;
         input.Kind = PinKind::Input;
     }
 
     for (auto &output: node->Outputs) {
-        output.Node = node;
+        output.NodeId = node->ID;
         output.Kind = PinKind::Output;
     }
 }
@@ -1291,8 +1291,8 @@ void CASE_tool::OnFrame(float deltaTime) {
         ImGui::Separator();
         if (pin) {
             ImGui::Text("ID: %p", pin->ID.AsPointer());
-            if (pin->Node)
-                ImGui::Text("Node: %p", pin->Node->ID.AsPointer());
+            if (pin->NodeId)
+                ImGui::Text("Node: %p", pin->NodeId.AsPointer());
             else
                 ImGui::Text("Node: %s", "<none>");
         } else
@@ -1641,7 +1641,7 @@ json CASE_tool::GetData() {
             // we don't wanna register master agent to hierarchy
             //find parent ID
             Pin *parentPin = FindPin(FindLink(node->Inputs.at(0).LinkIds.at(0))->StartPinID);
-            hierarchy_json[std::to_string(id.Get())] = std::to_string(parentPin->Node->ID.Get());
+            hierarchy_json[std::to_string(id.Get())] = std::to_string(parentPin->NodeId.Get());
        }
 
         // Get the responsible agent node
@@ -1732,9 +1732,6 @@ json CASE_tool::GetData() {
                 // Find all service nodes and attributes
                 for (ed::NodeId innerId : respNode->InsideIds) {
                     Node* innerNode = FindNode(innerId);
-                    if (innerNode->Type != NodeType::ReasService || innerNode->Type != NodeType::Attribute) {
-                        continue;
-                    }
                     // If innerNode is Service type, is it correctly connected ?
                     if (innerNode->Type == NodeType::ReasService) {
                         auto it = associatedServicesId.find(innerNode->ID.Get());
@@ -1743,57 +1740,38 @@ json CASE_tool::GetData() {
                     }
                     json node_json = {};
                     node_json[ID] = innerNode->ID.Get();
-                    if (innerNode->Type == NodeType::ReasService) {// If it's a service connected to the responsible agent
-                        node_json[TYPE] = SERVICE_ID;
-                        node_json[SERVICE] = innerNode->Outputs.at(0).PinBuffer->Buffer;
-                        AddLinkedNodes(innerNode->Outputs.at(0).LinkIds, LINKED, node_json);
-                        services_json.push_back(std::to_string(innerId.Get()));
-                        // Save connected nodes
-                        Pin *pin = &innerNode->Outputs.at(0); // There is only one output
-                        std::deque<Node *> dequeNodes = GetEndNodes(&innerNode->Outputs.at(0));
-                        deque.insert(deque.end(), dequeNodes.begin(), dequeNodes.end());
-                    } else if (innerNode->Type == NodeType::Attribute) {
-                        node_json[TYPE] = ATTRIBUTE_ID;
-                        node_json[TYPE_ATR] = innerNode->Inputs.at(0).PinBuffer->Buffer;
-                        node_json[INIT_VALUE] = innerNode->Inputs.at(1).PinBuffer->Buffer;
-                        node_json[NAME] = innerNode->Outputs.at(0).PinBuffer->Buffer;
-                        services_json.push_back(std::to_string(innerId.Get()));
+                    switch (innerNode->Type) {
+                        case (NodeType::ReasService):
+                            node_json[TYPE] = SERVICE_ID;
+                            node_json[SERVICE] = innerNode->Outputs.at(0).PinBuffer->Buffer;
+                            AddLinkedNodes(innerNode->Outputs.at(0).LinkIds, LINKED, node_json);
+                            services_json.push_back(std::to_string(innerId.Get()));
+                            break;
+                        case (NodeType::Attribute):
+                            node_json[TYPE] = ATTRIBUTE_ID;
+                            node_json[TYPE_ATR] = innerNode->Inputs.at(0).PinBuffer->Buffer;
+                            node_json[INIT_VALUE] = innerNode->Inputs.at(1).PinBuffer->Buffer;
+                            node_json[NAME] = innerNode->Outputs.at(0).PinBuffer->Buffer;
+                            attributes_json.push_back(std::to_string(innerId.Get()));
+                            break;
+                        case (NodeType::SimpleCond):
+                            node_json[TYPE] = CONDITION_ID;
+                            node_json[CONDITION] = innerNode->Inputs.at(0).PinButton->Label;
+                            AddLinkedNodes(innerNode->Outputs.at(0).LinkIds, IF, node_json);
+                            AddLinkedNodes(innerNode->Outputs.at(0).LinkIds, ELSE, node_json);
+                            break;
+                        case (NodeType::SimpleCode):
+                            node_json[TYPE] = CODE_ID;
+                            AddLinkedNodes(innerNode->Outputs.at(0).LinkIds, LINKED, node_json);
+                            break;
+                        case (NodeType::Function):
+                            node_json[TYPE] = FUNCTION_ID;
+                            node_json[NAME] = innerNode->Inputs.at(0).PinBuffer->Buffer;
+                            break;
+                        default:
+                            continue;
                     }
                     petriNet_json[std::to_string(innerId.Get())] = node_json;
-                }
-
-                // Iterate through all con
-
-                switch(innerNode->Type) {
-                    case (NodeType::SimpleCond):
-                        node_json[TYPE] = CONDITION_ID;
-                        node_json[CONDITION] = innerNode->Inputs.at(0).PinButton->Label;
-                        AddLinkedNodes(innerNode->Outputs.at(0).LinkIds, IF, node_json);
-                        AddLinkedNodes(innerNode->Outputs.at(0).LinkIds, ELSE, node_json);
-                        break;
-                    case (NodeType::SimpleCode):
-                        node_json[TYPE] = CODE_ID;
-                        AddLinkedNodes(innerNode->Outputs.at(0).LinkIds, LINKED, node_json);
-                        break;
-                    case (NodeType::Function):
-                        node_json[TYPE] = FUNCTION_ID;
-                        node_json[NAME] = innerNode->Inputs.at(0).PinBuffer->Buffer;
-                        break;
-                    case (NodeType::ReasService):// If it's a service connected to the responsible agent
-                        node_json[TYPE] = SERVICE_ID;
-                        node_json[SERVICE] = innerNode->Outputs.at(0).PinBuffer->Buffer;
-                        AddLinkedNodes(innerNode->Outputs.at(0).LinkIds, LINKED, node_json);
-                        services_json.push_back(std::to_string(innerId.Get()));
-                        break;
-                    case (NodeType::Attribute):
-                        node_json[TYPE] = ATTRIBUTE_ID;
-                        node_json[TYPE_ATR] = innerNode->Inputs.at(0).PinBuffer->Buffer;
-                        node_json[INIT_VALUE] = innerNode->Inputs.at(1).PinBuffer->Buffer;
-                        node_json[NAME] = innerNode->Outputs.at(0).PinBuffer->Buffer;
-                        services_json.push_back(std::to_string(innerId.Get()));
-                        break;
-                    default:
-                        continue;
                 }
                 petriNet_json[SERVICES] = services_json;
                 petriNet_json[ATTRIBUTES] = attributes_json;
@@ -1811,25 +1789,25 @@ json CASE_tool::GetData() {
     return output_json;
 }
 
-void CASE_tool::PetriNetNode(std::deque<Node*> deque) {
-    while (!deque.empty()) {
-        Node* node = deque.front();
-        deque.pop_front();
-        // Iterate through all outputs
-        for (Pin pin : node->Outputs) {
-            std::deque<Node *> dequeNodes = GetEndNodes(&pin);
-            deque.insert(deque.end(), dequeNodes.begin(), dequeNodes.end());
-        }
-    }
-
-
-
-}
+//void CASE_tool::PetriNetNode(std::deque<Node*> deque) {
+//    while (!deque.empty()) {
+//        Node* node = deque.front();
+//        deque.pop_front();
+//        // Iterate through all outputs
+//        for (Pin pin : node->Outputs) {
+//            std::deque<Node *> dequeNodes = GetEndNodes(&pin);
+//            deque.insert(deque.end(), dequeNodes.begin(), dequeNodes.end());
+//        }
+//    }
+//
+//
+//
+//}
 
 void CASE_tool::AddLinkedNodes(std::vector<ed::LinkId> &links, std::string key, json &data) {
     data[key] = json::array();
     for (auto id : links) {
-        data[key].push_back(std::to_string(FindPin(FindLink(id)->EndPinID)->Node->ID.Get()));
+        data[key].push_back(std::to_string(FindPin(FindLink(id)->EndPinID)->NodeId.Get()));
     }
 }
 
@@ -1840,7 +1818,7 @@ std::deque<Node*> CASE_tool::GetEndNodes(Pin* pin) {
         Link* link = FindLink(linkId);
         Pin* endPin = FindPin(link->EndPinID);
         // Save found end node
-        deque.push_back(endPin->Node);
+        deque.push_back(FindNode(endPin->NodeId));
     }
     return deque;
 }
@@ -1882,7 +1860,9 @@ void CASE_tool::ShowGenerateCodeEditor(bool* show) {
     try {
         if (ImGui::Button("Generate")) {
             *show = false;
-            agentGenerator->processJson(GetData(), strFilePath);
+            json data = GetData();
+            fileManager->saveJson("/home/miska/CLionProjects/Agent_simulation_library/jsons", "Miska_test", data);
+            agentGenerator->processJson(data, strFilePath);
         }
     } catch (const std::runtime_error &e) {
         ImGui::End();

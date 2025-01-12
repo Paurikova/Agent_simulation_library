@@ -107,7 +107,7 @@ struct Button {
 struct Pin {
     ed::PinId   ID;
     TextBuffer* PinBuffer;
-    ::Node*     Node;
+    ed::NodeId  NodeId;
     std::string Name;
     PinType     Type;
     PinKind     Kind;
@@ -117,7 +117,7 @@ struct Pin {
 
     Pin(int id, const char* name, PinType type, TextBuffer* buffer, bool active = true);
     // Deserialize
-    Pin(const json& data, struct Node* node);
+    Pin(const json& data, ed::NodeId nodeId);
     json Serialize() const;
 };
 
