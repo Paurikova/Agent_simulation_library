@@ -355,7 +355,7 @@ bool CASE_tool::IsPinLinked(ed::PinId id) {
 }
 
 bool CASE_tool::CanCreateLink(Pin *a, Pin *b) {
-    if (!a || !b || a == b || !a->IsActive || !b->IsActive || a->Kind == b->Kind || a->Type != b->Type || a->NodeId != b->NodeId)
+    if (!a || !b || a == b || !a->IsActive || !b->IsActive || a->Kind == b->Kind || a->Type != b->Type || a->NodeId.Get() == b->NodeId.Get())
         return false;
 
     return true;
