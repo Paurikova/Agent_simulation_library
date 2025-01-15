@@ -1865,6 +1865,7 @@ void CASE_tool::ShowGenerateCodeEditor(bool* show) {
         if (ImGui::Button("Generate")) {
             *show = false;
             json data = GetData();
+            fileManager->saveJson("/home/miska/CLionProjects/Agent_simulation_library", "test-generovanie", data);
             agentGenerator->processJson(data, strFilePath);
         }
     } catch (const std::runtime_error &e) {

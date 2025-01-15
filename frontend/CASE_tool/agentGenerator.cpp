@@ -61,7 +61,7 @@ void AgentGenerator::processReactive(json data, std::string path, AgentId_t agen
         // Retrieve attribute data
         json atr = data[atrId];
         // Generate values to insert for attributes
-        valuesToInsert = fmt::format(resources[REACTIVE][TEMPLATE][TEMP_ATTRIBUTE], atr[TYPE_ATR], atr[NAME], atr[INIT_VALUE]);
+        valuesToInsert = fmt::format(resources[MAIN][TEMPLATE][TEMP_ATTRIBUTE], atr[TYPE_ATR], atr[NAME], atr[INIT_VALUE]);
         // Insert values into the header file
         agent_h.insert(posAtr + SEARCH_ATR.length(), valuesToInsert);
     }
@@ -106,7 +106,7 @@ void AgentGenerator::processReactive(json data, std::string path, AgentId_t agen
     }
 
     // Save modified files
-    std::string fileName = fmt::format(resources[REACTIVE][TEMPLATE][TEMP_REACTIVE_FILE_NAME], agentId);
+    std::string fileName = fmt::format(resources[TEMPLATE][TEMP_REACTIVE_FILE_NAME], agentId);
     fileManager->saveFile(path, fileName + ".h", agent_h);
     fileManager->saveFile(path, fileName + ".cpp", agent_cpp);
 }
@@ -116,6 +116,22 @@ void AgentGenerator::processPetriNet(json data, std::string path, int agentId) {
     // Deep copy the template files
     std::string agent_h = fmt::format(resources[PETRI_NET][FILE_H], agentId);
     std::string agent_cpp = fmt::format(resources[PETRI_NET][FILE_CPP], agentId, agentId);
+
+    // Initialize positions for insertion points
+    size_t posAtr, posFun, posReg, posDef, posOver;
+    std::string valuesToInsert;
+
+    // Loop over attributes
+    posAtr = agent_h.find(SEARCH_ATR);
+    for (std::string atrId : data[ATTRIBUTES]) {
+        // Retrieve attribute data
+        json atr = data[atrId];
+        // Generate values to insert for attributes
+        valuesToInsert = fmt::format(resources[PETRI_NET][TEMPLATE][TEMP_ATTRIBUTE], atr[TYPE_ATR], atr[NAME], atr[INIT_VALUE]);
+        // Insert values into the header file
+        agent_h.insert(posAtr + SEARCH_ATR.length(), valuesToInsert);
+    }
+
 }
 
 void AgentGenerator::processMain(json data) {
