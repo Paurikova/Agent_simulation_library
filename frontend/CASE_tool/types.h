@@ -20,6 +20,7 @@ const std::string NODE_INPUTS = "Inputs";
 const std::string NODE_OUTPUTS = "Outputs";
 const std::string NODE_INSIDE_IDS = "InsideIds";
 const std::string NODE_ASSOCIATED_IDS = "AssociatedIds";
+const std::string NODE_POSITION = "Position";
 
 //pin attributes
 const std::string PIN_ID = "ID";

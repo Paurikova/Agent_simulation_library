@@ -123,18 +123,19 @@ Node::Node(int id, std::string name, NodeType type, ed::NodeId outsideId, ImColo
 
 json Node::Serialize() const {
     json jsonData = {
-            {NODE_ID, ID.Get()},
-            {NODE_AGENT_ID, AgentId},
-            {NODE_NAME, Name},
-            {NODE_OUTSIDE_ID, OutsideId.Get()},
-            {NODE_COLOR, {Color.Value.x, Color.Value.y, Color.Value.z}},
-            {NODE_TYPE, static_cast<int>(Type)},
-            {NODE_SIZE, {Size.x, Size.y}},
-            {NODE_DELETED, Deleted},
-            {NODE_INPUTS, serializeVector(Inputs)},
-            {NODE_OUTPUTS, serializeVector(Outputs)},
-            {NODE_INSIDE_IDS, serializeNodeIds(InsideIds)},
-            {NODE_ASSOCIATED_IDS, serializeNodeIds(AssociatedIds)}
+            {NODE_ID,             ID.Get()},
+            {NODE_AGENT_ID,       AgentId},
+            {NODE_NAME,           Name},
+            {NODE_OUTSIDE_ID,     OutsideId.Get()},
+            {NODE_COLOR,          {Color.Value.x,           Color.Value.y, Color.Value.z}},
+            {NODE_TYPE,           static_cast<int>(Type)},
+            {NODE_SIZE,           {Size.x,                  Size.y}},
+            {NODE_DELETED,        Deleted},
+            {NODE_INPUTS,         serializeVector(Inputs)},
+            {NODE_OUTPUTS,        serializeVector(Outputs)},
+            {NODE_INSIDE_IDS,     serializeNodeIds(InsideIds)},
+            {NODE_ASSOCIATED_IDS, serializeNodeIds(AssociatedIds)},
+            {NODE_POSITION,       {ed::GetNodePosition(ID).x, ed::GetNodePosition(ID).y}}
     };
     if (!State.empty()) {
         jsonData.push_back({NODE_STATE, State});
@@ -202,6 +203,9 @@ Node::Node(const json& data)
     for (const auto& id : data.at(NODE_ASSOCIATED_IDS)) {
         AssociatedIds.push_back(ed::NodeId(id.get<int>()));
     }
+
+    // Set node position
+    ed::SetNodePosition(ID, ImVec2(data.at(NODE_POSITION)[0].get<float>(), data.at(NODE_POSITION)[1].get<float>()));
 }
 
 Link::Link(ed::LinkId id, ed::PinId startPinId, ed::PinId endPinId):
@@ -1861,7 +1865,6 @@ void CASE_tool::ShowGenerateCodeEditor(bool* show) {
         if (ImGui::Button("Generate")) {
             *show = false;
             json data = GetData();
-            fileManager->saveJson("/home/miska/CLionProjects/Agent_simulation_library/jsons", "Miska_test", data);
             agentGenerator->processJson(data, strFilePath);
         }
     } catch (const std::runtime_error &e) {

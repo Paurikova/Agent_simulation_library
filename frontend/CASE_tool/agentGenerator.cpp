@@ -108,7 +108,7 @@ void AgentGenerator::processReactive(json data, std::string path, AgentId_t agen
     // Save modified files
     std::string fileName = fmt::format(resources[REACTIVE][TEMPLATE][TEMP_REACTIVE_FILE_NAME], agentId);
     fileManager->saveFile(path, fileName + ".h", agent_h);
-    fileManager->saveFile(RESOURCE_REACTIVE_PATH, fileName + ".cpp", agent_cpp);
+    fileManager->saveFile(path, fileName + ".cpp", agent_cpp);
 }
 
 
