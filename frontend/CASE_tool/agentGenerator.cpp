@@ -127,9 +127,73 @@ void AgentGenerator::processPetriNet(json data, std::string path, int agentId) {
         // Retrieve attribute data
         json atr = data[atrId];
         // Generate values to insert for attributes
-        valuesToInsert = fmt::format(resources[PETRI_NET][TEMPLATE][TEMP_ATTRIBUTE], atr[TYPE_ATR], atr[NAME], atr[INIT_VALUE]);
+        valuesToInsert = fmt::format(resources[MAIN][TEMPLATE][TEMP_ATTRIBUTE], atr[TYPE_ATR], atr[NAME], atr[INIT_VALUE]);
         // Insert values into the header file
         agent_h.insert(posAtr + SEARCH_ATR.length(), valuesToInsert);
+    }
+
+    // Loop over all nodes
+    posFun = agent_h.find(SEARCH_FUNCT);
+    posDef = agent_cpp.find(SEARCH_H);
+
+    std::unordered_set<long> createdIds; // Set to store unique IDs of created nodes
+    std::unique_ptr<UniqueDeque<long>> currentIds = std::make_unique<UniqueDeque<long>>(); // store current IDs that have to be created
+
+    for (std::string serviceId : data[SERVICES]) {
+        // Retrieve service data
+        json service = data[serviceId];
+        // Skip empty linked functions
+        if (service[LINKED].empty())
+            continue;
+        // Save all linked ids
+        for (const std::string& linked : service[LINKED]) {
+            currentIds->push_back(std::stoi(linked));
+        }
+        while (!currentIds->empty()) {
+            // Get id data
+            long currId = currentIds->pop_front();
+            // Check if node already exists
+            if (createdIds.find(currId) != createdIds.end()) {
+                // node exists
+                continue;
+            }
+            // Save id
+            createdIds.insert(currId);
+            // Get data
+            json node = data[currentIds->pop_front()];
+            // Get type
+            std::string name;
+            switch (static_cast<int>(node[TYPE])) {
+                case CONDITION_ID:
+                    name = CONDITION + std::to_string(currId);
+                    break;
+                case CODE_ID:
+                    name = CODE + std::to_string(currId);
+                    break;
+                case FUNCTION_ID:
+                    name = FUNCTION + std::to_string(currId);
+                    break;
+
+            }
+        }
+
+            // Retrieve function data
+            json funct = data[linked];
+            // Generate values to insert for function definition
+            valuesToInsert = fmt::format(resources[REACTIVE][TEMPLATE][TEMP_FUNCTION_DEF], funct[NAME]);
+            // Insert function definition into the header file
+            agent_h.insert(posFun + SEARCH_FUNCT.length(), valuesToInsert);
+            // Generate values to insert for function implementation
+            valuesToInsert = fmt::format(resources[REACTIVE][TEMPLATE][TEMP_FUNCTION_IMPL], agentId, funct[NAME]);
+            // Insert function implementation into the source file
+            agent_cpp.insert(posDef + SEARCH_H.length(), valuesToInsert);
+            // Find registration position in the source file
+            posReg = agent_cpp.find(SEARCH_FUNCT);
+            // Generate values to insert for function registration
+            valuesToInsert = fmt::format(resources[REACTIVE][TEMPLATE][TEMP_FUNCTION_REG], service[SERVICE], funct[NAME]);
+            // Insert function registration into the source file
+            agent_cpp.insert(posReg + SEARCH_FUNCT.length(), valuesToInsert);
+        }
     }
 
 }

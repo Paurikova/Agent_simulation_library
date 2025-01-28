@@ -7,7 +7,7 @@ using namespace std;
 class Agent{}PetriNetReasoning : public PetriNetReasoning {{
 private:
     //attributes
-    //functions
-    //registration
-    void registerFunctions() override;
+    //nodes
+    void registerNodes() override;
+    void registerServices() override;
 }};

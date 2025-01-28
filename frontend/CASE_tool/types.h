@@ -70,6 +70,7 @@ const std::string ID = "ID";
 
 //functions
 const std::string FUNCTIONS = "Functions";
+const std::string FUNCTION = "Function";
 
 //reasoning types
 const std::string REACTIVE = "Reactive";
@@ -83,6 +84,7 @@ const std::string CONDITION = "Condition";
 const std::string IF = "If";
 const std::string ELSE = "Else";
 //code, service
+const std::string CODE = "Code";
 const std::string LINKED = "Linked";
 //service
 const std::string SERVICE = "Service";

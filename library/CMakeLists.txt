@@ -14,7 +14,7 @@ set(LIBRARY_SOURCES
         src/reactiveReasoning.cpp
         include/types.h
         src/agentReasoning.cpp
-        src/uniqueDeque.cpp
+        ../units/src/uniqueDeque.cpp
 )
 
 # Create the library

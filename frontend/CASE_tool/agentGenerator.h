@@ -7,9 +7,12 @@
 #include <fmt/format.h>
 #include <iostream>
 #include <string>
+#include <unordered_set>
 
 #include "types.h"
 #include "fileManager.h"
+#include "../../structure/include/uniqueDeque.h"
+
 
 using json = nlohmann::json;
 

@@ -1,2 +1,7 @@
 {
+  "FunctionDef" : "\n    deque<NodeId_t> {}();",
+  "FunctionImpl" : "\ndeque<NodeId_t> Agent{}PetriNetReasoning::{}() {{\n    //add your code\n    return {};\n}}",
+  "FunctionReg" : "\n    registerNode({}, [this])->deque<NodeId_t>{{\n        return {};\n    }});",
+  "ServiceReg" : "\n    registerService({}, {});",
+  "PetriNetFileName" : "agent{}PetriNetReasoning"
 }
