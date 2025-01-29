@@ -96,14 +96,24 @@ const std::string DATA = "Data";
 
 const std::string SEARCH_ATR = "//attributes";
 const std::string SEARCH_FUNCT = "//functions";
+const std::string SEARCH_NODES = "//nodes";
+const std::string SEARCH_SERVICE = "//services";
+const std::string SEARCH_REGIST = "//registration";
 const std::string SEARCH_OVERRIDE = "override;";
-const std::string SEARCH_H = "ReactiveReasoning.h\"";
+const std::string SEARCH_REACTIVE_H = "ReactiveReasoning.h\"";
+const std::string SEARCH_PETRI_NET_H = "PetriNetReasoning.h\"";
 
 const std::string TEMP_ATTRIBUTE = "Attribute";
 const std::string TEMP_FUNCTION_DEF = "FunctionDef";
 const std::string TEMP_FUNCTION_IMPL = "FunctionImpl";
 const std::string TEMP_FUNCTION_REG = "FunctionReg";
+const std::string TEMP_NODE_DEF = "NodeDef";
+const std::string TEMP_NODE_IMPL = "NodeImpl";
+const std::string TEMP_IF_ELSE_NODE_IMPL = "IfElseNodeImpl";
+const std::string TEMP_NODE_REG = "NodeReg";
+const std::string TEMP_SERVICE_REG = "ServiceReg";
 const std::string TEMP_REACTIVE_FILE_NAME = "ReactiveFileName";
+const std::string TEMP_PETRI_NET_FILE_NAME = "PetriNetFileName";
 const std::string TEMP_MAIN_INITMSG_DEF = "InitMessageDef";
 const std::string TEMP_MAIN_INITMSG_IMPL = "InitMessageImpl";
 const std::string FILE_H = "File_h";

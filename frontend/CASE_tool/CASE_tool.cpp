@@ -1809,10 +1809,7 @@ json CASE_tool::GetData() {
 //}
 
 void CASE_tool::AddLinkedNodes(std::vector<ed::LinkId> &links, std::string key, json &data) {
-    data[key] = json::array();
-    for (auto id : links) {
-        data[key].push_back(std::to_string(FindPin(FindLink(id)->EndPinID)->NodeId.Get()));
-    }
+    data[key] = std::to_string(FindPin(FindLink(links.front())->EndPinID)->NodeId.Get());
 }
 
 std::deque<Node*> CASE_tool::GetEndNodes(Pin* pin) {

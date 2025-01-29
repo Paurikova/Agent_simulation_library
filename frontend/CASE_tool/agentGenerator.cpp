@@ -68,7 +68,7 @@ void AgentGenerator::processReactive(json data, std::string path, AgentId_t agen
 
     // Loop over services
     posFun = agent_h.find(SEARCH_FUNCT);
-    posDef = agent_cpp.find(SEARCH_H);
+    posDef = agent_cpp.find(SEARCH_REACTIVE_H);
     for (std::string serviceId : data[SERVICES]) {
         // Retrieve service data
         json service = data[serviceId];
@@ -86,10 +86,10 @@ void AgentGenerator::processReactive(json data, std::string path, AgentId_t agen
             // Generate values to insert for function implementation
             valuesToInsert = fmt::format(resources[REACTIVE][TEMPLATE][TEMP_FUNCTION_IMPL], agentId, funct[NAME]);
             // Insert function implementation into the source file
-            agent_cpp.insert(posDef + SEARCH_H.length(), valuesToInsert);
+            agent_cpp.insert(posDef + SEARCH_REACTIVE_H.length(), valuesToInsert);
             // Find registration position in the source file
             posReg = agent_cpp.find(SEARCH_FUNCT);
-            // Generate values to insert for function registration
+            // Generate values to insert for functSEARCH_Hion registration
             valuesToInsert = fmt::format(resources[REACTIVE][TEMPLATE][TEMP_FUNCTION_REG], service[SERVICE], funct[NAME]);
             // Insert function registration into the source file
             agent_cpp.insert(posReg + SEARCH_FUNCT.length(), valuesToInsert);
@@ -102,7 +102,7 @@ void AgentGenerator::processReactive(json data, std::string path, AgentId_t agen
         agent_h.insert(posOver + SEARCH_OVERRIDE.length(), resources[MAIN][TEMPLATE][TEMP_MAIN_INITMSG_DEF]);
         // Generate values to insert for function registration
         valuesToInsert = fmt::format(resources[MAIN][TEMPLATE][TEMP_MAIN_INITMSG_IMPL], agentId, "ReactiveReasoning");
-        agent_cpp.insert(posDef + SEARCH_H.length(), valuesToInsert);
+        agent_cpp.insert(posDef + SEARCH_REACTIVE_H.length(), valuesToInsert);
     }
 
     // Save modified files
@@ -118,7 +118,7 @@ void AgentGenerator::processPetriNet(json data, std::string path, int agentId) {
     std::string agent_cpp = fmt::format(resources[PETRI_NET][FILE_CPP], agentId, agentId);
 
     // Initialize positions for insertion points
-    size_t posAtr, posFun, posReg, posDef, posOver;
+    size_t posAtr, posNod, posReg, serReg, posDef, posOver;
     std::string valuesToInsert;
 
     // Loop over attributes
@@ -133,8 +133,8 @@ void AgentGenerator::processPetriNet(json data, std::string path, int agentId) {
     }
 
     // Loop over all nodes
-    posFun = agent_h.find(SEARCH_FUNCT);
-    posDef = agent_cpp.find(SEARCH_H);
+    posNod = agent_h.find(SEARCH_NODES);
+    posDef = agent_cpp.find(SEARCH_PETRI_NET_H);
 
     std::unordered_set<long> createdIds; // Set to store unique IDs of created nodes
     std::unique_ptr<UniqueDeque<long>> currentIds = std::make_unique<UniqueDeque<long>>(); // store current IDs that have to be created
@@ -142,13 +142,17 @@ void AgentGenerator::processPetriNet(json data, std::string path, int agentId) {
     for (std::string serviceId : data[SERVICES]) {
         // Retrieve service data
         json service = data[serviceId];
-        // Skip empty linked functions
-        if (service[LINKED].empty())
+        // Skip empty linked nodes
+        if (service[LINKED] == "")
             continue;
-        // Save all linked ids
-        for (const std::string& linked : service[LINKED]) {
-            currentIds->push_back(std::stoi(linked));
-        }
+        // Save linked
+        long linked = std::stol(service[LINKED]);
+        currentIds->push_back(linked);
+        // Generate values to insert for service registration
+        valuesToInsert = fmt::format(resources[PETRI_NET][TEMPLATE][TEMP_SERVICE_REG], serviceId, linked);
+        // Insert function registration into the source file
+        serReg = agent_cpp.find(SEARCH_SERVICE);
+        agent_cpp.insert(serReg + SEARCH_SERVICE.length(), valuesToInsert);
         while (!currentIds->empty()) {
             // Get id data
             long currId = currentIds->pop_front();
@@ -166,36 +170,35 @@ void AgentGenerator::processPetriNet(json data, std::string path, int agentId) {
             switch (static_cast<int>(node[TYPE])) {
                 case CONDITION_ID:
                     name = CONDITION + std::to_string(currId);
+                    valuesToInsert = fmt::format(resources[PETRI_NET][TEMPLATE][TEMP_IF_ELSE_NODE_IMPL], agentId, name, node[IF], node[ELSE]);
+                    currentIds->push_back( std::stol(node[IF]));
+                    currentIds->push_back(node[ELSE]);
                     break;
                 case CODE_ID:
                     name = CODE + std::to_string(currId);
+                    valuesToInsert = fmt::format(resources[PETRI_NET][TEMPLATE][TEMP_NODE_IMPL], agentId, name, node[LINKED]);
+                    currentIds->push_back(node[LINKED]);
                     break;
                 case FUNCTION_ID:
                     name = FUNCTION + std::to_string(currId);
+                    valuesToInsert = fmt::format(resources[PETRI_NET][TEMPLATE][TEMP_NODE_IMPL], agentId, name);
                     break;
-
             }
-        }
+            // Insert node implementation into the implementation
+            agent_cpp.insert(posDef + SEARCH_PETRI_NET_H.length(), valuesToInsert);
 
-            // Retrieve function data
-            json funct = data[linked];
-            // Generate values to insert for function definition
-            valuesToInsert = fmt::format(resources[REACTIVE][TEMPLATE][TEMP_FUNCTION_DEF], funct[NAME]);
-            // Insert function definition into the header file
-            agent_h.insert(posFun + SEARCH_FUNCT.length(), valuesToInsert);
-            // Generate values to insert for function implementation
-            valuesToInsert = fmt::format(resources[REACTIVE][TEMPLATE][TEMP_FUNCTION_IMPL], agentId, funct[NAME]);
-            // Insert function implementation into the source file
-            agent_cpp.insert(posDef + SEARCH_H.length(), valuesToInsert);
+            // Generate values to insert for node definition
+            valuesToInsert = fmt::format(resources[PETRI_NET][TEMPLATE][TEMP_NODE_DEF], name);
+            // Insert node definition into the header file
+            agent_h.insert(posNod + SEARCH_NODES.length(), valuesToInsert);
+            // Generate values to insert for node registration
+            valuesToInsert = fmt::format(resources[PETRI_NET][TEMPLATE][TEMP_NODE_REG], currId, name);
             // Find registration position in the source file
-            posReg = agent_cpp.find(SEARCH_FUNCT);
-            // Generate values to insert for function registration
-            valuesToInsert = fmt::format(resources[REACTIVE][TEMPLATE][TEMP_FUNCTION_REG], service[SERVICE], funct[NAME]);
-            // Insert function registration into the source file
-            agent_cpp.insert(posReg + SEARCH_FUNCT.length(), valuesToInsert);
+            posReg = agent_cpp.find(SEARCH_REGIST);
+            // Insert node registration into the source file
+            agent_cpp.insert(posReg + SEARCH_REGIST.length(), valuesToInsert);
         }
     }
-
 }
 
 void AgentGenerator::processMain(json data) {
