@@ -88,8 +88,8 @@ void AgentGenerator::processReactive(json data, std::string path, AgentId_t agen
             // Insert function implementation into the source file
             agent_cpp.insert(posDef + SEARCH_REACTIVE_H.length(), valuesToInsert);
             // Find registration position in the source file
-            posReg = agent_cpp.find(SEARCH_FUNCT);
-            // Generate values to insert for functSEARCH_Hion registration
+            posReg = agent_cpp.find(SEARCH_REGIST);
+            // Generate values to insert for SEARCH_REGIST registration
             valuesToInsert = fmt::format(resources[REACTIVE][TEMPLATE][TEMP_FUNCTION_REG], service[SERVICE], funct[NAME]);
             // Insert function registration into the source file
             agent_cpp.insert(posReg + SEARCH_FUNCT.length(), valuesToInsert);
