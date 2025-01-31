@@ -1,8 +1,9 @@
 {
   "NodeDef" : "\n    deque<NodeId_t> {}();",
-  "NodeImpl" : "\ndeque<NodeId_t> Agent{}PetriNetReasoning::{}() {{\n    //add your code\n    return {};\n}}",
+  "NodeImpl" : "\ndeque<NodeId_t> Agent{}PetriNetReasoning::{}() {{\n    //add your code\n    return {{{}}};\n}}",
+  "FunctionImpl" : "\ndeque<NodeId_t> Agent{}PetriNetReasoning::{}() {{\n    //add your code\n    return {{}};\n}}",
   "NodeReg" : "\n    registerNode({}, [this])->deque<NodeId_t>{{\n        return {};\n    }});",
-  "IfElseNodeImpl" : "\ndeque<NodeId_t> Agent{}PetriNetReasoning::{}() {{\n        if () {{\n                return {};\n        }} else {{\n                return {};\n        }}",
+  "IfElseNodeImpl" : "\ndeque<NodeId_t> Agent{}PetriNetReasoning::{}() {{\n    if () {{\n        return {{{}}};\n    }} else {{\n        return {{{}}};\n    }}\n}}",
   "ServiceReg" : "\n    registerService({}, {});",
   "PetriNetFileName" : "agent{}PetriNetReasoning"
 }

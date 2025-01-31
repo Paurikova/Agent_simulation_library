@@ -1762,7 +1762,7 @@ json CASE_tool::GetData() {
                             node_json[TYPE] = CONDITION_ID;
                             node_json[CONDITION] = innerNode->Inputs.at(0).PinButton->Label;
                             AddLinkedNode(innerNode->Outputs.at(0).LinkIds, IF, node_json);
-                            AddLinkedNode(innerNode->Outputs.at(0).LinkIds, ELSE, node_json);
+                            AddLinkedNode(innerNode->Outputs.at(1).LinkIds, ELSE, node_json);
                             break;
                         case (NodeType::SimpleCode):
                             node_json[TYPE] = CODE_ID;
