@@ -8,7 +8,7 @@ void customer::checkNewCustomer(int pSender, SimTime_t pExecTime) {
     if (number == 1) {
         // new customer is created
         //send him to shop
-        sendMessage(2, pExecTime, pSender, 3);
+        sendMessage(1, pExecTime, pSender, 3);
     }
 }
 

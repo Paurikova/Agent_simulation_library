@@ -3,11 +3,15 @@
 void line_manager::addToLine(int pSender, SimTime_t pExecTime) {
     if (arr[0] < arr[1]) {
         arr[0] += 1;
+        sendMessage(3, pExecTime, pSender, 5);
     } else {
         arr[1] += 1;
+        sendMessage(4, pExecTime, pSender, 5);
     }
     std::cout << "Lines: 1[" << arr[0] << "] 2[" << arr[1] << "]" << std::endl;
 }
+
+
 void line_manager::removeFromLine1(int pSender, SimTime_t pExecTime) {
     if (arr[0] > 0) {
         arr[0] -= 1;

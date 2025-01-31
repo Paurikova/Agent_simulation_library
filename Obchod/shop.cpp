@@ -6,16 +6,32 @@
 //functions
 void shop::newCustomer(int pSender, SimTime_t pExecTime) {
     nCustomers += 1;
-    srand(static_cast<unsigned int>(time(0)));
-    int random_number = rand() % 30 + 5;
-    std::cout << "Customers: " << nCustomers << std::endl;
+    int random_number = rand() % 5 + 5;
+    std::cout << "New Customers. Current[" << nCustomers << "]" << std::endl;
     std::cout << "Shopping time: " << random_number << std::endl;
     sendMessage(3,pExecTime + random_number, pSender,4);
+    if (nCustomers == 1) {
+        sendMessage(3, pExecTime, pSender, 5, 1);
+    }
+}
+
+void shop::removedCustomer(int pSender, SimTime_t pExecTime) {
+    nCustomers -= 1;
+    std::cout << "Out Customer: Current[" << nCustomers << "]" << std::endl;
+    sendMessage(3, pExecTime + 1, pSender, 5, 1);
+    sendMessage(4, pExecTime + 1, pSender, 5, 1);
+}
+
+void shop::addToLine(int pSender, SimTime_t pExecTime) {
+
 }
 
 void shop::registerFunctions() {
     // Register a lambda function to handle function
     registerFunction(1, [this](int pSender, SimTime_t pExecTime) {
+        newCustomer(pSender, pExecTime);
+    });
+    registerFunction(2, [this](int pSender, SimTime_t pExecTime) {
         newCustomer(pSender, pExecTime);
     });
 }
