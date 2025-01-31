@@ -553,7 +553,7 @@ Node* CASE_tool::SpawnAttributeNode(ed::NodeId outsideId)
 
 Node* CASE_tool::SpawnConditionNode(ed::NodeId outsideId)
 {
-    m_Nodes.emplace_back(GetNextId(), "", NodeType::SimpleCond, outsideId,ImColor(128, 195, 248));
+    m_Nodes.emplace_back(GetNextId(), "Condition", NodeType::SimpleCond, outsideId,ImColor(128, 195, 248));
     m_Nodes.back().Inputs.emplace_back(GetNextId(), "", PinType::Function, NewTextBuffer(BufferType::Empty));
     //An option for user choice of condition from menu
     m_Nodes.back().Inputs.back().PinButton = new Button(std::string ("Condition"));
@@ -840,12 +840,13 @@ void CASE_tool::BlueprintAndSimpleInputs(Node& node, Pin* newLinkPin, util::Blue
         }
         ImGui::PopStyleVar();
 
-        //Button definition for condition node
-        if (node.Type == NodeType::SimpleCond) {
-            if (ImGui::Button(input.PinButton->Label.c_str())) {
-                m_ActiveButton = input.PinButton;
-            }
-        }
+        //For now we dont wanna allow user to define his own conditions by gui
+//        //Button definition for condition node
+//        if (node.Type == NodeType::SimpleCond) {
+//            if (ImGui::Button(input.PinButton->Label.c_str())) {
+//                m_ActiveButton = input.PinButton;
+//            }
+//        }
         builder.EndInput();
     }
 }
@@ -927,7 +928,7 @@ void CASE_tool::OnFrame(float deltaTime) {
                     || m_Inside.Get() == 0 || node.OutsideId.Get() != m_Inside.Get())
                 continue;
             builder.Begin(node.ID);
-            bool isSimple = node.Type == NodeType::SimpleCond|| node.Type == NodeType::SimpleCode;
+            bool isSimple = node.Type == NodeType::SimpleCond || node.Type == NodeType::SimpleCode;
             if (!isSimple) {
                 builder.Header(node.Color);
                 ImGui::Spring(0);
@@ -944,7 +945,9 @@ void CASE_tool::OnFrame(float deltaTime) {
                 builder.Middle();
 
                 ImGui::Spring(1, 0);
-                ImGui::TextUnformatted(node.Name.c_str());
+                if (node.Type != NodeType::SimpleCond) {
+                    ImGui::TextUnformatted(node.Name.c_str());
+                }
                 ImGui::Spring(1, 0);
             }
 

@@ -220,7 +220,3 @@ void AgentGenerator::initMessage(std::string& agent_h, std::string& agent_cpp, s
     pos = agent_cpp.find(searchType);
     agent_cpp.insert(pos + searchType.length(), valuesToInsert);
 }
-
-void AgentGenerator::processMain(json data) {
-
-}
