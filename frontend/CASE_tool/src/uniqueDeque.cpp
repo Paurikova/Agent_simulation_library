@@ -1,14 +1,11 @@
 #include "../include/uniqueDeque.h"
 
-// Template specialization for NodeId_t or any type T
-template <typename T>
-bool UniqueDeque<T>::uniqueValue(const T& value) {
-    return set.find(value) == set.end();
+bool UniqueDeque::uniqueValue(std::string pData) {
+    return set.find(pData) == set.end();
 }
 
-// Template specialization for NodeId_t or any type T
-template <typename T>
-bool UniqueDeque<T>::push_back(const T& value) {
+// Template specialization for std::string or any type T
+bool UniqueDeque::push_back(const std::string value) {
     if (uniqueValue(value)) {
         // If not found, insert into both deque and set
         deque.push_back(value);
@@ -18,12 +15,10 @@ bool UniqueDeque<T>::push_back(const T& value) {
     return false;
 }
 
-// Template specialization for NodeId_t or any type T
-template <typename T>
-bool UniqueDeque<T>::push_back(const std::deque<T>& values) {
+bool UniqueDeque::push_back(std::deque<std::string> pData) {
     // Push only unique values
     bool addedAny = false;
-    for (const auto& value : values) {
+    for (const auto& value : pData) {
         // Check if the value is already in the set
         if (uniqueValue(value)) {
             addedAny |= push_back(value);
@@ -32,13 +27,11 @@ bool UniqueDeque<T>::push_back(const std::deque<T>& values) {
     return addedAny; // Return true if any element was added
 }
 
-// Template specialization for NodeId_t or any type T
-template <typename T>
-T UniqueDeque<T>::pop_front() {
+std::string UniqueDeque::pop_front() {
     if (deque.empty()) {
         throw std::runtime_error("Deque is empty. Cannot pop value.");
     }
-    T output = deque.front();
+    std::string output = deque.front();
     deque.pop_front();
     auto it = set.find(output);
     if (it != set.end()) {
@@ -49,8 +42,6 @@ T UniqueDeque<T>::pop_front() {
     return output;
 }
 
-// Template specialization for NodeId_t or any type T
-template <typename T>
-bool UniqueDeque<T>::empty() const {
+bool UniqueDeque::empty() const {
     return deque.empty();
 }

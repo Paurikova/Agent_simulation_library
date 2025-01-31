@@ -68,5 +68,7 @@ private:
 
     void processPetriNet(json data, std::string path, int agentId);
     void initMessage(std::string& agent_h, std::string& agent_cpp, std::string type);
+    bool pushWithControl(std::string currId, std::unique_ptr<std::unordered_set<std::string>>& createdIds,
+                         std::unique_ptr<UniqueDeque>& currentIds);
     void processMain(json data);
 };
