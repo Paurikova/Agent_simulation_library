@@ -13,11 +13,11 @@
 #include <unordered_set>
 #include <unordered_map>
 
-#include "application.h"
-#include "utilities/builders.h"
-#include "utilities/widgets.h"
-#include "imgui_project/imgui_node_editor.h"
-#include "imgui_internal.h"
+#include "../../application/include/application.h"
+#include "../utilities/builders.h"
+#include "../utilities/widgets.h"
+#include "../../../imgui_project/imgui_node_editor.h"
+#include "../../../external/imgui/imgui_internal.h"
 #include "agentGenerator.h"
 
 namespace ed = ax::NodeEditor;
@@ -580,16 +580,17 @@ private:
     json GetData();
 
     /**
-     * @brief Adds linked nodes to a JSON object.
+     * @brief Adds linked node to a JSON object.
      *
-     * This function adds linked nodes represented by the provided links to a JSON object.
-     * The linked nodes are added under the specified key in the JSON object.
+     * This function adds linked node represented by the provided link to a JSON object.
+     * The linked node is added under the specified key in the JSON object.
+     * If there is more than one linked node, only the first one will be accepted.
      *
      * @param links The vector of link IDs representing the links between nodes.
      * @param key The key under which the linked nodes will be added in the JSON object.
      * @param data The JSON object to which the linked nodes will be added.
      */
-    void AddLinkedNodes(std::vector<ed::LinkId> &links, std::string key, json &data);
+    void AddLinkedNode(std::vector<ed::LinkId> &links, std::string key, json &data);
 
     void ShowProjectEditor(bool* show = nullptr);
     void ShowGenerateCodeEditor(bool* show = nullptr);

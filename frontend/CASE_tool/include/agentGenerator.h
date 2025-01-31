@@ -11,7 +11,7 @@
 
 #include "types.h"
 #include "fileManager.h"
-#include "../../structure/include/uniqueDeque.h"
+#include "uniqueDeque.h"
 
 
 using json = nlohmann::json;
@@ -67,6 +67,6 @@ private:
     void processReactive(json data, std::string path, int agentId);
 
     void processPetriNet(json data, std::string path, int agentId);
-
+    void initMessage(std::string& agent_h, std::string& agent_cpp, std::string type);
     void processMain(json data);
 };

@@ -1,4 +1,4 @@
-#include "fileManager.h"
+#include "../include/fileManager.h"
 
 std::string FileManager::readFile(std::string path, std::string name) {
     // Concatenate the path and name to form the full file name

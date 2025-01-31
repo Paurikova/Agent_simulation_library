@@ -17,7 +17,7 @@ add_subdirectory(frontend)
 
 # Add your executable with agent1.cpp and agent2.cpp
 add_executable(Agent_simulation_library main.cpp
-        frontend/CASE_tool/agentGenerator.cpp
+        frontend/CASE_tool/src/agentGenerator.cpp
         backend/src/agent1ReactiveReasoning.cpp
         backend/src/agent2ReactiveReasoning.cpp
         backend/src/simCoreReactiveReasoning.cpp

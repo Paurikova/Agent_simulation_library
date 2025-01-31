@@ -1,7 +1,7 @@
-#include "CASE_tool.h"
+#include "frontend/CASE_tool/include/CASE_tool.h"
 
 #include "imgui_internal.h"
-#include "types.h"
+#include "frontend/CASE_tool/include/types.h"
 
 static inline auto ImGui_GetItemRect() -> ImRect
 {
@@ -1710,7 +1710,7 @@ json CASE_tool::GetData() {
                         case (NodeType::ReasService):
                             node_json[TYPE] = SERVICE_ID;
                             node_json[SERVICE] = innerNode->Outputs.at(0).PinBuffer->Buffer;
-                            AddLinkedNodes(innerNode->Outputs.at(0).LinkIds, LINKED, node_json);
+                            AddLinkedNode(innerNode->Outputs.at(0).LinkIds, LINKED, node_json);
                             services_json.push_back(std::to_string(innerId.Get()));
                             break;
                         default:
@@ -1748,7 +1748,7 @@ json CASE_tool::GetData() {
                         case (NodeType::ReasService):
                             node_json[TYPE] = SERVICE_ID;
                             node_json[SERVICE] = innerNode->Outputs.at(0).PinBuffer->Buffer;
-                            AddLinkedNodes(innerNode->Outputs.at(0).LinkIds, LINKED, node_json);
+                            AddLinkedNode(innerNode->Outputs.at(0).LinkIds, LINKED, node_json);
                             services_json.push_back(std::to_string(innerId.Get()));
                             break;
                         case (NodeType::Attribute):
@@ -1761,12 +1761,12 @@ json CASE_tool::GetData() {
                         case (NodeType::SimpleCond):
                             node_json[TYPE] = CONDITION_ID;
                             node_json[CONDITION] = innerNode->Inputs.at(0).PinButton->Label;
-                            AddLinkedNodes(innerNode->Outputs.at(0).LinkIds, IF, node_json);
-                            AddLinkedNodes(innerNode->Outputs.at(0).LinkIds, ELSE, node_json);
+                            AddLinkedNode(innerNode->Outputs.at(0).LinkIds, IF, node_json);
+                            AddLinkedNode(innerNode->Outputs.at(0).LinkIds, ELSE, node_json);
                             break;
                         case (NodeType::SimpleCode):
                             node_json[TYPE] = CODE_ID;
-                            AddLinkedNodes(innerNode->Outputs.at(0).LinkIds, LINKED, node_json);
+                            AddLinkedNode(innerNode->Outputs.at(0).LinkIds, LINKED, node_json);
                             break;
                         case (NodeType::Function):
                             node_json[TYPE] = FUNCTION_ID;
@@ -1808,7 +1808,7 @@ json CASE_tool::GetData() {
 //
 //}
 
-void CASE_tool::AddLinkedNodes(std::vector<ed::LinkId> &links, std::string key, json &data) {
+void CASE_tool::AddLinkedNode(std::vector<ed::LinkId> &links, std::string key, json &data) {
     data[key] = std::to_string(FindPin(FindLink(links.front())->EndPinID)->NodeId.Get());
 }
 
