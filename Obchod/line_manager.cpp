@@ -1,10 +1,12 @@
 #include "line_manager.h"
 
 void line_manager::addToLine(int pSender, SimTime_t pExecTime) {
-    if (arr[0] < arr[1]) {
+    if (arr[0] <= arr[1]) {
         arr[0] += 1;
+        sendMessage(5, pExecTime, 4, 5);
     } else {
         arr[1] += 1;
+        sendMessage(6, pExecTime, 4, 5);
     }
     std::cout << "Added Lines: 1[" << arr[0] << "] 2[" << arr[1] << "]" << std::endl;
 }

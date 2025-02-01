@@ -3,7 +3,7 @@
 class Manager : public ReactiveReasoning {
 private:
     //attributes
-    int shopClose = 100;
+    int shopClose = 10;
     //functions
     void newCustomer(int pSender, SimTime_t pExecTime);
     void isOpen1(int pSender, SimTime_t pExecTime);
