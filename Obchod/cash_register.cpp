@@ -7,7 +7,7 @@ void cash_register::processCustomer1(int pSender, SimTime_t pExecTime) {
         return;
     }
     customers[0] = true;
-    sendMessage(1, pExecTime, 5, 4);
+    sendMessage(1, pExecTime + customer_processing[0], 5, 4);
     //process customer
     std::cout << "Casch 1 Time: " << customer_processing[0] << std::endl;
     sendMessage(3, pExecTime + customer_processing[0], 5, 5);
@@ -21,7 +21,7 @@ void cash_register::processCustomer2(int pSender, SimTime_t pExecTime) {
         return;
     }
     customers[1] = true;
-    sendMessage(2, pExecTime, 5, 4);
+    sendMessage(2, pExecTime + customer_processing[1], 5, 4);
     //process customer
     std::cout << "Casch 2 Time: " << customer_processing[1] << std::endl;
     sendMessage(4, pExecTime + customer_processing[1], 5, 5);
@@ -34,18 +34,18 @@ void cash_register::endCustomer1(int pSender, SimTime_t pExecTime) {
 
 void cash_register::endCustomer2(int pSender, SimTime_t pExecTime) {
     customers[1] = false;
-    sendMessage(2, pExecTime, 5, 3);
+    sendMessage(3, pExecTime, 5, 3);
 }
 
 void cash_register::hasCustomer1(int pSender, SimTime_t pExecTime) {
     if (!customers[0]) {
-        sendMessage(2, pExecTime, 5, 1);
+        sendMessage(4, pExecTime, 5, 3);
     }
 }
 
 void cash_register::hasCustomer2(int pSender, SimTime_t pExecTime) {
-    if (!customers[0]) {
-        sendMessage(3, pExecTime, 5, 1);
+    if (!customers[1]) {
+        sendMessage(5, pExecTime, 5, 3);
     }
 }
 
@@ -57,6 +57,18 @@ void cash_register::registerFunctions() {
     });
     registerFunction(2, [this](int pSender, SimTime_t pExecTime) {
         processCustomer2(pSender, pExecTime);
+    });
+    registerFunction(3, [this](int pSender, SimTime_t pExecTime) {
+        endCustomer1(pSender, pExecTime);
+    });
+    registerFunction(4, [this](int pSender, SimTime_t pExecTime) {
+        endCustomer2(pSender, pExecTime);
+    });
+    registerFunction(5, [this](int pSender, SimTime_t pExecTime) {
+        hasCustomer1(pSender, pExecTime);
+    });
+    registerFunction(6, [this](int pSender, SimTime_t pExecTime) {
+        hasCustomer2(pSender, pExecTime);
     });
 }
 

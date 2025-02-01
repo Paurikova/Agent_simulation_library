@@ -14,13 +14,13 @@ void shop::newCustomer(int pSender, SimTime_t pExecTime) {
 
 void shop::removedCustomerLine1(int pSender, SimTime_t pExecTime) {
     nCustomers -= 1;
-    sendMessage(2, pExecTime+1, 3, 1);
+    sendMessage(4, pExecTime+1, 3, 3);
     std::cout << "Out Customer Line 1: Current[" << nCustomers << "]" << std::endl;
 }
 
 void shop::removedCustomerLine2(int pSender, SimTime_t pExecTime) {
     nCustomers -= 1;
-    sendMessage(3, pExecTime+1, 3, 1);
+    sendMessage(5, pExecTime+1, 3, 3);
     std::cout << "Out Customer Line 2: Current[" << nCustomers << "]" << std::endl;
 }
 

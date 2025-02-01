@@ -14,16 +14,12 @@ void line_manager::addToLine(int pSender, SimTime_t pExecTime) {
 void line_manager::hasCustomer1(int pSender, SimTime_t pExecTime) {
     if (arr[0] > 0) {
         sendMessage(1, pExecTime, 4, 5);
-    } else {
-        sendMessage(2, pExecTime + 1, 4, 1);
     }
 }
 
 void line_manager::hasCustomer2(int pSender, SimTime_t pExecTime) {
     if (arr[1] > 0) {
         sendMessage(2, pExecTime, 4, 5);
-    } else {
-        sendMessage(3, pExecTime + 1, 4, 1);
     }
 }
 
