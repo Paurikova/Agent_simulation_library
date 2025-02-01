@@ -11,9 +11,8 @@ private:
     int hasBreak(int cache, int value);
     //function
     void processCustomer1(int pSender, SimTime_t pExecTime);
-    void working1(int pSender, SimTime_t pExecTime);
-    void working2(int pSender, SimTime_t pExecTime);
     void processCustomer2(int pSender, SimTime_t pExecTime);
-    void open(int pSender, SimTime_t pExecTime);
+    void newCustomer1(int pSender, SimTime_t pExecTime);
+    void newCustomer2(int pSender, SimTime_t pExecTime);
     void registerFunctions() override;
 };

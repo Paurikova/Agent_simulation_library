@@ -41,7 +41,12 @@ void SimulationCore::runSimulation() {
     // Get the next scheduled message
     Message* message = mainSchedule->popMessage(); // Get the next scheduled message
     // Loop until there are no more messages scheduled for the current time
+    int last_exec_time = -1;
     while (message) {
+        if (message->execTime > last_exec_time) {
+            std::cout << "Exec time: " << message->execTime << std::endl;
+            last_exec_time = message->execTime;
+        }
         currTime = message->execTime;
         while (message) {
             // Check if the receiver agent exists

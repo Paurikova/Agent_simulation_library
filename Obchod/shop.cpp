@@ -5,25 +5,33 @@
 
 //functions
 void shop::newCustomer(int pSender, SimTime_t pExecTime) {
-    nCustomers += 1;
     int random_number = rand() % 5 + 5;
-    std::cout << "New Customers. Current[" << nCustomers << "]" << std::endl;
+    nCustomers += 1;
+    std::cout << "New Customers. Shopping time: " << random_number << " Current[" << nCustomers << "]" << std::endl;
     std::cout << "Shopping time: " << random_number << std::endl;
-    sendMessage(3,pExecTime + random_number, pSender,4);
-    if (nCustomers == 1) {
-        sendMessage(3, pExecTime, pSender, 5, 1);
+    sendMessage(3,pExecTime + random_number, 3,4);
+}
+
+void shop::removedCustomerLine1(int pSender, SimTime_t pExecTime) {
+    nCustomers -= 1;
+    std::cout << "Out Customer Line 1: Current[" << nCustomers << "]" << std::endl;
+}
+
+void shop::removedCustomerLine2(int pSender, SimTime_t pExecTime) {
+    nCustomers -= 1;
+    std::cout << "Out Customer Line 2: Current[" << nCustomers << "]" << std::endl;
+}
+
+void shop::hasCustomers1(int pSender, SimTime_t pExecTime) {
+    if (nCustomers > 0) {
+        sendMessage(4, pExecTime, 1, 4);
     }
 }
 
-void shop::removedCustomer(int pSender, SimTime_t pExecTime) {
-    nCustomers -= 1;
-    std::cout << "Out Customer: Current[" << nCustomers << "]" << std::endl;
-    sendMessage(3, pExecTime + 1, pSender, 5, 1);
-    sendMessage(4, pExecTime + 1, pSender, 5, 1);
-}
-
-void shop::addToLine(int pSender, SimTime_t pExecTime) {
-
+void shop::hasCustomers2(int pSender, SimTime_t pExecTime) {
+    if (nCustomers > 0) {
+        sendMessage(5, pExecTime, 1, 4);
+    }
 }
 
 void shop::registerFunctions() {
@@ -32,7 +40,16 @@ void shop::registerFunctions() {
         newCustomer(pSender, pExecTime);
     });
     registerFunction(2, [this](int pSender, SimTime_t pExecTime) {
-        newCustomer(pSender, pExecTime);
+        removedCustomerLine1(pSender, pExecTime);
+    });
+    registerFunction(3, [this](int pSender, SimTime_t pExecTime) {
+        removedCustomerLine2(pSender, pExecTime);
+    });
+    registerFunction(4, [this](int pSender, SimTime_t pExecTime) {
+        hasCustomers1(pSender, pExecTime);
+    });
+    registerFunction(5, [this](int pSender, SimTime_t pExecTime) {
+        hasCustomers2(pSender, pExecTime);
     });
 }
 

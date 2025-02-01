@@ -3,12 +3,11 @@
 //functions
 void customer::checkNewCustomer(int pSender, SimTime_t pExecTime) {
     int number = rand() % 2;
-    std::cout << "Customer: " << number << std::endl;
     // Should be new customer generated?
     if (number == 1) {
         // new customer is created
         //send him to shop
-        sendMessage(1, pExecTime, pSender, 3);
+        sendMessage(1, pExecTime, 2, 3);
     }
 }
 
