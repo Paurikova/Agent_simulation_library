@@ -4,11 +4,11 @@
 #include "backend/include/agent2ReactiveReasoning.h"
 #include "backend/include/agent3ReactiveReasoning.h"
 #include "backend/include/agent1PetriNetReasoning.h"
-#include "Obchod/manager.h"
-#include "Obchod/customer.h"
-#include "Obchod/line_manager.h"
-#include "Obchod/cash_register.h"
-#include "Obchod/shop.h"
+#include "Obchod_better/manager.h"
+#include "Obchod_better/customer.h"
+#include "Obchod_better/shop.h"
+#include "Obchod_better/line.h"
+#include "Obchod_better/cash.h"
 
 #include <iostream>
 #include <fstream>
@@ -25,20 +25,25 @@ using json = nlohmann::json;
 using namespace nlohmann;
 
 int main(int argc, char** argv) {
-    Manager* manager = new Manager();
+    Manager* manager = new Manager(10, 2);
     SimulationCore* simCore = new SimulationCore(manager);
-    customer* cust = new customer();
+    Customer* cust = new Customer();
     Agent* aCustomer = new Agent(2, simCore, cust);
     simCore->registerAgent(aCustomer);
-    shop* rShop = new shop();
+    Shop* rShop = new Shop(3);
     Agent* aShop = new Agent(3, simCore, rShop);
     simCore->registerAgent(aShop);
-    line_manager* rLineManager = new line_manager();
-    Agent* aLineManager = new Agent(4, simCore, rLineManager);
-    simCore->registerAgent(aLineManager);
-    cash_register* rCash = new cash_register();
-    Agent* aCash = new Agent(5, simCore, rCash);
-    simCore->registerAgent(aCash);
+    Line* rLineManager = new Line();
+    Agent* line1 = new Agent(4, simCore, rLineManager);
+    Agent* line2 = new Agent(5, simCore, rLineManager);
+    simCore->registerAgent(line1);
+    simCore->registerAgent(line2);
+    Cash* rCash1 = new Cash({3, 7}, 1, 3);
+    Cash* rCash2 = new Cash({5, 9}, 1, 4);
+    Agent* aCash1 = new Agent(6, simCore, rCash1);
+    Agent* aCash2 = new Agent(7, simCore, rCash2);
+    simCore->registerAgent(aCash1);
+    simCore->registerAgent(aCash2);
     simCore->runSimulation();
 
 

@@ -1,9 +1,10 @@
 #include "cash.h"
 
 void Cash::acceptCustomer(int pSender, int pReceiver, SimTime_t pExecTime) {
+    std::cout << pReceiver << ": acceptCustomer" << std::endl;
     if (!hasCustom) {
         //Has break?
-        int brakTime = hasBreak(0, pExecTime);
+        int brakTime = hasBreak(pExecTime);
         if (brakTime > -1 ) {
             //has break
             std::cout << "Break" << std::endl;
@@ -16,15 +17,16 @@ void Cash::acceptCustomer(int pSender, int pReceiver, SimTime_t pExecTime) {
 }
 
 void Cash::processCustomer(int pSender, int pReceiver, SimTime_t pExecTime) {
+    std::cout << pReceiver << ": processCustomer";
     hasCustom = true;
     //process customer
-    std::cout << "Cash processing [" << processLength << "]" << std::endl;
+    std::cout << "  [" << processLength << "]" << std::endl;
     sendMessage(3, pExecTime + processLength, pReceiver, pReceiver);
 }
 
 void Cash::endCustomer(int pSender, int pReceiver, SimTime_t pExecTime) {
-    hasCustom = true;
-    std::cout << "Cash free" << std::endl;
+    std::cout << pReceiver << ": endCustomer" << std::endl;
+    hasCustom = false;
     sendMessage(3, pExecTime, pReceiver, pReceiver - 2);
 }
 
@@ -45,7 +47,7 @@ int Cash::hasBreak(int value) {
     // Loop through each row
     for (int j = 0; j < 2; ++j) {
         // Check if the current element is 200
-        if (breaks[j] >= value && breaks[j] + breakLength[j] <= value) {
+        if (breaks[j] >= value && breaks[j] + breakLength <= value) {
             return breaks[j];
         }
     }

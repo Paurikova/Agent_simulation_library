@@ -5,30 +5,33 @@
 
 //functions
 void Shop::open(int pSender, int pReceiver, SimTime_t pExecTime) {
+    std::cout << pReceiver << ": open" << std::endl;
     std::cout << "Shopping is open" << std::endl;
 }
 
 void Shop::close(int pSender, int pReceiver, SimTime_t pExecTime) {
+    std::cout << pReceiver << ": close" << std::endl;
     std::cout << "Shop is close" << std::endl;
 }
 
 void Shop::newCustomer(int pSender, int pReceiver, SimTime_t pExecTime) {
+    std::cout << pReceiver << ": newCustomer";
     nCustomers += 1;
-    int shoppingTime = rand() % 5 + 5;
-    std::cout << "New Customer: Shopping time [" << shoppingTime << "]" << std::endl;
-    std::cout << "Customers [" << nCustomers << "]" << std::endl;
+    int shoppingTime = rand() % shopping + shopping;
+    std::cout <<"    [" << nCustomers << "]" << " Shopping time [" << shoppingTime << "]" << std::endl;
     //chose cash random
     int line = rand() % 2;
     if (line == 0) {
-        sendMessage(1,pExecTime + shoppingTime, 3,4);
+        sendMessage(1,pExecTime + shoppingTime, pReceiver,4);
     } else {
-        sendMessage(1,pExecTime + shoppingTime, 3,5);
+        sendMessage(1,pExecTime + shoppingTime, pReceiver,5);
     }
 }
 
 void Shop::removeCustomer(int pSender, int pReceiver, SimTime_t pExecTime) {
+    std::cout << pReceiver << ": removeCustomer";
     nCustomers -= 1;
-    std::cout << "Out Customer [" << nCustomers << "]" << std::endl;
+    std::cout << "  [" << nCustomers << "]" << std::endl;
     if (nCustomers > 0) {
         sendMessage(4, pExecTime + 1, pReceiver, pSender);
     }

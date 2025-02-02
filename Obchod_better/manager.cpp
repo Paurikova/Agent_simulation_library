@@ -3,8 +3,9 @@
 
 //functions
 void Manager::generateCustomer(int pSender, int pReceiver, SimTime_t pExecTime) {
+    std::cout << pReceiver << ": generateCustomer" << std::endl;
     // Is shop open?
-    if (pExecTime > end) {
+    if (pExecTime >= end) {
         return;
     }
     //create msg for new customer generating
@@ -14,6 +15,7 @@ void Manager::generateCustomer(int pSender, int pReceiver, SimTime_t pExecTime) 
 }
 
 void Manager::acceptCustomer(int pSender, int pReceiver, SimTime_t pExecTime) {
+    std::cout << pReceiver << ": acceptCustomer" << std::endl;
     sendMessage(3, pExecTime, pReceiver, 3);
 }
 
@@ -33,10 +35,11 @@ void Manager::initMessage() {
     //      pServiceId by required service ID
     //      pExecTime by execution time of event
     //      pReceiver by the ID of the receiving agent
-    // new customer
-    sendMessage(1, 0, 1, 1);
     //open
     sendMessage(1, 0, 1, 3);
     //close
-    sendMessage(2, 0, 1, 3);
+    sendMessage(2, end, 1, 3);
+    // new customer
+    sendMessage(1, 0, 1, 1);
+
 }
