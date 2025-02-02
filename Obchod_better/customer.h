@@ -3,9 +3,10 @@
 
 #include "../library/include/reactiveReasoning.h"
 
-class customer : public ReactiveReasoning {
+class Customer : public ReactiveReasoning {
 private:
+    int nCustomers = 0;
     //function
-    void newCustomer(int pSender, int pReceiver, SimTime_t pExecTime);
+    void createCustomer(int pSender, int pReceiver, SimTime_t pExecTime);
     void registerFunctions() override;
 };

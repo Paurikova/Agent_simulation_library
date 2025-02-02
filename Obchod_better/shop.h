@@ -1,17 +1,15 @@
 #include "../library/include/reactiveReasoning.h"
 #include <iostream>
 
-class shop : public ReactiveReasoning {
+class Shop : public ReactiveReasoning {
 private:
     //attributes
     int nCustomers = 0;
     //functions
-    void newCustomer(int pSender, SimTime_t pExecTime);
-    void removedCustomerLine1(int pSender, SimTime_t pExecTime);
-    void removedCustomerLine2(int pSender, SimTime_t pExecTime);
-    void hasCustomers1(int pSender, SimTime_t pExecTime);
-    void hasCustomers2(int pSender, SimTime_t pExecTime);
+    void open(int pSender, int pReceiver, SimTime_t pExecTime);
+    void close(int pSender, int pReceiver, SimTime_t pExecTime);
+    void newCustomer(int pSender, int pReceiver, SimTime_t pExecTime);
+    void removeCustomer(int pSender, int pReceiver, SimTime_t pExecTime);
+    void hasCustomer(int pSender, int pReceiver, SimTime_t pExecTime);
     void registerFunctions() override;
-public:
-    void initMessage() override;
 };
