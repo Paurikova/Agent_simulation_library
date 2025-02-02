@@ -13,7 +13,7 @@ add_subdirectory(library)
 #add_subdirectory(frontend)
 
 # Include the frontend project
-#add_subdirectory(frontend)
+add_subdirectory(frontend)
 
 # Add your executable with agent1.cpp and agent2.cpp
 add_executable(Agent_simulation_library main.cpp
