@@ -1,11 +1,11 @@
 #include "../include/reactiveReasoning.h"
 
 
-void ReactiveReasoning::process(ServiceId_t pServiceId, AgentId_t pSender, SimTime_t pExecTime) {
+void ReactiveReasoning::process(ServiceId_t pServiceId, AgentId_t pSender, AgentId_t  pReceiver, SimTime_t pExecTime) {
     // Find function connected with the entered service ID
     auto it = functionMap.find(pServiceId);
     if (it != functionMap.end()) {
-        it->second(pSender, pExecTime);
+        it->second(pSender, pReceiver, pExecTime);
         return;
     }
     // Throw an exception if the function does not exist

@@ -26,7 +26,7 @@ void PetriNetReasoning::unregisterNode(NodeId_t pId) {
     }
 }
 
-void PetriNetReasoning::process(ServiceId_t pServiceId, AgentId_t pSender, SimTime_t pExecTime) {
+void PetriNetReasoning::process(ServiceId_t pServiceId, AgentId_t pSender, AgentId_t  pReceiver, SimTime_t pExecTime) {
     // Find the node id associated with the service
     auto it = serviceToNode.find(pServiceId);
     if (it == serviceToNode.end()) {

@@ -33,7 +33,7 @@ public:
      * @param pSender    The sender ID.
      * @param pExecTime  The time of process execution.
      */
-    virtual void process(ServiceId_t pServiceId, AgentId_t pSender, SimTime_t pExecTime) = 0;
+    virtual void process(ServiceId_t pServiceId, AgentId_t pSender, AgentId_t  pReceiver, SimTime_t pExecTime) = 0;
 
     /**
     * @brief Checks if a service is provided.
