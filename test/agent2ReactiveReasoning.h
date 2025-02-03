@@ -9,7 +9,7 @@ private:
     //attributes
     int nCustomers = 0;
     //functions
-    void createCustomer(int pSender, SimTime_t pExecTime);
+    void createCustomer(int pSender, SimTime_t pExecTime, std::unordered_map<std::string, std::variant<int, double, std::string>> args);
     //registration
     void registerFunctions() override;
 };

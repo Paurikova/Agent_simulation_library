@@ -10,8 +10,8 @@ private:
     int newCust = 0;
     int end = 0;
     //functions
-    void acceptCustomer(int pSender, SimTime_t pExecTime);
-    void generateCustomer(int pSender, SimTime_t pExecTime);
+    void acceptCustomer(int pSender, SimTime_t pExecTime, std::unordered_map<std::string, std::variant<int, double, std::string>> args);
+    void generateCustomer(int pSender, SimTime_t pExecTime, std::unordered_map<std::string, std::variant<int, double, std::string>> args);
     //registration
     void registerFunctions() override;
 public:

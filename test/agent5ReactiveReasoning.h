@@ -12,8 +12,8 @@ private:
     int breakLength = 0;
     std::vector<int> breaks = {0};
     //functions
-    void processCustomer(int pSender, SimTime_t pExecTime);
-    void acceptCustomer(int pSender, SimTime_t pExecTime);
+    void processCustomer(int pSender, SimTime_t pExecTime, std::unordered_map<std::string, std::variant<int, double, std::string>> args);
+    void acceptCustomer(int pSender, SimTime_t pExecTime, std::unordered_map<std::string, std::variant<int, double, std::string>> args);
     //registration
     void registerFunctions() override;
 };
