@@ -1,7 +1,7 @@
 #include "../include/agent.h"
 
-void Agent::process(ServiceId_t pServiceId, AgentId_t pSender, AgentId_t  pReceiver, SimTime_t execTime) {
-    agentReasoning->process(pServiceId, pSender, pReceiver, execTime);
+void Agent::process(ServiceId_t pServiceId, AgentId_t pSender, AgentId_t  pReceiver, SimTime_t execTime, std::unordered_map<std::string, std::variant<int, double, std::string>> args) {
+    agentReasoning->process(pServiceId, pSender, pReceiver, execTime, args);
 }
 
 Agent::Agent(AgentId_t pId, Agent* pParent, AgentReasoning* pAgentReasoning) {
@@ -32,7 +32,7 @@ void Agent::execute() {
     Message* message = schedule->popMessage(); // Get the next scheduled message
     while (message) { // Loop until there are no more messages scheduled
         currTime = message->execTime; //Set the current time to the execution time of current message
-        process(message->serviceId, message->sender, message->receiver, message->execTime); // Process the message
+        process(message->serviceId, message->sender, message->receiver, message->execTime, message->args); // Process the message
         message = schedule->popMessage(); // Get the next scheduled message
     }
 }

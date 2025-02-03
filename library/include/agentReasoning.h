@@ -2,6 +2,10 @@
 #include "types.h"
 #include "message.h"
 #include <memory>
+#include <unordered_map>
+#include <variant>
+#include <string>
+#include <stdexcept>
 
 /**
  * @brief Class for agent reasoning functionality.
@@ -19,7 +23,7 @@ protected:
      * @param pReceiver The ID of the receiver agent.
      * @param pPriority The priority of the message (optional, default is -1).
      */
-    void sendMessage(ServiceId_t pServiceId, SimTime_t pTime, AgentId_t pSender, AgentId_t pReceiver = -1, int pPriority = -1);
+    void sendMessage(ServiceId_t pServiceId, SimTime_t pTime, AgentId_t pSender, AgentId_t pReceiver = -1, int pPriority = -1, std::unordered_map<std::string, std::variant<int, double, std::string>> pArgs = {});
 
 public:
     /**
@@ -33,7 +37,7 @@ public:
      * @param pSender    The sender ID.
      * @param pExecTime  The time of process execution.
      */
-    virtual void process(ServiceId_t pServiceId, AgentId_t pSender, AgentId_t  pReceiver, SimTime_t pExecTime) = 0;
+    virtual void process(ServiceId_t pServiceId, AgentId_t pSender, AgentId_t  pReceiver, SimTime_t pExecTime, std::unordered_map<std::string, std::variant<int, double, std::string>> args) = 0;
 
     /**
     * @brief Checks if a service is provided.
