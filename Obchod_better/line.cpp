@@ -30,6 +30,7 @@ void Line::hasCustomer(int pSender, int pReceiver, SimTime_t pExecTime, std::uno
 }
 
 void Line::getCountOfCustInLine(int pSender, int pReceiver, SimTime_t pExecTime, std::unordered_map<std::string, std::variant<int, double, std::string>> args) {
+    std::cout << pReceiver << ": getCountOfCustInLine" << std::endl;
     sendMessage(6, pExecTime, pReceiver, pSender, -1, std::unordered_map<std::string, std::variant<int, double, std::string>>{{"custInLine", custInLine}});
 }
 

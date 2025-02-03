@@ -18,7 +18,7 @@ void Shop::newCustomer(int pSender, int pReceiver, SimTime_t pExecTime, std::uno
     std::cout << pReceiver << ": newCustomer";
     nCustomers += 1;
     int shoppingTime = rand() % shopping + shopping;
-    std::cout <<"    [" << nCustomers << "]" << " Shopping time [" << shoppingTime << "]" << std::endl;
+    std::cout <<" [" << nCustomers << "]" << " Shopping time [" << shoppingTime << "]" << std::endl;
     sendMessage(5,pExecTime + shoppingTime, pReceiver, pReceiver);
 }
 
@@ -32,11 +32,13 @@ void Shop::removeCustomer(int pSender, int pReceiver, SimTime_t pExecTime, std::
 }
 
 void Shop::endShoppingTime(int pSender, int pReceiver, SimTime_t pExecTime, std::unordered_map<std::string, std::variant<int, double, std::string>> args) {
+    std::cout << pReceiver << ": endShoppingTime" << std::endl;
     sendMessage(5, pExecTime, pReceiver, 4);
     sendMessage(5, pExecTime, pReceiver, 5);
 }
 
 void Shop::custInLinesCheck(int pSender, int pReceiver, SimTime_t pExecTime, std::unordered_map<std::string, std::variant<int, double, std::string>> args) {
+    std::cout << pReceiver << ": custInLineCheck";
     auto it = args.find("custInLine");
     int custInLine = std::get<int>(it->second);
     if (pSender == 4) {
@@ -45,8 +47,7 @@ void Shop::custInLinesCheck(int pSender, int pReceiver, SimTime_t pExecTime, std
         custInLines[1] = custInLine;
     }
     if (custInLines[0] != -1 && custInLines[1] != -1) {
-        int shoppingTime = rand() % shopping + shopping;
-        std::cout <<"    [" << nCustomers << "]" << " Shopping time [" << shoppingTime << "]" << std::endl;
+        std::cout <<"   Line1[" << custInLines[0] << "]" << "     Line2 [" << custInLines[1] << "]";
         if (custInLines[0] >= custInLines[1]) {
             sendMessage(1,pExecTime, pReceiver,5);
         } else {
@@ -55,6 +56,7 @@ void Shop::custInLinesCheck(int pSender, int pReceiver, SimTime_t pExecTime, std
         custInLines[0] = -1;
         custInLines[1] = -1;
     }
+    std::cout << std::endl;
 }
 
 void Shop::registerFunctions() {
