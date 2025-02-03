@@ -26,7 +26,7 @@ void PetriNetReasoning::unregisterNode(NodeId_t pId) {
     }
 }
 
-void PetriNetReasoning::process(ServiceId_t pServiceId, AgentId_t pSender, AgentId_t  pReceiver, SimTime_t pExecTime, std::unordered_map<std::string, std::variant<int, double, std::string>> args) {
+void PetriNetReasoning::process(ServiceId_t pServiceId, AgentId_t pSender, AgentId_t  pReceiver, SimTime_t pExecTime, std::unordered_map<std::string, std::variant<int, float, std::string, std::vector<float>>> args) {
     // Find the node id associated with the service
     auto it = serviceToNode.find(pServiceId);
     if (it == serviceToNode.end()) {

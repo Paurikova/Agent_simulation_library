@@ -10,9 +10,9 @@ private:
     int shopping = 1;
     int nCustomers = 0;
     //functions
-    void open(int pSender, SimTime_t pExecTime, std::unordered_map<std::string, std::variant<int, double, std::string>> args);
-    void removeCustomer(int pSender, SimTime_t pExecTime, std::unordered_map<std::string, std::variant<int, double, std::string>> args);
-    void close(int pSender, SimTime_t pExecTime, std::unordered_map<std::string, std::variant<int, double, std::string>> args);
+    void open(int pSender, SimTime_t pExecTime, std::unordered_map<std::string, std::variant<int, float, std::string, std::vector<float>>> args);
+    void removeCustomer(int pSender, SimTime_t pExecTime, std::unordered_map<std::string, std::variant<int, float, std::string, std::vector<float>>> args);
+    void close(int pSender, SimTime_t pExecTime, std::unordered_map<std::string, std::variant<int, float, std::string, std::vector<float>>> args);
     //registration
     void registerFunctions() override;
 };

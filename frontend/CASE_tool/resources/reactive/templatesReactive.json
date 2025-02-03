@@ -1,6 +1,6 @@
 {
-  "FunctionDef" : "\n    void {}(int pSender, SimTime_t pExecTime, std::unordered_map<std::string, std::variant<int, double, std::string>> args);",
-  "FunctionImpl" : "\nvoid Agent{}ReactiveReasoning::{}(int pSender, int pReceiver, SimTime_t pExecTime, std::unordered_map<std::string, std::variant<int, double, std::string>> args) {{\n    //add your code\n}}",
-  "FunctionReg" : "\n    registerFunction({}, [this](int pSender, int pReceiver, SimTime_t pExecTime, std::unordered_map<std::string, std::variant<int, double, std::string>> args) {{\n        {}(pSender, pReceiver, pExecTime, args);\n    }});",
+  "FunctionDef" : "\n    void {}(int pSender, SimTime_t pExecTime, std::unordered_map<std::string, std::variant<int, float, std::string, std::vector<float>>> args);",
+  "FunctionImpl" : "\nvoid Agent{}ReactiveReasoning::{}(int pSender, int pReceiver, SimTime_t pExecTime, std::unordered_map<std::string, std::variant<int, float, std::string, std::vector<float>>> args) {{\n    //add your code\n}}",
+  "FunctionReg" : "\n    registerFunction({}, [this](int pSender, int pReceiver, SimTime_t pExecTime, std::unordered_map<std::string, std::variant<int, float, std::string, std::vector<float>>> args) {{\n        {}(pSender, pReceiver, pExecTime, args);\n    }});",
   "ReactiveFileName" : "agent{}ReactiveReasoning"
 }

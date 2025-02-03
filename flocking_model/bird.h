@@ -15,12 +15,13 @@ private:
     sf::CircleShape shape;
     float screenX, screenY;
     void normalize_velocity();
+    float distance_to(float otherX, float otherY);
     //function
-    NodeId_t move(std::unordered_map<std::string, std::variant<int, double, std::string>> args);
-    NodeId_t getPositionX(std::unordered_map<std::string, std::variant<int, double, std::string>> args);
-    NodeId_t getPositionY(std::unordered_map<std::string, std::variant<int, double, std::string>> args);
-    NodeId_t normalize_velocity(std::unordered_map<std::string, std::variant<int, double, std::string>> args);
-    void flock(std::unordered_map<std::string, std::variant<int, double, std::string>> args);
+    NodeId_t getAttributes(int pSender, int pReceiver, SimTime_t pExecTime, std::unordered_map<std::string, std::variant<int, float, std::string, std::vector<float>>> args);
+    NodeId_t move(int pSender, int pReceiver, SimTime_t pExecTime, std::unordered_map<std::string, std::variant<int, float, std::string, std::vector<float>>> args);
+    NodeId_t isNeighbors(int pSender, int pReceiver, SimTime_t pExecTime, std::unordered_map<std::string, std::variant<int, float, std::string, std::vector<float>>> args);
+    NodeId_t normalize_velocity(int pSender, int pReceiver, SimTime_t pExecTime, std::unordered_map<std::string, std::variant<int, float, std::string, std::vector<float>>> args);
+    void flock(int pSender, int pReceiver, SimTime_t pExecTime, std::unordered_map<std::string, std::variant<int, float, std::string, std::vector<float>>> args);
     void registerServices() override;
     void registerNodes() override;
 public:

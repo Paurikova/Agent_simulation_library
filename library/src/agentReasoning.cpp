@@ -1,6 +1,6 @@
 #include "../include/agentReasoning.h"
 
-void AgentReasoning::sendMessage(ServiceId_t pServiceId, SimTime_t pTime, AgentId_t pSender, AgentId_t pReceiver, int pPriority, std::unordered_map<std::string, std::variant<int, double, std::string>> args) {
+void AgentReasoning::sendMessage(ServiceId_t pServiceId, SimTime_t pTime, AgentId_t pSender, AgentId_t pReceiver, int pPriority, std::unordered_map<std::string, std::variant<int, float, std::string, std::vector<float>>> args) {
     // Create a new message
     Message* newMessage = new Message{pTime, pPriority, pServiceId, pSender, pReceiver, args};
     // Add the new message to the message box

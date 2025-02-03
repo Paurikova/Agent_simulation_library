@@ -1,6 +1,6 @@
 #include "../include/agent.h"
 
-void Agent::process(ServiceId_t pServiceId, AgentId_t pSender, AgentId_t  pReceiver, SimTime_t execTime, std::unordered_map<std::string, std::variant<int, double, std::string>> args) {
+void Agent::process(ServiceId_t pServiceId, AgentId_t pSender, AgentId_t  pReceiver, SimTime_t execTime, std::unordered_map<std::string, std::variant<int, float, std::string, std::vector<float>>> args) {
     agentReasoning->process(pServiceId, pSender, pReceiver, execTime, args);
 }
 

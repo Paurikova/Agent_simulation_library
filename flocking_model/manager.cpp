@@ -1,5 +1,5 @@
-//
-// Created by miska on 3.2.2025.
-//
-
 #include "manager.h"
+
+NodeId_t Manager::neighbors(std::unordered_map<std::string, std::variant<int, float, std::string, std::vector<float>>> args) {
+
+}

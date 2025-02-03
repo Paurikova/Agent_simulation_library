@@ -8,7 +8,7 @@
 class Manager : public PetriNetReasoning {
 private:
     //function
-    NodeId_t move();
+    NodeId_t neighbors(std::unordered_map<std::string, std::variant<int, float, std::string, std::vector<float>>> args);
 
     void registerServices() override;
     void registerNodes() override;

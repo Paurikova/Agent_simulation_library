@@ -23,9 +23,16 @@ add_executable(Agent_simulation_library main.cpp
         Obchod_better/customer.cpp
         Obchod_better/shop.cpp
         Obchod_better/line.cpp
-        Obchod_better/cash.cpp)
+        Obchod_better/cash.cpp
+        flocking_model/bird.cpp)
 #backend/src/agentGenerator.cpp backend/src/agentTemplate.cpp
 # Link with the library
 target_link_libraries(Agent_simulation_library library)
 
 target_link_libraries(Agent_simulation_library fmt)
+
+# Find SFML
+find_package(SFML 2.5 REQUIRED graphics window system)
+
+# Link SFML libraries to the project
+target_link_libraries(Agent_simulation_library sfml-graphics sfml-window sfml-system)

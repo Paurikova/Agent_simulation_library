@@ -8,7 +8,7 @@ bool Message::operator<(const Message& other) const {
     return execTime == other.execTime ? priority < other.priority : execTime > other.execTime;
 }
 
-Message::Message(SimTime_t pExecTime, int pPriority, ServiceId_t pServiceId, AgentId_t pSdr, AgentId_t pRcvr, std::unordered_map<std::string, std::variant<int, double, std::string>> pArgs) {
+Message::Message(SimTime_t pExecTime, int pPriority, ServiceId_t pServiceId, AgentId_t pSdr, AgentId_t pRcvr, std::unordered_map<std::string, std::variant<int, float, std::string, std::vector<float>>> pArgs) {
     messageId = nextMessageId++;
     execTime = pExecTime;
     priority = pPriority;
