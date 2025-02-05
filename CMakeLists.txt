@@ -18,13 +18,12 @@ add_subdirectory(frontend)
 # Add your executable with agent1.cpp and agent2.cpp
 add_executable(Agent_simulation_library main.cpp
        # frontend/CASE_tool/src/agentGenerator.cpp
-        Obchod_better/manager.cpp
-        Obchod_better/customer.h
-        Obchod_better/customer.cpp
-        Obchod_better/shop.cpp
-        Obchod_better/line.cpp
-        Obchod_better/cash.cpp
-        flocking_model/bird.h
+#        Obchod_better/manager.cpp
+#        Obchod_better/customer.h
+#        Obchod_better/customer.cpp
+#        Obchod_better/shop.cpp
+#        Obchod_better/line.cpp
+#        Obchod_better/cash.cpp
         flocking_model/bird.cpp
         flocking_model/manager.cpp)
 #backend/src/agentGenerator.cpp backend/src/agentTemplate.cpp

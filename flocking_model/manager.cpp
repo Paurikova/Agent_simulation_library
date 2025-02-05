@@ -26,6 +26,10 @@ void Manager::calculate_direction(float x1, float y1, float x2, float y2, float 
 void Manager::registerServices() {
     registerService(1, 1);
     registerService(2, 2);
+    registerService(3, 3);
+    registerService(4, 4);
+    registerService(5, 5);
+    registerService(6, 6);
 }
 
 void Manager::registerNodes() {
@@ -68,7 +72,7 @@ NodeId_t Manager::update_positions(int pSender, int pReceiver, SimTime_t pExecTi
             pSender += 1;
             sendMessage(1, pExecTime, pReceiver, pSender);
             return -1;
-        } 
+        }
         initRun = false;
         curBirdId = 2;
     }
