@@ -44,7 +44,7 @@ void SimulationCore::runSimulation() {
     int last_exec_time = -1;
     while (message) {
         if (message->execTime > last_exec_time) {
-            std::cout << "Exec time: " << message->execTime << std::endl;
+            //std::cout << "Exec time: " << message->execTime << std::endl;
             last_exec_time = message->execTime;
         }
         currTime = message->execTime;

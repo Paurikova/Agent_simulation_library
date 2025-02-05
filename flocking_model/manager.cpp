@@ -68,7 +68,7 @@ void Manager::initMessage() {
 }
 
 NodeId_t Manager::update_positions(int pSender, int pReceiver, SimTime_t pExecTime, std::unordered_map<std::string, variant_t> args) {
-    std::cout << pReceiver << ": update_positions" << std::endl;
+    //std::cout << pReceiver << ": update_positions" << std::endl;
     birds[pSender - 2] = std::move(args);
     if (initRun) {
         updatedPosition += 1;
@@ -85,7 +85,7 @@ NodeId_t Manager::update_positions(int pSender, int pReceiver, SimTime_t pExecTi
 }
 
 NodeId_t Manager::handle_events(int pSender, int pReceiver, SimTime_t pExecTime, std::unordered_map<std::string, variant_t> args) {
-    std::cout << pReceiver << ": handle_events" << std::endl;
+    //std::cout << pReceiver << ": handle_events" << std::endl;
     // Handle events
     sf::Event event;
     while (window.pollEvent(event)) {
@@ -101,7 +101,7 @@ NodeId_t Manager::handle_events(int pSender, int pReceiver, SimTime_t pExecTime,
 }
 
 NodeId_t Manager::bird_updated(int pSender, int pReceiver, SimTime_t pExecTime, std::unordered_map<std::string, variant_t> args) {
-    std::cout << pReceiver << ": bird_updated [" << pSender << "]" << std::endl;
+    //std::cout << pReceiver << ": bird_updated [" << pSender << "]" << std::endl;
     curBirdId += 1;
     if (curBirdId > number_of_birds + 1)  {
         curBirdId = 2;
@@ -113,27 +113,31 @@ NodeId_t Manager::bird_updated(int pSender, int pReceiver, SimTime_t pExecTime, 
 }
 
 NodeId_t Manager::clearScreen(int pSender, int pReceiver, SimTime_t pExecTime, std::unordered_map<std::string, variant_t> args) {
-    std::cout << pReceiver << ": clearScreen" << std::endl;
+    //std::cout << pReceiver << ": clearScreen" << std::endl;
     // Clear the screen
     window.clear(sf::Color::Black);
     for (int i = 0; i < number_of_birds; i++) {
         sendMessage(3, pExecTime, pReceiver, i + 2);
     }
-    sendMessage(6, pExecTime, pReceiver, pReceiver);
     return -1;
 }
 
 NodeId_t Manager::display(int pSender, int pReceiver, SimTime_t pExecTime, std::unordered_map<std::string, variant_t> args) {
-    std::cout << pReceiver << ": display" << std::endl;
-    // Display everything on the screen
-    window.display();
-    //Do run again
-    sendMessage(3, pExecTime + 1, pReceiver, pReceiver);
+    //std::cout << pReceiver << ": display";
+    if (pSender - 1 == number_of_birds) {
+        //std::cout << "      YES" << std::endl;
+        // Display everything on the screen
+        window.display();
+        //Do run again
+        sendMessage(3, pExecTime + 1, pReceiver, pReceiver);
+    } else {
+        //std::cout << "      NO" << std::endl;
+    }
     return -1;
 }
 
 NodeId_t Manager::isWindowOpen(int pSender, int pReceiver, SimTime_t pExecTime, std::unordered_map<std::string, variant_t> args) {
-    std::cout << pReceiver << ": isWindowOpen" << std::endl;
+    //std::cout << pReceiver << ": isWindowOpen" << std::endl;
     if (window.isOpen()) {
         sendMessage(4, pExecTime, pSender, pReceiver);
     }
@@ -142,7 +146,7 @@ NodeId_t Manager::isWindowOpen(int pSender, int pReceiver, SimTime_t pExecTime, 
 
 // Function to simulate a step for each bird
 NodeId_t Manager::move(int pSender, int pReceiver, SimTime_t pExecTime, std::unordered_map<std::string, variant_t> args) {
-    std::cout << pReceiver << ": move [" << curBirdId << "]" << std::endl;
+    //std::cout << pReceiver << ": move [" << curBirdId << "]" << std::endl;
     std::vector<NodeId_t> neighbors;
     auto it = birds[curBirdId - 2].find("x");
     float x1 = std::get<float>(it->second);
