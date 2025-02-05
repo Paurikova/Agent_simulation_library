@@ -23,7 +23,7 @@ protected:
      * @param pReceiver The ID of the receiver agent.
      * @param pPriority The priority of the message (optional, default is -1).
      */
-    void sendMessage(ServiceId_t pServiceId, SimTime_t pTime, AgentId_t pSender, AgentId_t pReceiver = -1, int pPriority = -1, std::unordered_map<std::string, std::variant<int, float, std::string, std::vector<float>>> pArgs = {});
+    void sendMessage(ServiceId_t pServiceId, SimTime_t pTime, AgentId_t pSender, AgentId_t pReceiver = -1, int pPriority = -1, std::unordered_map<std::string, variant_t> pArgs = {});
 
 public:
     /**
@@ -37,7 +37,7 @@ public:
      * @param pSender    The sender ID.
      * @param pExecTime  The time of process execution.
      */
-    virtual void process(ServiceId_t pServiceId, AgentId_t pSender, AgentId_t  pReceiver, SimTime_t pExecTime, std::unordered_map<std::string, std::variant<int, float, std::string, std::vector<float>>> args) = 0;
+    virtual void process(ServiceId_t pServiceId, AgentId_t pSender, AgentId_t  pReceiver, SimTime_t pExecTime, std::unordered_map<std::string, variant_t> args) = 0;
 
     /**
     * @brief Checks if a service is provided.

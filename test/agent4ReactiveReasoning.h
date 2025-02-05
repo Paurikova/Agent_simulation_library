@@ -9,10 +9,10 @@ private:
     //attributes
     int custInLine = 0;
     //functions
-    void hasCustomer(int pSender, SimTime_t pExecTime, std::unordered_map<std::string, std::variant<int, float, std::string, std::vector<float>>> args);
-    void removeFromShop(int pSender, SimTime_t pExecTime, std::unordered_map<std::string, std::variant<int, float, std::string, std::vector<float>>> args);
-    void NremoveFromLine(int pSender, SimTime_t pExecTime, std::unordered_map<std::string, std::variant<int, float, std::string, std::vector<float>>> args);
-    void addToLine(int pSender, SimTime_t pExecTime, std::unordered_map<std::string, std::variant<int, float, std::string, std::vector<float>>> args);
+    void hasCustomer(int pSender, SimTime_t pExecTime, std::unordered_map<std::string, variant_t> args);
+    void removeFromShop(int pSender, SimTime_t pExecTime, std::unordered_map<std::string, variant_t> args);
+    void NremoveFromLine(int pSender, SimTime_t pExecTime, std::unordered_map<std::string, variant_t> args);
+    void addToLine(int pSender, SimTime_t pExecTime, std::unordered_map<std::string, variant_t> args);
     //registration
     void registerFunctions() override;
 };

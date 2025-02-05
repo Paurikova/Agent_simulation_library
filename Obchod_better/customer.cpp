@@ -1,7 +1,7 @@
 #include "customer.h"
 
 //functions
-void Customer::createCustomer(int pSender, int pReceiver, SimTime_t pExecTime, std::unordered_map<std::string, std::variant<int, float, std::string, std::vector<float>>> args) {
+void Customer::createCustomer(int pSender, int pReceiver, SimTime_t pExecTime, std::unordered_map<std::string, variant_t> args) {
     std::cout << pReceiver << ": createCustomer";
     int isCreated = rand() % 2;
     // Should be new customer created?
@@ -17,7 +17,7 @@ void Customer::createCustomer(int pSender, int pReceiver, SimTime_t pExecTime, s
 }
 
 void Customer::registerFunctions() {
-    registerFunction(1, [this](int pSender, int pReceiver, SimTime_t pExecTime, std::unordered_map<std::string, std::variant<int, float, std::string, std::vector<float>>> args) {
+    registerFunction(1, [this](int pSender, int pReceiver, SimTime_t pExecTime, std::unordered_map<std::string, variant_t> args) {
         createCustomer(pSender, pReceiver, pExecTime, args);
     });
 }

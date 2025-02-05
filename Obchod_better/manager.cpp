@@ -2,7 +2,7 @@
 #include <cmath>  // For fmod()
 
 //functions
-void Manager::generateCustomer(int pSender, int pReceiver, SimTime_t pExecTime, std::unordered_map<std::string, std::variant<int, float, std::string, std::vector<float>>> args) {
+void Manager::generateCustomer(int pSender, int pReceiver, SimTime_t pExecTime, std::unordered_map<std::string, variant_t> args) {
     std::cout << pReceiver << ": generateCustomer" << std::endl;
     // Is shop open?
     if (pExecTime >= end) {
@@ -14,17 +14,17 @@ void Manager::generateCustomer(int pSender, int pReceiver, SimTime_t pExecTime, 
     sendMessage(1, pExecTime + newCust, pReceiver, pReceiver);
 }
 
-void Manager::acceptCustomer(int pSender, int pReceiver, SimTime_t pExecTime, std::unordered_map<std::string, std::variant<int, float, std::string, std::vector<float>>> args) {
+void Manager::acceptCustomer(int pSender, int pReceiver, SimTime_t pExecTime, std::unordered_map<std::string, variant_t> args) {
     std::cout << pReceiver << ": acceptCustomer" << std::endl;
     sendMessage(3, pExecTime, pReceiver, 3);
 }
 
 void Manager::registerFunctions() {
     // Register a lambda function to handle function
-    registerFunction(1, [this](int pSender, int pReceiver, SimTime_t pExecTime, std::unordered_map<std::string, std::variant<int, float, std::string, std::vector<float>>> args) {
+    registerFunction(1, [this](int pSender, int pReceiver, SimTime_t pExecTime, std::unordered_map<std::string, variant_t> args) {
         generateCustomer(pSender, pReceiver, pExecTime, args);
     });
-    registerFunction(2, [this](int pSender, int pReceiver, SimTime_t pExecTime, std::unordered_map<std::string, std::variant<int, float, std::string, std::vector<float>>> args) {
+    registerFunction(2, [this](int pSender, int pReceiver, SimTime_t pExecTime, std::unordered_map<std::string, variant_t> args) {
         acceptCustomer(pSender, pReceiver, pExecTime, args);
     });
 }

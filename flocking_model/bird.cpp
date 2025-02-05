@@ -1,7 +1,7 @@
 #include "bird.h"
 
-NodeId_t Bird::getPosition(int pSender, int pReceiver, SimTime_t pExecTime, std::unordered_map<std::string, std::variant<int, float, std::string, std::vector<float>>> args) {
-    sendMessage(1,  pExecTime, pReceiver, pSender, -1, std::unordered_map<std::string, std::variant<int, float, std::string, std::vector<float>>>{
+NodeId_t Bird::getPosition(int pSender, int pReceiver, SimTime_t pExecTime, std::unordered_map<std::string, variant_t> args) {
+    sendMessage(1,  pExecTime, pReceiver, pSender, -1, std::unordered_map<std::string, variant_t>{
             {"x", x},
             {"y", y},
             {"velX", velX},
@@ -10,7 +10,7 @@ NodeId_t Bird::getPosition(int pSender, int pReceiver, SimTime_t pExecTime, std:
     return -1;
 }
 
-NodeId_t Bird::setPosition(int pSender, int pReceiver, SimTime_t pExecTime, std::unordered_map<std::string, std::variant<int, float, std::string, std::vector<float>>> args) {
+NodeId_t Bird::setPosition(int pSender, int pReceiver, SimTime_t pExecTime, std::unordered_map<std::string, variant_t> args) {
     auto it = args.find("velX");
     velX = std::get<int>(it->second);
     it = args.find("velY");

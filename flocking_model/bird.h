@@ -14,8 +14,8 @@ private:
     float cohere_factor, separation, separate_factor, match_factor, visual_distance;
     sf::CircleShape shape;
     //function
-    NodeId_t getPosition(int pSender, int pReceiver, SimTime_t pExecTime, std::unordered_map<std::string, std::variant<int, float, std::string, std::vector<float>>> args);
-    NodeId_t setPosition(int pSender, int pReceiver, SimTime_t pExecTime, std::unordered_map<std::string, std::variant<int, float, std::string, std::vector<float>>> args);
+    NodeId_t getPosition(int pSender, int pReceiver, SimTime_t pExecTime, std::unordered_map<std::string, variant_t> args);
+    NodeId_t setPosition(int pSender, int pReceiver, SimTime_t pExecTime, std::unordered_map<std::string, variant_t> args);
     void registerServices() override;
     void registerNodes() override;
 public:
