@@ -24,6 +24,7 @@ add_executable(Agent_simulation_library main.cpp
         Obchod_better/shop.cpp
         Obchod_better/line.cpp
         Obchod_better/cash.cpp
+        flocking_model/bird.h
         flocking_model/bird.cpp)
 #backend/src/agentGenerator.cpp backend/src/agentTemplate.cpp
 # Link with the library
