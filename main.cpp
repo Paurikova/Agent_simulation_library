@@ -44,7 +44,7 @@ int main() {
     srand(time(0)); // Initialize random number generator
 
     // Create a flock of birds
-    int n_birds = 5;
+    int n_birds = 300;
     sf::RenderWindow window(sf::VideoMode(800, 600), "Flocking Simulation");
     Manager* manager = new Manager(0.7, 0.1, 2.0, 0.25, 0.04, 50.0, n_birds, window);
     SimulationCore* simCore = new SimulationCore(manager);
