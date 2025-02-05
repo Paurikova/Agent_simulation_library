@@ -34,17 +34,22 @@ using namespace nlohmann;
 #include <cstdlib>
 #include <ctime>
 
+
+// Static member initialization
+std::mt19937 Bird::gen;  // Declare static random number generator
+std::uniform_real_distribution<float> Bird::distPos(0.0f, 500.0f);  // For position (0 to 500)
+std::uniform_real_distribution<float> Bird::distVel(-1.0f, 1.0f);   // For velocity (-1 to 1)
+
 int main() {
     srand(time(0)); // Initialize random number generator
 
     // Create a flock of birds
-    int n_birds = 300;
+    int n_birds = 5;
     sf::RenderWindow window(sf::VideoMode(800, 600), "Flocking Simulation");
     Manager* manager = new Manager(0.7, 0.1, 2.0, 0.25, 0.04, 50.0, n_birds, window);
     SimulationCore* simCore = new SimulationCore(manager);
-    Bird* birdReas = new Bird(window);
     for (int i = 0; i < n_birds; i++) {
-        simCore->registerAgent(new Agent(i + 2, simCore, birdReas));
+        simCore->registerAgent(new Agent(i + 2, simCore, new Bird(window)));
     }
 
     // Run the simulation

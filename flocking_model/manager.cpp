@@ -30,6 +30,7 @@ void Manager::registerServices() {
     registerService(4, 4);
     registerService(5, 5);
     registerService(6, 6);
+    registerService(7, 7);
 }
 
 void Manager::registerNodes() {
@@ -50,6 +51,9 @@ void Manager::registerNodes() {
     });
     registerNode(6, [this](int pSender, int pReceiver, SimTime_t pExecTime, std::unordered_map<std::string, variant_t> args)->NodeId_t {
         return display(pSender, pReceiver, pExecTime, args);
+    });
+    registerNode(7, [this](int pSender, int pReceiver, SimTime_t pExecTime, std::unordered_map<std::string, variant_t> args)->NodeId_t {
+        return bird_updated(pSender, pReceiver, pExecTime, args);
     });
 };
 
@@ -93,6 +97,18 @@ NodeId_t Manager::handle_events(int pSender, int pReceiver, SimTime_t pExecTime,
     } else {
         sendMessage(2, pExecTime, pSender, pReceiver);
     }
+    return -1;
+}
+
+NodeId_t Manager::bird_updated(int pSender, int pReceiver, SimTime_t pExecTime, std::unordered_map<std::string, variant_t> args) {
+    std::cout << pReceiver << ": bird_updated [" << pSender << "]" << std::endl;
+    curBirdId += 1;
+    if (curBirdId > number_of_birds + 1)  {
+        curBirdId = 2;
+        sendMessage(5, pExecTime, pReceiver, pReceiver);
+        return -1;
+    }
+    sendMessage(2, pExecTime, pReceiver, pReceiver);
     return -1;
 }
 
@@ -142,13 +158,13 @@ NodeId_t Manager::move(int pSender, int pReceiver, SimTime_t pExecTime, std::uno
     float matchX = 0, matchY = 0, separateX = 0, separateY = 0, cohereX = 0, cohereY = 0;
     for (int i = 2; i <= number_of_birds + 1; i++) {
         if (i != curBirdId) {
-            it = birds[curBirdId - 2].find("x");
+            it = birds[i - 2].find("x");
             float x2 = std::get<float>(it->second);
-            it = birds[curBirdId - 2].find("y");
+            it = birds[i - 2].find("y");
             float y2 = std::get<float>(it->second);
-            it = birds[curBirdId - 2].find("velX");
+            it = birds[i - 2].find("velX");
             float velX2 = std::get<float>(it->second);
-            it = birds[curBirdId - 2].find("velY");
+            it = birds[i - 2].find("velY");
             float velY2 = std::get<float>(it->second);
             float dist = distance_to(x1, y1, x2, y2);
             if (dist < visual_distance) {
@@ -217,15 +233,8 @@ NodeId_t Manager::move(int pSender, int pReceiver, SimTime_t pExecTime, std::uno
     };
 
     //update current positions
-    birds[curBirdId - 2] = std::move(newArgs);
+    birds[curBirdId - 2] = newArgs;
     //update position to bird
     sendMessage(2, pExecTime, pReceiver, curBirdId, 1, newArgs);
-    curBirdId += 1;
-    if (curBirdId > number_of_birds + 1)  {
-        curBirdId = 2;
-        sendMessage(5, pExecTime, pReceiver, pReceiver);
-        return -1;
-    }
-    sendMessage(2, pExecTime, pReceiver, pReceiver);
     return -1;
 }

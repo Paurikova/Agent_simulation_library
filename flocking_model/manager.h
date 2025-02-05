@@ -27,7 +27,7 @@ private:
     float distance_to(float x1, float y1, float x2, float y2);
     void calculate_direction(float x1, float y1, float x2, float y2, float &dirX, float &dirY);
     NodeId_t update_positions(int pSender, int pReceiver, SimTime_t pExecTime, std::unordered_map<std::string, variant_t> args);
-    NodeId_t initialization(int pSender, int pReceiver, SimTime_t pExecTime, std::unordered_map<std::string, variant_t> args);
+    NodeId_t bird_updated(int pSender, int pReceiver, SimTime_t pExecTime, std::unordered_map<std::string, variant_t> args);
     NodeId_t move(int pSender, int pReceiver, SimTime_t pExecTime, std::unordered_map<std::string, variant_t> args);
     NodeId_t handle_events(int pSender, int pReceiver, SimTime_t pExecTime, std::unordered_map<std::string, variant_t> args);
     NodeId_t clearScreen(int pSender, int pReceiver, SimTime_t pExecTime, std::unordered_map<std::string, variant_t> args);

@@ -12,17 +12,18 @@ NodeId_t Bird::getPosition(int pSender, int pReceiver, SimTime_t pExecTime, std:
 }
 
 NodeId_t Bird::setPosition(int pSender, int pReceiver, SimTime_t pExecTime, std::unordered_map<std::string, variant_t> args) {
-    std::cout << pReceiver << ": setPosition" << std::endl;
-    auto it = args.find("velX");
-    velX = std::get<int>(it->second);
-    it = args.find("velY");
-    velY = std::get<int>(it->second);
-    it = args.find("x");
-    x = std::get<int>(it->second);
+    auto it = args.find("x");
+    x = std::get<float>(it->second);
     it = args.find("y");
-    y = std::get<int>(it->second);
+    y = std::get<float>(it->second);
+    it = args.find("velX");
+    velX = std::get<float>(it->second);
+    it = args.find("velY");
+    velY = std::get<float>(it->second);
+
 
     shape.setPosition(x, y); // Update bird shape position
+    sendMessage(7, pExecTime, pReceiver, pSender);
     return -1;
 }
 
