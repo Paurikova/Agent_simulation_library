@@ -13,13 +13,16 @@ private:
     float speed;
     float cohere_factor, separation, separate_factor, match_factor, visual_distance;
     sf::CircleShape shape;
+    // Create an SFML window
+    sf::RenderWindow& window;
     //function
     NodeId_t getPosition(int pSender, int pReceiver, SimTime_t pExecTime, std::unordered_map<std::string, variant_t> args);
     NodeId_t setPosition(int pSender, int pReceiver, SimTime_t pExecTime, std::unordered_map<std::string, variant_t> args);
+    NodeId_t draw(int pSender, int pReceiver, SimTime_t pExecTime, std::unordered_map<std::string, variant_t> args);
     void registerServices() override;
     void registerNodes() override;
 public:
-    Bird() {
+    Bird(sf::RenderWindow& window) : window(window) {
         // Initialize position and velocity
         x = static_cast<float>(rand() % 500);  // Random position
         y = static_cast<float>(rand() % 500);
