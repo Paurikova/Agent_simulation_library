@@ -1,7 +1,7 @@
 #include "bird.h"
 
 NodeId_t Bird::getPosition(int pSender, int pReceiver, SimTime_t pExecTime, std::unordered_map<std::string, variant_t> args) {
-    std::cout << pReceiver << ": getPosition";
+    std::cout << pReceiver << ": getPosition" << std::endl;
     sendMessage(1,  pExecTime, pReceiver, pSender, -1, std::unordered_map<std::string, variant_t>{
             {"x", x},
             {"y", y},
@@ -12,7 +12,7 @@ NodeId_t Bird::getPosition(int pSender, int pReceiver, SimTime_t pExecTime, std:
 }
 
 NodeId_t Bird::setPosition(int pSender, int pReceiver, SimTime_t pExecTime, std::unordered_map<std::string, variant_t> args) {
-    std::cout << pReceiver << ": setPosition";
+    std::cout << pReceiver << ": setPosition" << std::endl;
     auto it = args.find("velX");
     velX = std::get<int>(it->second);
     it = args.find("velY");
@@ -23,11 +23,13 @@ NodeId_t Bird::setPosition(int pSender, int pReceiver, SimTime_t pExecTime, std:
     y = std::get<int>(it->second);
 
     shape.setPosition(x, y); // Update bird shape position
+    return -1;
 }
 
 NodeId_t Bird::draw(int pSender, int pReceiver, SimTime_t pExecTime, std::unordered_map<std::string, variant_t> args) {
-    std::cout << pReceiver << ": draw";
+    std::cout << pReceiver << ": draw" << std::endl;
     window.draw(shape);
+    return -1;
 }
 
 void Bird::registerServices() {

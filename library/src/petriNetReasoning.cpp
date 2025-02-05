@@ -43,23 +43,15 @@ void PetriNetReasoning::process(ServiceId_t pServiceId, AgentId_t pSender, Agent
 
     // Create a deque to store result from processed node
     NodeId_t result;
-    // Create a UniqueDeque to manage active nodes uniquely
-    std::unique_ptr<UniqueDeque> activeNodes = std::make_unique<UniqueDeque>();
-    // Initialize activeNodes with the initial node ID
-    activeNodes->push_back(nodeId);
-    // Process nodes in a loop until activeNodes front is not empty
-    while (!activeNodes->empty()) {
-        // Pop the nodeId from the front of activeNodes
-        nodeId = activeNodes->pop_front();
+    // Process nodes in a loop until activeNodes is not -1
+    while (nodeId != -1) {
         // Find the function associated with the current node ID
         auto it = nodeToFunct.find(nodeId);
 
         // Find the function associated with the current node ID
         if (it != nodeToFunct.end()) {
             // Execute the function and update the result
-            result = it->second(pSender, pReceiver, pExecTime, args);
-            // Push only unique values
-            activeNodes->push_back(result);
+            nodeId = it->second(pSender, pReceiver, pExecTime, args);
         } else {
             // Throw an error if the node ID is not found
             throw std::runtime_error("Required node id does not exist!");
