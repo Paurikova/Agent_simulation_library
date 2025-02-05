@@ -19,7 +19,7 @@ private:
     void registerServices() override;
     void registerNodes() override;
 public:
-    Bird(float pScreenX, float pScreenY) {
+    Bird() {
         // Initialize position and velocity
         x = static_cast<float>(rand() % 500);  // Random position
         y = static_cast<float>(rand() % 500);

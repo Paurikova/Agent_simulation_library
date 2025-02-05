@@ -23,8 +23,32 @@ void Manager::calculate_direction(float x1, float y1, float x2, float y2, float 
     dirY = dy / magnitude;
 }
 
+void Manager::registerServices() {
+    registerService(1, 1);
+    registerService(2, 2);
+}
+
+void Manager::registerNodes() {
+    registerNode(1, [this](int pSender, int pReceiver, SimTime_t pExecTime, std::unordered_map<std::string, variant_t> args)->NodeId_t {
+        return update_positions(pSender, pReceiver, pExecTime, args);
+    });
+    registerNode(2, [this](int pSender, int pReceiver, SimTime_t pExecTime, std::unordered_map<std::string, variant_t> args)->NodeId_t {
+        return move(pSender, pReceiver, pExecTime, args);
+    });
+};
+
+void Manager::initMessage() {
+    // Add implementation of initial message
+    // Replace:
+    //      pServiceId by required service ID
+    //      pExecTime by execution time of event
+    //      pReceiver by the ID of the receiving agent
+    //open
+    sendMessage(1, 0, 1, 2);
+}
+
 NodeId_t Manager::update_positions(int pSender, int pReceiver, SimTime_t pExecTime, std::unordered_map<std::string, variant_t> args) {
-    birds[pSender - 1] = std::move(args);
+    birds[curBirdId - 2] = std::move(args);
     if (initRun) {
         updatedPosition += 1;
         if (updatedPosition < number_of_birds) {
@@ -40,6 +64,36 @@ NodeId_t Manager::update_positions(int pSender, int pReceiver, SimTime_t pExecTi
         pExecTime += 1;
     }
     sendMessage(2, pReceiver, pSender, pExecTime);
+}
+
+NodeId_t  Manager::run() {
+
+
+    // Run the simulation
+    while (window.isOpen()) {
+        // Handle events
+        sf::Event event;
+        while (window.pollEvent(event)) {
+            if (event.type == sf::Event::Closed)
+                window.close();
+        }
+
+        // Update bird positions
+        for (auto &bird : flock) {
+            agent_step(bird, flock);
+        }
+
+        // Clear the screen
+        window.clear(sf::Color::Black);
+
+        // Draw each bird
+        for (auto &bird : flock) {
+            window.draw(bird.get_shape());
+        }
+
+        // Display everything on the screen
+        window.display();
+    }
 }
 
 // Function to simulate a step for each bird

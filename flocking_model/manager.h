@@ -19,6 +19,8 @@ private:
     int updatedPosition = 0;
     bool initRun = true;
     int curBirdId = 2;
+    // Create an SFML window
+    sf::RenderWindow window(sf::VideoMode(800, 600), "Flocking Simulation");
 
     //function
     void normalize_velocity(float& velX, float& velY);
@@ -28,7 +30,6 @@ private:
     NodeId_t initialization(int pSender, int pReceiver, SimTime_t pExecTime, std::unordered_map<std::string, variant_t> args);
     NodeId_t move(int pSender, int pReceiver, SimTime_t pExecTime, std::unordered_map<std::string, variant_t> args);
     void registerServices() override;
-
     void registerNodes() override;
 
 public:
@@ -39,4 +40,5 @@ public:
               visual_distance(visual_distance), number_of_birds(number_of_birds) {
         birds.resize(number_of_birds);
     };
+    void initMessage();
 };

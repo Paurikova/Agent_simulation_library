@@ -22,3 +22,17 @@ NodeId_t Bird::setPosition(int pSender, int pReceiver, SimTime_t pExecTime, std:
 
     shape.setPosition(x, y); // Update bird shape position
 }
+
+void Bird::registerServices() {
+    registerService(1, 1);
+    registerService(2, 2);
+}
+
+void Bird::registerNodes() {
+    registerNode(1, [this](int pSender, int pReceiver, SimTime_t pExecTime, std::unordered_map<std::string, variant_t> args)->NodeId_t {
+        return getPosition(pSender, pReceiver, pExecTime, args);
+    });
+    registerNode(2, [this](int pSender, int pReceiver, SimTime_t pExecTime, std::unordered_map<std::string, variant_t> args)->NodeId_t {
+        return setPosition(pSender, pReceiver, pExecTime, args);
+    });
+};
