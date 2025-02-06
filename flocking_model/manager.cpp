@@ -1,7 +1,5 @@
 #include "manager.h"
 
-#include <utility>
-
 // Calculate the Euclidean distance between two birds
 float Manager::distance_to(float x1, float y1, float x2, float y2) {
     return sqrt((x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2));
@@ -23,153 +21,47 @@ void Manager::calculate_direction(float x1, float y1, float x2, float y2, float 
     dirY = dy / magnitude;
 }
 
-void Manager::registerServices() {
-    registerService(1, 1);
-    registerService(2, 2);
-    registerService(3, 3);
-    registerService(4, 4);
-    registerService(5, 5);
-    registerService(6, 6);
-    registerService(7, 7);
-}
-
-void Manager::registerNodes() {
-    registerNode(1, [this](int pSender, int pReceiver, SimTime_t pExecTime, State* state)->NodeId_t {
-        return update_positions(pSender, pReceiver, pExecTime, args);
-    });
-    registerNode(2, [this](int pSender, int pReceiver, SimTime_t pExecTime, State* state)->NodeId_t {
-        return move(pSender, pReceiver, pExecTime, args);
-    });
-    registerNode(3, [this](int pSender, int pReceiver, SimTime_t pExecTime, State* state)->NodeId_t {
-        return isWindowOpen(pSender, pReceiver, pExecTime, args);
-    });
-    registerNode(4, [this](int pSender, int pReceiver, SimTime_t pExecTime, State* state)->NodeId_t {
-        return handle_events(pSender, pReceiver, pExecTime, args);
-    });
-    registerNode(5, [this](int pSender, int pReceiver, SimTime_t pExecTime, State* state)->NodeId_t {
-        return clearScreen(pSender, pReceiver, pExecTime, args);
-    });
-    registerNode(6, [this](int pSender, int pReceiver, SimTime_t pExecTime, State* state)->NodeId_t {
-        return display(pSender, pReceiver, pExecTime, args);
-    });
-    registerNode(7, [this](int pSender, int pReceiver, SimTime_t pExecTime, State* state)->NodeId_t {
-        return bird_updated(pSender, pReceiver, pExecTime, args);
-    });
-};
-
-void Manager::initMessage() {
-    // Add implementation of initial message
-    // Replace:
-    //      pServiceId by required service ID
-    //      pExecTime by execution time of event
-    //      pReceiver by the ID of the receiving agent
-    //open
-    sendMessage(3, 0, 1, 1);
-}
-
-NodeId_t Manager::update_positions(int pSender, int pReceiver, SimTime_t pExecTime, State* state) {
-    //std::cout << pReceiver << ": update_positions" << std::endl;
-    birds[pSender - 2] = std::move(args);
-    if (initRun) {
-        updatedPosition += 1;
-        if (updatedPosition < number_of_birds) {
-            pSender += 1;
-            sendMessage(1, pExecTime, pReceiver, pSender);
-            return -1;
-        }
-        initRun = false;
-        curBirdId = 2;
+void Manager::initialization(int pSender, int pReceiver, SimTime_t pExecTime, State* state) {
+    logger->log(fmt::format("{}: update_positions\n", pReceiver));
+    StateBird* stateBird = dynamic_cast<StateBird*>(state);
+    birds[pSender - 2] = stateBird;
+    if (pSender < number_of_birds + 1) {
+        pSender += 1;
+        sendMessage(1, pExecTime, pReceiver, pSender);
+        return;
     }
     sendMessage(2, pExecTime, pReceiver, pReceiver);
-    return -1;
 }
 
-NodeId_t Manager::handle_events(int pSender, int pReceiver, SimTime_t pExecTime, State* state) {
-    //std::cout << pReceiver << ": handle_events" << std::endl;
+void Manager::isWindowOpen(int pSender, int pReceiver, SimTime_t pExecTime, State* state) {
+    logger->log(fmt::format("{}: isWindowOpen\n", pReceiver));
+    if (window.isOpen()) {
+        sendMessage(3, pExecTime, pSender, pReceiver);
+    }
+}
+
+void Manager::handleEvents(int pSender, int pReceiver, SimTime_t pExecTime, State* state) {
+    logger->log(fmt::format("{}: handle_events\n", pReceiver));
     // Handle events
     sf::Event event;
     while (window.pollEvent(event)) {
         if (event.type == sf::Event::Closed)
             window.close();
     }
-    if (initRun) {
-        sendMessage(1, pExecTime, pSender, 2);
-    } else {
-        sendMessage(2, pExecTime, pSender, pReceiver);
-    }
-    return -1;
-}
-
-NodeId_t Manager::bird_updated(int pSender, int pReceiver, SimTime_t pExecTime, State* state) {
-    //std::cout << pReceiver << ": bird_updated [" << pSender << "]" << std::endl;
-    curBirdId += 1;
-    if (curBirdId > number_of_birds + 1)  {
-        curBirdId = 2;
-        sendMessage(5, pExecTime, pReceiver, pReceiver);
-        return -1;
-    }
-    sendMessage(2, pExecTime, pReceiver, pReceiver);
-    return -1;
-}
-
-NodeId_t Manager::clearScreen(int pSender, int pReceiver, SimTime_t pExecTime, State* state) {
-    //std::cout << pReceiver << ": clearScreen" << std::endl;
-    // Clear the screen
-    window.clear(sf::Color::Black);
-    for (int i = 0; i < number_of_birds; i++) {
-        sendMessage(3, pExecTime, pReceiver, i + 2);
-    }
-    return -1;
-}
-
-NodeId_t Manager::display(int pSender, int pReceiver, SimTime_t pExecTime, State* state) {
-    //std::cout << pReceiver << ": display";
-    if (pSender - 1 == number_of_birds) {
-        //std::cout << "      YES" << std::endl;
-        // Display everything on the screen
-        window.display();
-        //Do run again
-        sendMessage(3, pExecTime + 1, pReceiver, pReceiver);
-    } else {
-        //std::cout << "      NO" << std::endl;
-    }
-    return -1;
-}
-
-NodeId_t Manager::isWindowOpen(int pSender, int pReceiver, SimTime_t pExecTime, State* state) {
-    //std::cout << pReceiver << ": isWindowOpen" << std::endl;
-    if (window.isOpen()) {
-        sendMessage(4, pExecTime, pSender, pReceiver);
-    }
-    return -1;
+    sendMessage(2, pExecTime, pReceiver, 2);
 }
 
 // Function to simulate a step for each bird
-NodeId_t Manager::move(int pSender, int pReceiver, SimTime_t pExecTime, State* state) {
-    //std::cout << pReceiver << ": move [" << curBirdId << "]" << std::endl;
-    std::vector<NodeId_t> neighbors;
-    auto it = birds[curBirdId - 2].find("x");
-    float x1 = std::get<float>(it->second);
-    it = birds[curBirdId - 2].find("y");
-    float y1 = std::get<float>(it->second);
-    it = birds[curBirdId - 2].find("velX");
-    float velX1 = std::get<float>(it->second);
-    it = birds[curBirdId - 2].find("velY");
-    float velY1 = std::get<float>(it->second);
+void Manager::move(int pSender, int pReceiver, SimTime_t pExecTime, State* state) {
+    logger->log(fmt::format("{}: move\n", pReceiver));
+    float x1 = birds[pSender-2]->x, y1 = birds[pSender-2]->y, velX1 = birds[pSender-2]->velX, velY1 = birds[pSender-2]->velY;
 
     int N = 0;
     // Find all neighbors within the visual distance
     float matchX = 0, matchY = 0, separateX = 0, separateY = 0, cohereX = 0, cohereY = 0;
     for (int i = 2; i <= number_of_birds + 1; i++) {
-        if (i != curBirdId) {
-            it = birds[i - 2].find("x");
-            float x2 = std::get<float>(it->second);
-            it = birds[i - 2].find("y");
-            float y2 = std::get<float>(it->second);
-            it = birds[i - 2].find("velX");
-            float velX2 = std::get<float>(it->second);
-            it = birds[i - 2].find("velY");
-            float velY2 = std::get<float>(it->second);
+        if (i != pSender) {
+            float x2 = birds[i-2]->x, y2 = birds[i-2]->y, velX2 = birds[i-2]->velX, velY2 = birds[i-2]->velY;
             float dist = distance_to(x1, y1, x2, y2);
             if (dist < visual_distance) {
                 N += 1;
@@ -229,16 +121,71 @@ NodeId_t Manager::move(int pSender, int pReceiver, SimTime_t pExecTime, State* s
     if (y1 < 0) y1 = 600;
     if (y1 > 600) y1 = 0;
 
-    std::unordered_map<std::string, variant_t> newArgs = {
-            {"x", x1},
-            {"y", y1},
-            {"velX", velX1},
-            {"velY", velY1}
-    };
+    StateBird* sendingState = new StateBird(x1, y1, velX1, velY1);
 
-    //update current positions
-    birds[curBirdId - 2] = newArgs;
     //update position to bird
-    sendMessage(2, pExecTime, pReceiver, curBirdId, 1, newArgs);
-    return -1;
+    sendMessage(3, pExecTime, pReceiver, pSender, 1, sendingState);
+}
+
+void Manager::birdUpdated(int pSender, int pReceiver, SimTime_t pExecTime, State* state) {
+    logger->log(fmt::format("{}: birdUpdated\n", pReceiver));
+    if (pSender < number_of_birds + 1)  {
+        sendMessage(2, pExecTime, pReceiver, pSender + 1);
+        return;
+    }
+    sendMessage(6, pExecTime, pReceiver, pReceiver);
+}
+
+void Manager::clearScreen(int pSender, int pReceiver, SimTime_t pExecTime, State* state) {
+    logger->log(fmt::format("{}: clearScreen\n", pReceiver));
+    // Clear the screen
+    window.clear(sf::Color::Black);
+    for (int i = 0; i < number_of_birds; i++) {
+        sendMessage(4, pExecTime, pReceiver, i + 2);
+    }
+}
+
+void Manager::display(int pSender, int pReceiver, SimTime_t pExecTime, State* state) {
+    logger->log(fmt::format("{}: display\n", pReceiver));
+    if (pSender - 1 == number_of_birds) {
+        // Display everything on the screen
+        window.display();
+        //Do run again
+        sendMessage(1, pExecTime + 1, pReceiver, 2);
+    }
+}
+
+void Manager::registerFunctions() {
+    registerFunction(1, [this](int pSender, int pReceiver, SimTime_t pExecTime, State* state) {
+        return initialization(pSender, pReceiver, pExecTime, state);
+    });
+    registerFunction(2, [this](int pSender, int pReceiver, SimTime_t pExecTime, State* state) {
+        return isWindowOpen(pSender, pReceiver, pExecTime, state);
+    });
+    registerFunction(3, [this](int pSender, int pReceiver, SimTime_t pExecTime, State* state) {
+        return handleEvents(pSender, pReceiver, pExecTime, state);
+    });
+    registerFunction(4, [this](int pSender, int pReceiver, SimTime_t pExecTime, State* state) {
+        return move(pSender, pReceiver, pExecTime, state);
+    });
+    registerFunction(5, [this](int pSender, int pReceiver, SimTime_t pExecTime, State* state) {
+        return birdUpdated(pSender, pReceiver, pExecTime, state);
+    });
+    registerFunction(6, [this](int pSender, int pReceiver, SimTime_t pExecTime, State* state) {
+        return clearScreen(pSender, pReceiver, pExecTime, state);
+    });
+    registerFunction(7, [this](int pSender, int pReceiver, SimTime_t pExecTime, State* state) {
+        return display(pSender, pReceiver, pExecTime, state);
+    });
+
+};
+
+void Manager::initMessage() {
+    // Add implementation of initial message
+    // Replace:
+    //      pServiceId by required service ID
+    //      pExecTime by execution time of event
+    //      pReceiver by the ID of the receiving agent
+    //open
+    sendMessage(1, 0, 1, 2);
 }

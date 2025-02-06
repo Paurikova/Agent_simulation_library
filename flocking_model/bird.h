@@ -5,52 +5,30 @@
 #include <SFML/Graphics.hpp>
 #include <random>  // For better randomness
 
-#include "../library/include/petriNetReasoning.h"
+#include "../library/include/reactiveReasoning.h"
+#include "state_bird.h"
 
-class Bird : public PetriNetReasoning {
+class Bird : public ReactiveReasoning {
 private:
-    float x, y; //position
-    float velX, velY; //velocity
-    float speed;
-    float cohere_factor, separation, separate_factor, match_factor, visual_distance;
+    StateBird* birdState;
     sf::CircleShape shape;
-    // Create an SFML window
     sf::RenderWindow& window;
 
-    // Static random number generator and distribution
-    static std::mt19937 gen;  // Mersenne Twister generator
-    static std::uniform_real_distribution<float> distPos;  // For position (0 to 500)
-    static std::uniform_real_distribution<float> distVel;  // For velocity (-1 to 1)
-
-
     //function
-    NodeId_t getPosition(int pSender, int pReceiver, SimTime_t pExecTime, State* state);
-    NodeId_t setPosition(int pSender, int pReceiver, SimTime_t pExecTime, State* state);
-    NodeId_t draw(int pSender, int pReceiver, SimTime_t pExecTime, State* state);
-    void registerServices() override;
-    void registerNodes() override;
+    void getPosition(int pSender, int pReceiver, SimTime_t pExecTime, State* state);
+    void move(int pSender, int pReceiver, SimTime_t pExecTime, State* state);
+    void setPosition(int pSender, int pReceiver, SimTime_t pExecTime, State* state);
+    void draw(int pSender, int pReceiver, SimTime_t pExecTime, State* state);
+    void registerFunctions() override;
 public:
-    Bird(sf::RenderWindow& window) : window(window) {
-        // Initialize position and velocity using random distributions
-//        x = distPos(gen);   // Random position between 0 and 500
-//        y = distPos(gen);   // Random position between 0 and 500
-//        velX = distVel(gen);  // Random velocity between -1 and 1
-//        velY = distVel(gen);  // Random velocity between -1 and 1
-// Randomly initialize position and velocity
-        x = static_cast<float>(rand() % 500);  // Width of window
-        y = static_cast<float>(rand() % 500);  // Height of window
-        velX = static_cast<float>(rand() % 2) * 2 - 1;  // Random velocity between -1 and 1
-        velY = static_cast<float>(rand() % 2) * 2 - 1;
+    Bird(sf::RenderWindow& window, Logger* logger) : ReactiveReasoning(logger), window(window) {
+        // Randomly initialize position and velocity
+        birdState = new StateBird(static_cast<float>(rand() % 500), static_cast<float>(rand() % 500),
+                              static_cast<float>(rand() % 2) * 2 - 1, static_cast<float>(rand() % 2) * 2 - 1);
 
         // Initialize shape
         shape.setRadius(5);
         shape.setFillColor(sf::Color::White);
         shape.setOrigin(5, 5);  // Center the shape at its origin
     }
-
-//    // Static initialization for random number generation
-//    static void initializeRandomGenerator() {
-//        std::random_device rd;  // Random hardware-based seed
-//        gen.seed(rd());         // Seed the random generator with the device
-//    }
 };
