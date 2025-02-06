@@ -12,9 +12,9 @@ private:
     bool hasCustom = false;
     int hasBreak(int value);
     //function
-    void acceptCustomer(int pSender, int pReceiver, SimTime_t pExecTime, std::unordered_map<std::string, variant_t> args);
-    void processCustomer(int pSender, int pReceiver, SimTime_t pExecTime, std::unordered_map<std::string, variant_t> args);
-    void endCustomer(int pSender, int pReceiver, SimTime_t pExecTime, std::unordered_map<std::string, variant_t> args);
+    void acceptCustomer(int pSender, int pReceiver, SimTime_t pExecTime, State* state);
+    void processCustomer(int pSender, int pReceiver, SimTime_t pExecTime, State* state);
+    void endCustomer(int pSender, int pReceiver, SimTime_t pExecTime, State* state);
     void registerFunctions() override;
 public:
     Cash(std::vector<int> pBreaks, int pBreakLength, int pProcessLength, Logger* pLogger) : ReactiveReasoning(pLogger),

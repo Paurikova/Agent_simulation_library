@@ -8,14 +8,14 @@ bool Message::operator<(const Message& other) const {
     return execTime == other.execTime ? priority < other.priority : execTime > other.execTime;
 }
 
-Message::Message(SimTime_t pExecTime, int pPriority, ServiceId_t pServiceId, AgentId_t pSdr, AgentId_t pRcvr, std::unordered_map<std::string, variant_t> pArgs) {
+Message::Message(SimTime_t pExecTime, int pPriority, ServiceId_t pServiceId, AgentId_t pSdr, AgentId_t pRcvr, State* pState) {
     messageId = nextMessageId++;
     execTime = pExecTime;
     priority = pPriority;
     sender = pSdr;
     receiver = pRcvr;
     serviceId = pServiceId;
-    args = std::move(pArgs);
+    state = pState;
 }
 
 bool MessagePtrComparator::operator()(const Message* m1, const Message* m2) const {

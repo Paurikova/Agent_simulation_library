@@ -15,6 +15,7 @@ set(LIBRARY_SOURCES
         include/types.h
         src/agentReasoning.cpp
         src/uniqueDeque.cpp
+        include/state.h
 )
 
 # Create the library

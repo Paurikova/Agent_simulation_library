@@ -1,11 +1,11 @@
 #include "../include/reactiveReasoning.h"
 
 
-void ReactiveReasoning::process(ServiceId_t pServiceId, AgentId_t pSender, AgentId_t  pReceiver, SimTime_t pExecTime, std::unordered_map<std::string, variant_t> args) {
+void ReactiveReasoning::process(ServiceId_t pServiceId, AgentId_t pSender, AgentId_t  pReceiver, SimTime_t pExecTime, State* state) {
     // Find function connected with the entered service ID
     auto it = functionMap.find(pServiceId);
     if (it != functionMap.end()) {
-        it->second(pSender, pReceiver, pExecTime, args);
+        it->second(pSender, pReceiver, pExecTime, state);
         return;
     }
     // Throw an exception if the function does not exist

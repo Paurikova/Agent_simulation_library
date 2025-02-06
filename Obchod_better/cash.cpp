@@ -1,6 +1,6 @@
 #include "cash.h"
 
-void Cash::acceptCustomer(int pSender, int pReceiver, SimTime_t pExecTime, std::unordered_map<std::string, variant_t> args) {
+void Cash::acceptCustomer(int pSender, int pReceiver, SimTime_t pExecTime, State* state) {
     logger->log(fmt::format("{}: acceptCustomer", pReceiver));
     if (!hasCustom) {
         //Has break?
@@ -18,7 +18,7 @@ void Cash::acceptCustomer(int pSender, int pReceiver, SimTime_t pExecTime, std::
     }
 }
 
-void Cash::processCustomer(int pSender, int pReceiver, SimTime_t pExecTime, std::unordered_map<std::string, variant_t> args) {
+void Cash::processCustomer(int pSender, int pReceiver, SimTime_t pExecTime, State* state) {
     logger->log(fmt::format("{}: processCustomer", pReceiver));
     hasCustom = true;
     //process customer
@@ -26,7 +26,7 @@ void Cash::processCustomer(int pSender, int pReceiver, SimTime_t pExecTime, std:
     sendMessage(3, pExecTime + processLength, pReceiver, pReceiver);
 }
 
-void Cash::endCustomer(int pSender, int pReceiver, SimTime_t pExecTime, std::unordered_map<std::string, variant_t> args) {
+void Cash::endCustomer(int pSender, int pReceiver, SimTime_t pExecTime, State* state) {
     logger->log(fmt::format("{}: endCustomer\n", pReceiver));
     hasCustom = false;
     sendMessage(3, pExecTime, pReceiver, pReceiver - 2);
@@ -34,14 +34,14 @@ void Cash::endCustomer(int pSender, int pReceiver, SimTime_t pExecTime, std::uno
 
 void Cash::registerFunctions() {
     // Register a lambda function to handle function
-    registerFunction(1, [this](int pSender, int pReceiver, SimTime_t pExecTime, std::unordered_map<std::string, variant_t> args) {
-        acceptCustomer(pSender, pReceiver, pExecTime, args);
+    registerFunction(1, [this](int pSender, int pReceiver, SimTime_t pExecTime, State* state) {
+        acceptCustomer(pSender, pReceiver, pExecTime, state);
     });
-    registerFunction(2, [this](int pSender, int pReceiver, SimTime_t pExecTime, std::unordered_map<std::string, variant_t> args) {
-        processCustomer(pSender, pReceiver, pExecTime, args);
+    registerFunction(2, [this](int pSender, int pReceiver, SimTime_t pExecTime, State* state) {
+        processCustomer(pSender, pReceiver, pExecTime, state);
     });
-    registerFunction(3, [this](int pSender, int pReceiver, SimTime_t pExecTime, std::unordered_map<std::string, variant_t> args) {
-        endCustomer(pSender, pReceiver, pExecTime, args);
+    registerFunction(3, [this](int pSender, int pReceiver, SimTime_t pExecTime, State* state) {
+        endCustomer(pSender, pReceiver, pExecTime, state);
     });
 }
 

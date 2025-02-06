@@ -26,7 +26,7 @@ void PetriNetReasoning::unregisterNode(NodeId_t pId) {
     }
 }
 
-void PetriNetReasoning::process(ServiceId_t pServiceId, AgentId_t pSender, AgentId_t  pReceiver, SimTime_t pExecTime, std::unordered_map<std::string, variant_t> args) {
+void PetriNetReasoning::process(ServiceId_t pServiceId, AgentId_t pSender, AgentId_t  pReceiver, SimTime_t pExecTime, State* state) {
     // Find the node id associated with the service
     auto it = serviceToNode.find(pServiceId);
     if (it == serviceToNode.end()) {
@@ -51,7 +51,7 @@ void PetriNetReasoning::process(ServiceId_t pServiceId, AgentId_t pSender, Agent
         // Find the function associated with the current node ID
         if (it != nodeToFunct.end()) {
             // Execute the function and update the result
-            nodeId = it->second(pSender, pReceiver, pExecTime, args);
+            nodeId = it->second(pSender, pReceiver, pExecTime, state);
         } else {
             // Throw an error if the node ID is not found
             throw std::runtime_error("Required node id does not exist!");

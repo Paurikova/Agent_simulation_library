@@ -14,7 +14,7 @@ struct Message {
     AgentId_t sender; /**< ID of the sender agent */
     AgentId_t receiver; /**< ID of the receiver agent */
     ServiceId_t serviceId; /**< ID of the service */
-    std::unordered_map<std::string, variant_t> args; /**< Another args */
+    State* state; /**< Another args */
 
     /**
      * @brief Overloaded greater-than operator for comparing messages.
@@ -36,8 +36,8 @@ struct Message {
      * @param pPriority The priority of the message.
      * @param pSdr The ID of the sender agent.
      * @param pRcvr The ID of the receiver agent.
-     * @param pArgs Another args of message */
-    Message(SimTime_t pExecTime, int pPriority, ServiceId_t pServiceId, AgentId_t pSdr, AgentId_t pRcvr, std::unordered_map<std::string, variant_t> pArgs);
+     * @param pState Another args of message */
+    Message(SimTime_t pExecTime, int pPriority, ServiceId_t pServiceId, AgentId_t pSdr, AgentId_t pRcvr, State* pState);
 };
 
 // Define a custom comparison functor

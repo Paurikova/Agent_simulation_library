@@ -79,7 +79,7 @@ public:
      * @param pSender The ID of the sender agent.
      * @param execTime The execution time.
      */
-    void process(ServiceId_t pServiceId, AgentId_t pSender, AgentId_t  pReceiver, SimTime_t pExecTime, std::unordered_map<std::string, variant_t> args) override;
+    void process(ServiceId_t pServiceId, AgentId_t pSender, AgentId_t  pReceiver, SimTime_t pExecTime, State* state) override;
 
     /**
      * @brief Checks if a service is provided.

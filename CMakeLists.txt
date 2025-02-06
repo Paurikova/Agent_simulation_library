@@ -25,7 +25,7 @@ add_executable(Agent_simulation_library main.cpp
         Obchod_better/shop.cpp
         Obchod_better/line.cpp
         Obchod_better/cash.cpp
-        Obchod_better/state.h
+        Obchod_better/state_line.h
 #        flocking_model_petri_net/bird.cpp
         units/scr/logger.cpp
         units/scr/fileManager.cpp)
