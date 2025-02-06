@@ -12,7 +12,7 @@ void Customer::createCustomer(int pSender, int pReceiver, SimTime_t pExecTime, s
         //send him to shop
         sendMessage(2, pExecTime, pReceiver, pSender);
     } else {
-        std::cout << std::endl;
+        logger->log("\n");
     }
 }
 

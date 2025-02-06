@@ -38,7 +38,6 @@ void Shop::addCustomerToLine(int pSender, int pReceiver, SimTime_t pExecTime, st
     } else {
         sendMessage(1,pExecTime, pReceiver,4);
     }
-    std::cout << std::endl;
 }
 
 void Shop::registerFunctions() {

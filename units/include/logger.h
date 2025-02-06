@@ -20,7 +20,7 @@ private:
 public:
     void log(std::string msg);
     //TODO path
-    Logger(std::string pPath = "/home/miska/CLionProjects/Agent_simulation_library/test", bool pConsole = true) :
+    Logger(bool pConsole = true, std::string pPath = "/home/miska/CLionProjects/Agent_simulation_library/test") :
     path(pPath), console(pConsole) {};
     ~Logger();
 };
