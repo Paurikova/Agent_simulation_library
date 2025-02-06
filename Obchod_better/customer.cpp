@@ -2,12 +2,12 @@
 
 //functions
 void Customer::createCustomer(int pSender, int pReceiver, SimTime_t pExecTime, std::unordered_map<std::string, variant_t> args) {
-    std::cout << pReceiver << ": createCustomer";
+    logger->log(fmt::format("{}: createCustomer", pReceiver));
     int isCreated = rand() % 2;
     // Should be new customer created?
     if (isCreated == 1) {
         nCustomers += 1;
-        std::cout << "  [" << nCustomers << "]" << std::endl;
+        logger->log(fmt::format("  [{}]\n", nCustomers));
         // new customer is created
         //send him to shop
         sendMessage(2, pExecTime, pReceiver, pSender);

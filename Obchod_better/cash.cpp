@@ -1,31 +1,33 @@
 #include "cash.h"
 
 void Cash::acceptCustomer(int pSender, int pReceiver, SimTime_t pExecTime, std::unordered_map<std::string, variant_t> args) {
-    std::cout << pReceiver << ": acceptCustomer" << std::endl;
+    logger->log(fmt::format("{}: acceptCustomer", pReceiver));
     if (!hasCustom) {
         //Has break?
-        int brakTime = hasBreak(pExecTime);
-        if (brakTime > -1 ) {
+        int breakTime = hasBreak(pExecTime);
+        if (breakTime > -1 ) {
             //has break
-            std::cout << "Break" << std::endl;
+            logger->log(fmt::format("       Break [{}] [{}]\n", pReceiver, breakTime));
             //accept customer after break
-            sendMessage(2, brakTime + breakLength, pReceiver, pSender);
+            sendMessage(2, breakTime + breakLength, pReceiver, pSender);
+            return;
         }
+        logger->log("\n");
         // The cash accept customer
         sendMessage(2, pExecTime, pReceiver, pSender);
     }
 }
 
 void Cash::processCustomer(int pSender, int pReceiver, SimTime_t pExecTime, std::unordered_map<std::string, variant_t> args) {
-    std::cout << pReceiver << ": processCustomer";
+    logger->log(fmt::format("{}: processCustomer", pReceiver));
     hasCustom = true;
     //process customer
-    std::cout << "  [" << processLength << "]" << std::endl;
+    logger->log(fmt::format("  [{}]\n" , processLength));
     sendMessage(3, pExecTime + processLength, pReceiver, pReceiver);
 }
 
 void Cash::endCustomer(int pSender, int pReceiver, SimTime_t pExecTime, std::unordered_map<std::string, variant_t> args) {
-    std::cout << pReceiver << ": endCustomer" << std::endl;
+    logger->log(fmt::format("{}: endCustomer\n", pReceiver));
     hasCustom = false;
     sendMessage(3, pExecTime, pReceiver, pReceiver - 2);
 }

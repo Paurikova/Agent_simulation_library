@@ -1,29 +1,29 @@
 #include "line.h"
 
 void Line::addToLine(int pSender, int pReceiver, SimTime_t pExecTime, std::unordered_map<std::string, variant_t> args) {
-    std::cout << pReceiver << ": addToLine";
+    logger->log(fmt::format("{}: addToLine", pReceiver));
     state->custInLine++;
-    std::cout << "  [" << state->custInLine << "]" << std::endl;
+    logger->log(fmt::format("  [{}]\n", state->custInLine));
     if (state->custInLine == 1) {
         sendMessage(1, pExecTime, pReceiver, pReceiver + 2);
     }
 }
 
 void Line::removeFromLine(int pSender, int pReceiver, SimTime_t pExecTime, std::unordered_map<std::string, variant_t> args) {
-    std::cout << pReceiver << ": removeFromLine";
+    logger->log(fmt::format("{}: removeFromLine", pReceiver));
     state->custInLine--;
-    std::cout << "  [" << state->custInLine << "]" << std::endl;
+    logger->log(fmt::format("  [{}]\n", state->custInLine));
     //process customer by cash
     sendMessage(2, pExecTime, pReceiver, pSender);
 }
 
 void Line::removeFromShop(int pSender, int pReceiver, SimTime_t pExecTime, std::unordered_map<std::string, variant_t> args) {
-    std::cout << pReceiver << ": removeFromShop" << std::endl;
+    logger->log(fmt::format("{}: removeFromShop\n", pReceiver));
     sendMessage(4, pExecTime, pReceiver, 3);
 }
 
 void Line::hasCustomer(int pSender, int pReceiver, SimTime_t pExecTime, std::unordered_map<std::string, variant_t> args) {
-    std::cout << pReceiver << ": hasCustomer" << std::endl;
+    logger->log(fmt::format("{}: hasCustomer\n", pReceiver));
     if (state->custInLine > 0) {
         sendMessage(1, pExecTime, pReceiver, pReceiver + 2);
     }

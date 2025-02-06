@@ -9,4 +9,6 @@ private:
     //function
     void createCustomer(int pSender, int pReceiver, SimTime_t pExecTime, std::unordered_map<std::string, variant_t> args);
     void registerFunctions() override;
+public:
+    Customer(Logger* pLogger) : ReactiveReasoning(pLogger) {};
 };

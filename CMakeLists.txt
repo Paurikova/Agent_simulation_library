@@ -13,19 +13,24 @@ add_subdirectory(library)
 #add_subdirectory(frontend)
 
 # Include the frontend project
-add_subdirectory(frontend)
+#TODO
+#add_subdirectory(frontend)
 
 # Add your executable with agent1.cpp and agent2.cpp
 add_executable(Agent_simulation_library main.cpp
        # frontend/CASE_tool/src/agentGenerator.cpp
-#        Obchod_better/manager.cpp
-#        Obchod_better/customer.h
-#        Obchod_better/customer.cpp
-#        Obchod_better/shop.cpp
-#        Obchod_better/line.cpp
-#        Obchod_better/cash.cpp
-        flocking_model/bird.cpp
-        flocking_model/manager.cpp)
+        Obchod_better/manager.cpp
+        Obchod_better/customer.h
+        Obchod_better/customer.cpp
+        Obchod_better/shop.cpp
+        Obchod_better/line.cpp
+        Obchod_better/cash.cpp
+        Obchod_better/state.h
+#        flocking_model_petri_net/bird.cpp
+        units/scr/logger.cpp
+        units/scr/fileManager.cpp)
+#        flocking_model/bird.cpp
+#        flocking_model/manager.cpp)
 #backend/src/agentGenerator.cpp backend/src/agentTemplate.cpp
 # Link with the library
 target_link_libraries(Agent_simulation_library library)

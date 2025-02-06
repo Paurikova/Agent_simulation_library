@@ -3,7 +3,7 @@
 
 //functions
 void Manager::generateCustomer(int pSender, int pReceiver, SimTime_t pExecTime, std::unordered_map<std::string, variant_t> args) {
-    std::cout << pReceiver << ": generateCustomer" << std::endl;
+    logger->log(fmt::format("{}: generateCustomer\n", pReceiver));
     // Is shop open?
     if (pExecTime >= end) {
         return;
@@ -15,7 +15,7 @@ void Manager::generateCustomer(int pSender, int pReceiver, SimTime_t pExecTime, 
 }
 
 void Manager::acceptCustomer(int pSender, int pReceiver, SimTime_t pExecTime, std::unordered_map<std::string, variant_t> args) {
-    std::cout << pReceiver << ": acceptCustomer" << std::endl;
+    logger->log(fmt::format("{}: acceptCustomer\n", pReceiver));
     sendMessage(3, pExecTime, pReceiver, 3);
 }
 

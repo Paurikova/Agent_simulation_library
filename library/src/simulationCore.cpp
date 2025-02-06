@@ -3,7 +3,8 @@
 
 //ID = 1
 //parent = nullptr
-SimulationCore::SimulationCore(AgentReasoning* pAgentReasoning) : Agent(SIMULATION_CORE_ID, nullptr, pAgentReasoning) {
+SimulationCore::SimulationCore(AgentReasoning* pAgentReasoning, Logger* pLogger) :
+    Agent(SIMULATION_CORE_ID, nullptr, pAgentReasoning), logger(pLogger) {
     currTime = -1;
     registerAgent(this);
     mainSchedule = std::make_unique<Schedule>();
@@ -44,7 +45,7 @@ void SimulationCore::runSimulation() {
     int last_exec_time = -1;
     while (message) {
         if (message->execTime > last_exec_time) {
-            //std::cout << "Exec time: " << message->execTime << std::endl;
+            logger->log(fmt::format("Exec time: {}\n", message->execTime));
             last_exec_time = message->execTime;
         }
         currTime = message->execTime;

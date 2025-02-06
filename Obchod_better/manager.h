@@ -10,6 +10,6 @@ private:
     void acceptCustomer(int pSender, int pReceiver, SimTime_t pExecTime, std::unordered_map<std::string, variant_t> args);
     void registerFunctions() override;
 public:
-    Manager(int pEnd, int pNewCust) : end(pEnd), newCust(pNewCust) {}
+    Manager(int pEnd, int pNewCust, Logger* pLogger) : ReactiveReasoning(pLogger), end(pEnd), newCust(pNewCust) {}
     void initMessage() override;
 };

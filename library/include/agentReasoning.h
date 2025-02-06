@@ -1,12 +1,14 @@
 #pragma once
 #include "types.h"
 #include "message.h"
+#include <fstream>
 #include <memory>
 #include <unordered_map>
 #include <variant>
 #include <string>
 #include <stdexcept>
 
+#include "../../units/include/logger.h"
 /**
  * @brief Class for agent reasoning functionality.
  */
@@ -14,6 +16,7 @@ class AgentReasoning {
 private:
     std::unique_ptr<std::vector<Message*>> outBox ; /**< Outgoing message queue. */
 protected:
+    Logger* logger;
     /**
      * @brief Sends a message to another agent.
      *
@@ -28,8 +31,11 @@ protected:
 public:
     /**
      * @brief Constructor for AgentReasoning class.
+     *
+     * @param pLogger Log to console and create log file.
      */
-    AgentReasoning();
+    AgentReasoning(Logger* pLogger);
+
     /**
      * @brief Retrieves the execution function associated with a service ID.
      *

@@ -36,8 +36,10 @@ protected:
 public:
     /**
      * @brief Default constructor for ReactiveReasoning class.
+     *
+     * @param pLogger Inherited
      */
-    ReactiveReasoning(){};
+    ReactiveReasoning(Logger* pLogger) : AgentReasoning(pLogger) {};
 
     /**
     * @brief Retrieves the execution function associated with a service ID.

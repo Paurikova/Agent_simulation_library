@@ -17,6 +17,6 @@ private:
     void endCustomer(int pSender, int pReceiver, SimTime_t pExecTime, std::unordered_map<std::string, variant_t> args);
     void registerFunctions() override;
 public:
-    Cash(std::vector<int> pBreaks, int pBreakLength, int pProcessLength) :
+    Cash(std::vector<int> pBreaks, int pBreakLength, int pProcessLength, Logger* pLogger) : ReactiveReasoning(pLogger),
         breaks(pBreaks), breakLength(pBreakLength), processLength(pProcessLength) {}
 };

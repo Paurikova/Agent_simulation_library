@@ -1,39 +1,38 @@
 #include "shop.h"
-#include <cstdlib>  // For rand() and srand()
-#include <ctime>    // For time()
-#include <iostream>  // For std::cout
+#include <cstdlib>
+#include <iostream>
 
 //functions
 void Shop::open(int pSender, int pReceiver, SimTime_t pExecTime, std::unordered_map<std::string, variant_t> args) {
-    std::cout << pReceiver << ": open" << std::endl;
-    std::cout << "Shopping is open" << std::endl;
+    logger->log(fmt::format("{}: open", pReceiver));
+    logger->log("   Shopping is open\n");
 }
 
 void Shop::close(int pSender, int pReceiver, SimTime_t pExecTime, std::unordered_map<std::string, variant_t> args) {
-    std::cout << pReceiver << ": close" << std::endl;
-    std::cout << "Shop is close" << std::endl;
+    logger->log(fmt::format("{}: close", pReceiver));
+    logger->log("   Shop is close\n");
 }
 
 void Shop::newCustomer(int pSender, int pReceiver, SimTime_t pExecTime, std::unordered_map<std::string, variant_t> args) {
-    std::cout << pReceiver << ": newCustomer";
+    logger->log(fmt::format("{}: newCustomer", pReceiver));
     nCustomers += 1;
     int shoppingTime = rand() % shopping + shopping;
-    std::cout <<" [" << nCustomers << "]" << " Shopping time [" << shoppingTime << "]" << std::endl;
+    logger->log(fmt::format( "[{}]  Shopping time [{}]\n", nCustomers, shoppingTime));
     sendMessage(5,pExecTime + shoppingTime, pReceiver, pReceiver);
 }
 
 void Shop::removeCustomer(int pSender, int pReceiver, SimTime_t pExecTime, std::unordered_map<std::string, variant_t> args) {
-    std::cout << pReceiver << ": removeCustomer";
+    logger->log(fmt::format("{}: removeCustomer", pReceiver));
     nCustomers -= 1;
-    std::cout << "  [" << nCustomers << "]" << std::endl;
+    logger->log(fmt::format("  [{}]\n", nCustomers));
     if (nCustomers > 0) {
         sendMessage(4, pExecTime + 1, pReceiver, pSender);
     }
 }
 
 void Shop::addCustomerToLine(int pSender, int pReceiver, SimTime_t pExecTime, std::unordered_map<std::string, variant_t> args) {
-    std::cout << pReceiver << ": addCustomerToLine";
-    std::cout <<"   Line1[" << custInLines[0]->custInLine << "]" << "     Line2 [" << custInLines[1]->custInLine << "]";
+    logger->log(fmt::format("{}: addCustomerToLine", pReceiver));
+    logger->log(fmt::format("   Line1[{}]     Line2 [{}]\n", custInLines[0]->custInLine, custInLines[1]->custInLine));
     if (custInLines[0]->custInLine >= custInLines[1]->custInLine) {
         sendMessage(1,pExecTime, pReceiver,5);
     } else {

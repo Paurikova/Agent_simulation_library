@@ -1,10 +1,12 @@
 #pragma once
 
 #include <unordered_map>
+#include <fstream>
 
 #include "agent.h"
 #include "message.h"
 #include "types.h"
+#include "../../units/include/logger.h"
 
 /**
  * @brief Represents the core of a simulation.
@@ -17,16 +19,15 @@ private:
     SimTime_t currTime; /**< Current simulation time. */
     std::unordered_map<AgentId_t, Agent*> agents; /**< Map of agent IDs to agent objects. */
     std::unique_ptr<Schedule> mainSchedule; /**< Unique pointer to the main schedule. */
-
+    Logger* logger;
 public:
     /**
      * @brief Constructs a new SimulationCore object.
      *
      * @param pAgentReasoning The reasoning of the agent.
-     * @param pStartTime The start time of the simulation.
-     * @param pEndTime The end time of the simulation.
+     * @param pLogger Logging to console and creating log file.
      */
-    SimulationCore(AgentReasoning* pAgentReasoning);
+    SimulationCore(AgentReasoning* pAgentReasoning, Logger* pLogger);
 
     /**
      * @brief Registers an agent with the simulation core.

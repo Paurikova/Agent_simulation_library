@@ -6,7 +6,9 @@ set(CMAKE_CXX_STANDARD 17)
 
 # Add all source files for the library
 set(STRUCTURES_SOURCE
-        src/uniqueDeque.cpp
+        scr/uniqueDeque.cpp
+        scr/logger.cpp
+        scr/fileManager.cpp
 )
 
 # Create the library

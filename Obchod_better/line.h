@@ -15,5 +15,5 @@ private:
 
     void registerFunctions() override;
 public:
-    Line(State* state) : state(state) {};
+    Line(State* state, Logger* pLogger) : ReactiveReasoning(pLogger), state(state) {};
 };

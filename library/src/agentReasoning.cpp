@@ -7,7 +7,8 @@ void AgentReasoning::sendMessage(ServiceId_t pServiceId, SimTime_t pTime, AgentI
     outBox->push_back(newMessage);
 }
 
-AgentReasoning::AgentReasoning() {
+AgentReasoning::AgentReasoning(Logger* pLogger) {
+    logger = pLogger;
     outBox = std::make_unique<std::vector<Message*>>();
 }
 

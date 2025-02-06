@@ -67,8 +67,10 @@ protected:
 public:
     /**
      * @brief Default constructor for PetriNetReasoning class.
+     *
+     * @param pLogger Inherited
      */
-    PetriNetReasoning() {};
+    PetriNetReasoning(Logger* pLogger) : AgentReasoning(pLogger) {};
 
     /**
      * @brief Retrieves the execution nodes associated with a service ID.
