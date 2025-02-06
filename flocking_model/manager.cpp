@@ -151,7 +151,7 @@ void Manager::display(int pSender, int pReceiver, SimTime_t pExecTime, State* st
         // Display everything on the screen
         window.display();
         //Do run again
-        sendMessage(1, pExecTime + 1, pReceiver, 2);
+        sendMessage(1, pExecTime + 1, pReceiver, pReceiver);
     }
 }
 
