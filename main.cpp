@@ -5,7 +5,7 @@
 #include "Obchod_better/shop.h"
 #include "Obchod_better/line.h"
 #include "Obchod_better/cash.h"
-#include "Obchod_better/state.h"
+#include "Obchod_better/state_line.h"
 //#include "flocking_model/manager.h"
 //#include "flocking_model/bird.h"
 //#include "flocking_model/bird.h"
@@ -50,14 +50,14 @@ using namespace nlohmann;
 //}
 
 int main(int argc, char** argv) {
-    Logger* logger = new Logger();
+    Logger* logger = new Logger(false);
     Manager* manager = new Manager(10, 1, logger);
     SimulationCore* simCore = new SimulationCore(manager, logger);
     Customer* cust = new Customer(logger);
     Agent* aCustomer = new Agent(2, simCore, cust);
     simCore->registerAgent(aCustomer);
-    State* state1 = new State();
-    State* state2 = new State();
+    StateLine* state1 = new StateLine();
+    StateLine* state2 = new StateLine();
     Shop* rShop = new Shop(1, state1, state2, logger);
     Agent* aShop = new Agent(3, simCore, rShop);
     simCore->registerAgent(aShop);

@@ -5,6 +5,8 @@
 #include "math.h"
 
 #include "../library/include/petriNetReasoning.h"
+#include "state_bird.h"
+#include "state_move.h"
 
 class Manager : public PetriNetReasoning {
 private:
@@ -14,25 +16,30 @@ private:
     float separate_factor;
     float match_factor;
     float visual_distance;
+
     int number_of_birds;
-    std::vector<std::unordered_map<std::string, variant_t>> birds;
-    int updatedPosition = 0;
-    bool initRun = true;
+    std::vector<StateBird*> stateBirds;
     int curBirdId = 2;
-    // Create an SFML window
+
     sf::RenderWindow& window;
 
-    //function
     void normalize_velocity(float& velX, float& velY);
     float distance_to(float x1, float y1, float x2, float y2);
     void calculate_direction(float x1, float y1, float x2, float y2, float &dirX, float &dirY);
-    NodeId_t update_positions(int pSender, int pReceiver, SimTime_t pExecTime, State* state);
+
+    //initialization
+    NodeId_t initialization_code1(int pSender, int pReceiver, SimTime_t pExecTime, State* state);
+    NodeId_t initialization_cond1(int pSender, int pReceiver, SimTime_t pExecTime, State* state);
+    NodeId_t initialization_fun1(int pSender, int pReceiver, SimTime_t pExecTime, State* state);
+    NodeId_t initialization_fun2(int pSender, int pReceiver, SimTime_t pExecTime, State* state);
+    NodeId_t isWindowOpen_fun1(int pSender, int pReceiver, SimTime_t pExecTime, State* state);
+    NodeId_t handleEvents_fun1(int pSender, int pReceiver, SimTime_t pExecTime, State* state);
     NodeId_t bird_updated(int pSender, int pReceiver, SimTime_t pExecTime, State* state);
     NodeId_t move(int pSender, int pReceiver, SimTime_t pExecTime, State* state);
-    NodeId_t handle_events(int pSender, int pReceiver, SimTime_t pExecTime, State* state);
+
     NodeId_t clearScreen(int pSender, int pReceiver, SimTime_t pExecTime, State* state);
     NodeId_t display(int pSender, int pReceiver, SimTime_t pExecTime, State* state);
-    NodeId_t isWindowOpen(int pSender, int pReceiver, SimTime_t pExecTime, State* state);
+
     void registerServices() override;
     void registerNodes() override;
 

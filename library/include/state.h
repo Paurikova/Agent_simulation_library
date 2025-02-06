@@ -1,2 +1,5 @@
 #pragma once
-struct State {};
+
+struct State {
+    virtual ~State() = default; // Virtual destructor
+};

@@ -28,7 +28,8 @@ add_executable(Agent_simulation_library main.cpp
         Obchod_better/state_line.h
 #        flocking_model_petri_net/bird.cpp
         units/scr/logger.cpp
-        units/scr/fileManager.cpp)
+        units/scr/fileManager.cpp
+        flocking_model_petri_net/state_bird.h)
 #        flocking_model/bird.cpp
 #        flocking_model/manager.cpp)
 #backend/src/agentGenerator.cpp backend/src/agentTemplate.cpp

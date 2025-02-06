@@ -24,9 +24,9 @@ private:
 
 
     //function
-    NodeId_t getPosition(int pSender, int pReceiver, SimTime_t pExecTime, std::unordered_map<std::string, variant_t> args);
-    NodeId_t setPosition(int pSender, int pReceiver, SimTime_t pExecTime, std::unordered_map<std::string, variant_t> args);
-    NodeId_t draw(int pSender, int pReceiver, SimTime_t pExecTime, std::unordered_map<std::string, variant_t> args);
+    NodeId_t getPosition(int pSender, int pReceiver, SimTime_t pExecTime, State* state);
+    NodeId_t setPosition(int pSender, int pReceiver, SimTime_t pExecTime, State* state);
+    NodeId_t draw(int pSender, int pReceiver, SimTime_t pExecTime, State* state);
     void registerServices() override;
     void registerNodes() override;
 public:
