@@ -139,3 +139,6 @@ add_subdirectory(simple-example)
 #add_subdirectory(basic-interaction-example)
 add_subdirectory(blueprints-example)
 add_subdirectory(CASE_tool)
+
+
+target_link_libraries(frontend PUBLIC units)

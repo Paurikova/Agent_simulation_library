@@ -14,12 +14,14 @@ set(LIBRARY_SOURCES
         src/reactiveReasoning.cpp
         include/types.h
         src/agentReasoning.cpp
-        src/uniqueDeque.cpp
         include/state.h
 )
 
 # Create the library
-add_library(library ${LIBRARY_SOURCES})
+add_library(Agent_library ${LIBRARY_SOURCES})
 
 # Include directories if needed
-target_include_directories(library PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+target_include_directories(Agent_library PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+
+# Link with the library
+target_link_libraries(Agent_library units)

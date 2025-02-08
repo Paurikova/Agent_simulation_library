@@ -10,33 +10,34 @@ find_package(fmt 8.0.0 REQUIRED)
 add_subdirectory(library)
 
 # Include the frontend project
-#add_subdirectory(frontend)
+add_subdirectory(frontend)
 
-# Include the frontend project
-#TODO
-#add_subdirectory(frontend)
+add_executable(Shop_reactive main_shop_reactive.cpp
+        "simulation_models/reactive/shop/src/manager.cpp"
+        "simulation_models/reactive/shop/src/customer.cpp"
+        "simulation_models/reactive/shop/src/shop.cpp"
+        "simulation_models/reactive/shop/src/line.cpp"
+        "simulation_models/reactive/shop/src/cash.cpp"
+        "simulation_models/reactive/shop/include/state_shop.h"
+        "simulation_models/reactive/shop/src/graph.cpp")
 
-# Add your executable with agent1.cpp and agent2.cpp
-add_executable(Agent_simulation_library main.cpp
-       # frontend/CASE_tool/src/agentGenerator.cpp
-        Obchod_better/manager.cpp
-        Obchod_better/customer.h
-        Obchod_better/customer.cpp
-        Obchod_better/shop.cpp
-        Obchod_better/line.cpp
-        Obchod_better/cash.cpp
-        Obchod_better/state_line.h
-#        flocking_model_petri_net/bird.cpp
-        units/scr/logger.cpp
-        units/scr/fileManager.cpp
-        flocking_model_petri_net/state_bird.h)
-#        flocking_model/bird.cpp
-#        flocking_model/manager.cpp)
-#backend/src/agentGenerator.cpp backend/src/agentTemplate.cpp
-# Link with the library
-target_link_libraries(Agent_simulation_library library)
+add_executable(Flocking_model_reactive_stupid main_flocking_model_reactive_stupid.cpp
+        "simulation_models/reactive/flocking_model_stupid/src/bird.cpp"
+        "simulation_models/reactive/flocking_model_stupid/src/manager.cpp"
+        "simulation_models/reactive/flocking_model_stupid/include/state_bird.h")
+
+add_executable(Flocking_model_reactive_intelligent main_flocking_model_reactive_intelligent.cpp
+        "simulation_models/reactive/flocking_model_intelligent/src/bird.cpp"
+        "simulation_models/reactive/flocking_model_intelligent/src/manager.cpp"
+        "simulation_models/reactive/flocking_model_intelligent/include/state_bird.h"
+        "simulation_models/reactive/flocking_model_intelligent/include/state_move.h")
 
 target_link_libraries(Agent_simulation_library fmt)
+
+# Link with the library
+target_link_libraries(Agent_simulation_library Agent_library)
+
+
 
 # Find SFML
 find_package(SFML 2.5 REQUIRED graphics window system)
