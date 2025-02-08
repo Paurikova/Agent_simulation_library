@@ -2,18 +2,21 @@
 #include <cstdlib>
 
 //functions
+//1
 NodeId_t Shop::open(int pSender, int pReceiver, SimTime_t pExecTime, State* state) {
     logger->log(fmt::format("{}: open", pReceiver));
     logger->log("   Shopping is open\n");
     return -1;
 }
 
+//2
 NodeId_t Shop::close(int pSender, int pReceiver, SimTime_t pExecTime, State* state) {
     logger->log(fmt::format("{}: close", pReceiver));
     logger->log("   Shop is close\n");
     return -1;
 }
 
+//3
 NodeId_t Shop::newCustomer(int pSender, int pReceiver, SimTime_t pExecTime, State* state) {
     logger->log(fmt::format("{}: newCustomer", pReceiver));
     stateShop->custInShop += 1;
@@ -24,24 +27,46 @@ NodeId_t Shop::newCustomer(int pSender, int pReceiver, SimTime_t pExecTime, Stat
     return -1;
 }
 
-NodeId_t Shop::removeCustomer(int pSender, int pReceiver, SimTime_t pExecTime, State* state) {
-    logger->log(fmt::format("{}: removeCustomer", pReceiver));
+//4
+NodeId_t Shop::removeCustomer_cond1(int pSender, int pReceiver, SimTime_t pExecTime, State* state) {
+    logger->log(fmt::format("{}: removeCustomer_cond1", pReceiver));
     stateShop->custInShop -= 1;
     logger->log(fmt::format("  [{}]\n", stateShop->custInShop));
     if (stateShop->custInShop > 0) {
-        sendMessage(4, pExecTime + 1, pReceiver, pSender);
+        return 6;
     }
     return -1;
 }
 
-NodeId_t Shop::addCustomerToLine(int pSender, int pReceiver, SimTime_t pExecTime, State* state) {
-    logger->log(fmt::format("{}: addCustomerToLine", pReceiver));
+//6
+NodeId_t Shop::removeCustomer_fun1(int pSender, int pReceiver, SimTime_t pExecTime, State* state) {
+    logger->log(fmt::format("{}: removeCustomer_funct1", pReceiver));
+    sendMessage(4, pExecTime + 1, pReceiver, pSender);
+    return -1;
+}
+
+//5
+NodeId_t Shop::addCustomerToLine_cond1(int pSender, int pReceiver, SimTime_t pExecTime, State* state) {
+    logger->log(fmt::format("{}: addCustomerToLine_cond1", pReceiver));
     logger->log(fmt::format("   Line1[{}]     Line2[{}]\n", stateShop->custInLines[4].size(), stateShop->custInLines[5].size()));
     if (stateShop->custInLines[4].size() >= stateShop->custInLines[5].size()) {
-        sendMessage(1,pExecTime, pReceiver,5);
+        return  7;
     } else {
-        sendMessage(1,pExecTime, pReceiver,4);
+        return 8;
     }
+}
+
+//7
+NodeId_t Shop::addCustomerToLine_fun1(int pSender, int pReceiver, SimTime_t pExecTime, State* state) {
+    logger->log(fmt::format("{}: addCustomerToLine_funct1\n", pReceiver));
+    sendMessage(1,pExecTime, pReceiver,5);
+    return -1;
+}
+
+//8
+NodeId_t Shop::addCustomerToLine_fun2(int pSender, int pReceiver, SimTime_t pExecTime, State* state) {
+    logger->log(fmt::format("{}: addCustomerToLine_funct2\n", pReceiver));
+    sendMessage(1,pExecTime, pReceiver,4);
     return -1;
 }
 
@@ -57,10 +82,19 @@ void Shop::registerNodes() {
         newCustomer(pSender, pReceiver, pExecTime, state);
     });
     registerNode(4, [this](int pSender, int pReceiver, SimTime_t pExecTime, State* state) -> NodeId_t {
-        removeCustomer(pSender, pReceiver, pExecTime, state);
+        removeCustomer_cond1(pSender, pReceiver, pExecTime, state);
     });
     registerNode(5, [this](int pSender, int pReceiver, SimTime_t pExecTime, State* state) -> NodeId_t {
-        addCustomerToLine(pSender, pReceiver, pExecTime, state);
+        addCustomerToLine_cond1(pSender, pReceiver, pExecTime, state);
+    });
+    registerNode(6, [this](int pSender, int pReceiver, SimTime_t pExecTime, State* state) -> NodeId_t {
+        removeCustomer_fun1(pSender, pReceiver, pExecTime, state);
+    });
+    registerNode(7, [this](int pSender, int pReceiver, SimTime_t pExecTime, State* state) -> NodeId_t {
+        addCustomerToLine_fun1(pSender, pReceiver, pExecTime, state);
+    });
+    registerNode(8, [this](int pSender, int pReceiver, SimTime_t pExecTime, State* state) -> NodeId_t {
+        addCustomerToLine_fun2(pSender, pReceiver, pExecTime, state);
     });
 }
 

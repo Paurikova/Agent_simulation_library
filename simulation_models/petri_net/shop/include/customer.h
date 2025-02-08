@@ -1,16 +1,15 @@
 #pragma once
 #include <cstdlib> // For rand()
 
-#include "../../../../library/include/petriNetReasoning.h"
+#include "../../../../library/include/reactiveReasoning.h"
 #include "state_shop.h"
 
-class Customer : public PetriNetReasoning {
+class Customer : public ReactiveReasoning {
 private:
     StateShop* stateShop;
     //function
-    NodeId_t createCustomer(int pSender, int pReceiver, SimTime_t pExecTime, State* state);
-    void registerNodes() override;
-    void registerServices() override;
+    void createCustomer(int pSender, int pReceiver, SimTime_t pExecTime, State* state);
+    void registerFunctions() override;
 public:
-    Customer(StateShop* pStateShop, Logger* pLogger) : PetriNetReasoning(pLogger), stateShop(pStateShop) {};
+    Customer(StateShop* pStateShop, Logger* pLogger) : ReactiveReasoning(pLogger), stateShop(pStateShop) {};
 };

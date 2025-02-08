@@ -2,47 +2,38 @@
 #include <cmath>  // For fmod()
 
 //functions
-NodeId_t Manager::generateCustomer(int pSender, int pReceiver, SimTime_t pExecTime, State* state) {
+void Manager::generateCustomer(int pSender, int pReceiver, SimTime_t pExecTime, State* state) {
     logger->log(fmt::format("{}: generateCustomer\n", pReceiver));
     // is window open?
     if (!run) {
-        return -1;
+        return;
     }
     //create msg for new customer generating
     sendMessage(1, pExecTime, pReceiver, 2);
     //generate new customer based on generating time
     sendMessage(1, pExecTime + newCust, pReceiver, pReceiver);
-    return -1;
 }
 
-NodeId_t Manager::acceptCustomer(int pSender, int pReceiver, SimTime_t pExecTime, State* state) {
+void Manager::acceptCustomer(int pSender, int pReceiver, SimTime_t pExecTime, State* state) {
     logger->log(fmt::format("{}: acceptCustomer\n", pReceiver));
     sendMessage(3, pExecTime, pReceiver, 3);
-    return -1;
 }
 
-NodeId_t Manager::closeSimulation(int pSender, int pReceiver, SimTime_t pExecTime, State* state) {
+void Manager::closeSimulation(int pSender, int pReceiver, SimTime_t pExecTime, State* state) {
     run = false;
-    return -1;
 }
 
-void Manager::registerNodes() {
+void Manager::registerFunctions() {
     // Register a lambda function to handle function
-    registerNode(1, [this](int pSender, int pReceiver, SimTime_t pExecTime, State* state) -> NodeId_t {
+    registerFunction(1, [this](int pSender, int pReceiver, SimTime_t pExecTime, State* state) {
         generateCustomer(pSender, pReceiver, pExecTime, state);
     });
-    registerNode(2, [this](int pSender, int pReceiver, SimTime_t pExecTime, State* state) -> NodeId_t {
+    registerFunction(2, [this](int pSender, int pReceiver, SimTime_t pExecTime, State* state) {
         acceptCustomer(pSender, pReceiver, pExecTime, state);
     });
-    registerNode(3, [this](int pSender, int pReceiver, SimTime_t pExecTime, State* state) -> NodeId_t {
+    registerFunction(3, [this](int pSender, int pReceiver, SimTime_t pExecTime, State* state) {
         closeSimulation(pSender, pReceiver, pExecTime, state);
     });
-}
-
-void Manager::registerServices() {
-    registerService(1, 1);
-    registerService(2, 2);
-    registerService(3, 3);
 }
 
 void Manager::initMessage() {

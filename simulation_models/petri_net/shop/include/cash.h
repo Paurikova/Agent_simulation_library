@@ -3,6 +3,7 @@
 #include <vector>  // For std::vector
 
 #include "state_shop.h"
+#include "state_break.h"
 #include "../../../../library/include/petriNetReasoning.h"
 
 class Cash : public PetriNetReasoning {
@@ -14,7 +15,11 @@ private:
     bool hasCustom = false;
     int hasBreak(int value);
     //function
-    NodeId_t acceptCustomer(int pSender, int pReceiver, SimTime_t pExecTime, State* state);
+    NodeId_t acceptCustomer_cond1(int pSender, int pReceiver, SimTime_t pExecTime, State* state);
+    NodeId_t acceptCustomer_code1(int pSender, int pReceiver, SimTime_t pExecTime, State* state);
+    NodeId_t acceptCustomer_cond2(int pSender, int pReceiver, SimTime_t pExecTime, State* state);
+    NodeId_t acceptCustomer_fun1(int pSender, int pReceiver, SimTime_t pExecTime, State* state);
+    NodeId_t acceptCustomer_fun2(int pSender, int pReceiver, SimTime_t pExecTime, State* state);
     NodeId_t processCustomer(int pSender, int pReceiver, SimTime_t pExecTime, State* state);
     NodeId_t endCustomer(int pSender, int pReceiver, SimTime_t pExecTime, State* state);
     void registerNodes() override;

@@ -1,7 +1,7 @@
 #include "../include/customer.h"
 
 //functions
-NodeId_t Customer::createCustomer(int pSender, int pReceiver, SimTime_t pExecTime, State* state) {
+void Customer::createCustomer(int pSender, int pReceiver, SimTime_t pExecTime, State* state) {
     logger->log(fmt::format("{}: createCustomer", pReceiver));
     int isCreated = rand() % 2;
     // Should be new customer created?
@@ -14,15 +14,10 @@ NodeId_t Customer::createCustomer(int pSender, int pReceiver, SimTime_t pExecTim
     } else {
         logger->log("\n");
     }
-    return -1;
 }
 
-void Customer::registerNodes() {
-    registerNode(1, [this](int pSender, int pReceiver, SimTime_t pExecTime, State* state) -> NodeId_t {
+void Customer::registerFunctions() {
+    registerFunction(1, [this](int pSender, int pReceiver, SimTime_t pExecTime, State* state) {
         createCustomer(pSender, pReceiver, pExecTime, state);
     });
-}
-
-void Customer::registerServices() {
-    registerService(1, 1);
 }
