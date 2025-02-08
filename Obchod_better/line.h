@@ -6,7 +6,7 @@
 
 class Line : public ReactiveReasoning {
 private:
-    StateLine* stateLine;
+    StateShop* stateShop;
     //function
     void addToLine(int pSender, int pReceiver, SimTime_t pExecTime, State* state);
     void removeFromLine(int pSender, int pReceiver, SimTime_t pExecTime, State* state);
@@ -15,5 +15,5 @@ private:
 
     void registerFunctions() override;
 public:
-    Line(StateLine* state, Logger* pLogger) : ReactiveReasoning(pLogger), stateLine(state) {};
+    Line(StateShop* pState, Logger* pLogger) : ReactiveReasoning(pLogger), stateShop(pState) {};
 };

@@ -29,6 +29,7 @@ void Cash::processCustomer(int pSender, int pReceiver, SimTime_t pExecTime, Stat
 void Cash::endCustomer(int pSender, int pReceiver, SimTime_t pExecTime, State* state) {
     logger->log(fmt::format("{}: endCustomer\n", pReceiver));
     hasCustom = false;
+    stateShop->payedTime += processLength;
     sendMessage(3, pExecTime, pReceiver, pReceiver - 2);
 }
 

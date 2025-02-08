@@ -2,17 +2,18 @@
 
 void Line::addToLine(int pSender, int pReceiver, SimTime_t pExecTime, State* state) {
     logger->log(fmt::format("{}: addToLine", pReceiver));
-    stateLine->custInLine++;
-    logger->log(fmt::format("  [{}]\n", stateLine->custInLine));
-    if (stateLine->custInLine == 1) {
+    stateShop->custInLine[pReceiver == 4 ? 0 : 1]++;
+    stateShop->totalCustInLine[pReceiver == 4 ? 0 : 1]++;
+    logger->log(fmt::format("  [{}]\n", stateShop->custInLine[pReceiver == 4 ? 0 : 1]));
+    if (stateShop->custInLine[pReceiver == 4 ? 0 : 1] == 1) {
         sendMessage(1, pExecTime, pReceiver, pReceiver + 2);
     }
 }
 
 void Line::removeFromLine(int pSender, int pReceiver, SimTime_t pExecTime, State* state) {
     logger->log(fmt::format("{}: removeFromLine", pReceiver));
-    stateLine->custInLine--;
-    logger->log(fmt::format("  [{}]\n", stateLine->custInLine));
+    stateShop->custInLine[pReceiver == 4 ? 0 : 1]--;
+    logger->log(fmt::format("  [{}]\n", stateShop->custInLine[pReceiver == 4 ? 0 : 1]));
     //process customer by cash
     sendMessage(2, pExecTime, pReceiver, pSender);
 }
@@ -24,7 +25,7 @@ void Line::removeFromShop(int pSender, int pReceiver, SimTime_t pExecTime, State
 
 void Line::hasCustomer(int pSender, int pReceiver, SimTime_t pExecTime, State* state) {
     logger->log(fmt::format("{}: hasCustomer\n", pReceiver));
-    if (stateLine->custInLine > 0) {
+    if (stateShop->custInLine[pReceiver == 4 ? 0 : 1] > 0) {
         sendMessage(1, pExecTime, pReceiver, pReceiver + 2);
     }
 }

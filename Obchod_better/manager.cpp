@@ -5,9 +5,9 @@
 void Manager::generateCustomer(int pSender, int pReceiver, SimTime_t pExecTime, State* state) {
     logger->log(fmt::format("{}: generateCustomer\n", pReceiver));
     // Is shop open?
-    if (pExecTime >= end) {
-        return;
-    }
+//    if (pExecTime >= end) {
+//        return;
+//    }
     //create msg for new customer generating
     sendMessage(1, pExecTime, pReceiver, 2);
     //generate new customer based on generating time
@@ -38,7 +38,9 @@ void Manager::initMessage() {
     //open
     sendMessage(1, 0, 1, 3);
     //close
-    sendMessage(2, end, 1, 3);
+    //sendMessage(2, end, 1, 3);
+    //window
+    sendMessage(1, 0, 1, 8);
     // new customer
     sendMessage(1, 0, 1, 1);
 

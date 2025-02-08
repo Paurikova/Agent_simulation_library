@@ -15,25 +15,26 @@ void Shop::close(int pSender, int pReceiver, SimTime_t pExecTime, State* state) 
 
 void Shop::newCustomer(int pSender, int pReceiver, SimTime_t pExecTime, State* state) {
     logger->log(fmt::format("{}: newCustomer", pReceiver));
-    nCustomers += 1;
+    stateShop->custInShop += 1;
     int shoppingTime = rand() % shopping + shopping;
-    logger->log(fmt::format( "[{}]  Shopping time [{}]\n", nCustomers, shoppingTime));
+    stateShop->shoppingTime += shoppingTime;
+    logger->log(fmt::format( "[{}]  Shopping time [{}]\n", stateShop->custInShop, shoppingTime));
     sendMessage(5,pExecTime + shoppingTime, pReceiver, pReceiver);
 }
 
 void Shop::removeCustomer(int pSender, int pReceiver, SimTime_t pExecTime, State* state) {
     logger->log(fmt::format("{}: removeCustomer", pReceiver));
-    nCustomers -= 1;
-    logger->log(fmt::format("  [{}]\n", nCustomers));
-    if (nCustomers > 0) {
+    stateShop->custInShop -= 1;
+    logger->log(fmt::format("  [{}]\n", stateShop->custInShop));
+    if (stateShop->custInShop > 0) {
         sendMessage(4, pExecTime + 1, pReceiver, pSender);
     }
 }
 
 void Shop::addCustomerToLine(int pSender, int pReceiver, SimTime_t pExecTime, State* state) {
     logger->log(fmt::format("{}: addCustomerToLine", pReceiver));
-    logger->log(fmt::format("   Line1[{}]     Line2 [{}]\n", custInLines[0]->custInLine, custInLines[1]->custInLine));
-    if (custInLines[0]->custInLine >= custInLines[1]->custInLine) {
+    logger->log(fmt::format("   Line1[{}]     Line2 [{}]\n", stateShop->custInLine[0], stateShop->custInLine[1]));
+    if (stateShop->custInLine[0] >= stateShop->custInLine[1]) {
         sendMessage(1,pExecTime, pReceiver,5);
     } else {
         sendMessage(1,pExecTime, pReceiver,4);

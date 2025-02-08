@@ -12,7 +12,8 @@ private:
 
     void draw(int pSender, int pReceiver, SimTime_t pExecTime, State* state);
     void registerFunctions() override;
-public:
-    Graph(sf::RenderWindow& window, Logger* logger) : ReactiveReasoning(logger), window(window) {}
     void drawBarChart(std::vector<float>& data);
+public:
+    Graph(sf::RenderWindow& window, StateShop* pStateShop, Logger* logger) : ReactiveReasoning(logger),
+    window(window), stateShop(pStateShop) {};
 };

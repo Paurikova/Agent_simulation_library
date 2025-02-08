@@ -1,46 +1,76 @@
-#include "graph.h"
 
-void Graph::draw(int pSender, int pReceiver, SimTime_t pExecTime, State* state) {
-    logger->log(fmt::format("{}: draw", pReceiver));
-    if (window.isOpen()) {
+#include <SFML/Graphics.hpp>
+#include <vector>
+#include <cmath>
+#include <cstdlib>
+#include <ctime>
+
+#include <SFML/Graphics.hpp>
+#include <vector>
+
+#include <SFML/Graphics.hpp>
+#include <vector>
+#include <cstdlib>
+#include <ctime>
+#include <sstream>
+#include <iostream>
+
+void drawBarChart(sf::RenderWindow& window, std::vector<int>& data);
+
+int main() {
+    // Create a window
+    sf::RenderWindow window(sf::VideoMode(800, 600), "Dynamic Bar Chart");
+
+    // Seed the random number generator
+    std::srand(static_cast<unsigned int>(std::time(0)));
+
+    // Initial data (values of the bars)
+    std::vector<int> data = {5, 8, 3, 6, 10};
+
+    // Clock to control the time between updates
+    sf::Clock clock;
+
+    while (window.isOpen()) {
         sf::Event event;
         while (window.pollEvent(event)) {
             if (event.type == sf::Event::Closed)
                 window.close();
         }
 
+        // Update data every 1 second
+        if (clock.getElapsedTime().asSeconds() >= 1.0f) {
+            // Generate random values for the bars (range from 1 to 15)
+            for (auto& value : data) {
+                value = std::rand() % 15 + 1;  // Random values between 1 and 15
+            }
+
+            // Reset the clock to track the next update time
+            clock.restart();
+        }
+
         // Clear the window with a background color
         window.clear(sf::Color::White);
 
-        //create data
-        std::vector<float> data;
-        data.push_back(stateShop->custInShop);  // current number of customers in shop
-        data.push_back(stateShop->custInLine[0]); // current number of customers in line 1
-        data.push_back(stateShop->custInLine[1]); //current number of customers in line 2
-        data.push_back(stateShop->shoppingTime/stateShop->customers);  // mean shopping time
-        data.push_back(stateShop->waitingTime[0]/stateShop->totalCustInLine[0]); // mean waiting time line 1
-        data.push_back(stateShop->waitingTime[1]/stateShop->totalCustInLine[1]); //mean waiting time line 2
-        data.push_back((stateShop->shoppingTime + stateShop->waitingTime[0] + stateShop->waitingTime[1] +
-        stateShop->payedTime)/stateShop->customers); // mean spending time in shop
         // Draw the bar chart
-        drawBarChart(data);
+        drawBarChart(window, data);
 
         // Display the window content
         window.display();
     }
-    sendMessage(1, pExecTime + 1, pReceiver, pReceiver);
+
+    return 0;
 }
 
-void Graph::registerFunctions() {
-    // Register a lambda function to handle function
-    registerFunction(1, [this](int pSender, int pReceiver, SimTime_t pExecTime, State *state) {
-        draw(pSender, pReceiver, pExecTime, state);
-    });
-}
-
-void Graph::drawBarChart(std::vector<float>& data) {
+void drawBarChart(sf::RenderWindow& window, std::vector<int>& data) {
     float barWidth = 50.f;
     float spaceBetweenBars = 20.f;
+
+    // Load the system font (DejaVu Sans as a default on Linux)
+    sf::Font font;
+    if (!font.loadFromFile("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf")) {
+        std::cerr << "Failed to load DejaVuSans font!" << std::endl;
+        return;
+    }
 
     // Draw bars
     for (size_t i = 0; i < data.size(); ++i) {
@@ -50,9 +80,9 @@ void Graph::drawBarChart(std::vector<float>& data) {
         // Position the bar
         bar.setPosition(i * (barWidth + spaceBetweenBars) + 100.f, window.getSize().y - 50);
 
-        // Set the color of the bar
-        float blueValue = std::fmod(data[i] * 25.0f, 255.0f);  // Gradually change the blue intensity based on data value
-        bar.setFillColor(sf::Color(0, 0, static_cast<int>(blueValue)));  // Convert float to int and set the color
+        // Set the color of the bar (gradient from green to blue)
+        int blueValue = (data[i] * 25) % 255;  // Gradually change the blue intensity based on data value
+        bar.setFillColor(sf::Color(0, 0, blueValue));  // Green to Blue variation
 
         // Draw the bar
         window.draw(bar);
@@ -63,20 +93,12 @@ void Graph::drawBarChart(std::vector<float>& data) {
         text.setCharacterSize(20);
         text.setFillColor(sf::Color::Black);
 
-        // Load the system font (DejaVu Sans as a default on Linux)
-        if (!text.getFont()) {
-            sf::Font font;
-            if (!font.loadFromFile("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf")) {
-                std::cerr << "Failed to load DejaVuSans font!" << std::endl;
-                return;
-            }
-            text.setFont(font);
-        }
-
         // Set position for the value text above the bar
+        // Adjust the y position so it's above the bar
         text.setPosition(bar.getPosition().x + barWidth / 2 - text.getLocalBounds().width / 2,
                          bar.getPosition().y - text.getLocalBounds().height - 5);
 
+        // Draw the number on top of the bar
         window.draw(text);
     }
 
@@ -97,16 +119,10 @@ void Graph::drawBarChart(std::vector<float>& data) {
 
     // Draw Title
     sf::Text title;
-    title.setString("Shop simulation");
+    title.setString("Dynamic Bar Chart");
     title.setCharacterSize(30);
     title.setFillColor(sf::Color::Black);
 
-    // Use a system font (DejaVu Sans or fallback)
-    sf::Font font;
-    if (!font.loadFromFile("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf")) {
-        std::cerr << "Failed to load DejaVuSans font!" << std::endl;
-        return;
-    }
     title.setFont(font);
 
     title.setPosition(window.getSize().x / 2 - title.getLocalBounds().width / 2, 20.f);
@@ -115,13 +131,12 @@ void Graph::drawBarChart(std::vector<float>& data) {
     // Draw column names (x-axis labels)
     for (size_t i = 0; i < data.size(); ++i) {
         std::ostringstream columnText;
-        columnText << "C" << i;
+        columnText << "C" << i + 1;
 
         sf::Text columnLabel(columnText.str(), font, 20);
         columnLabel.setFillColor(sf::Color::Black);
-        columnLabel.setPosition(
-                i * (barWidth + spaceBetweenBars) + 100.f + barWidth / 2 - columnLabel.getLocalBounds().width / 2,
-                window.getSize().y - 30.f);
+        columnLabel.setPosition(i * (barWidth + spaceBetweenBars) + 100.f + barWidth / 2 - columnLabel.getLocalBounds().width / 2,
+                                window.getSize().y - 30.f);
         window.draw(columnLabel);
     }
 

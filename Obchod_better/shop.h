@@ -6,9 +6,8 @@
 class Shop : public ReactiveReasoning {
 private:
     //attributes
-    int nCustomers = 0;
+    StateShop* stateShop;
     int shopping;
-    StateLine* custInLines[2];
     //functions
     void open(int pSender, int pReceiver, SimTime_t pExecTime, State* state);
     void close(int pSender, int pReceiver, SimTime_t pExecTime, State* state);
@@ -18,8 +17,5 @@ private:
     void addCustomerToLine(int pSender, int pReceiver, SimTime_t pExecTime, State* state);
     void registerFunctions() override;
 public:
-    Shop(int pShopping, StateLine* state1, StateLine* state2, Logger* pLogger) : ReactiveReasoning(pLogger), shopping(pShopping) {
-        custInLines[0] = state1;
-        custInLines[1] = state2;
-    }
+    Shop(int pShopping, StateShop* pStateShop, Logger* pLogger) : ReactiveReasoning(pLogger), shopping(pShopping), stateShop(pStateShop) {}
 };
