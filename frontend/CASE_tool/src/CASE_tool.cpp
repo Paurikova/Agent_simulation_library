@@ -1268,9 +1268,19 @@ void CASE_tool::OnFrame(float deltaTime) {
     ed::Suspend();
     ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(8, 8));
     if (ImGui::BeginPopup("Node Context Menu")) {
-        auto node = FindNode(contextNodeId);
-        if (ImGui::MenuItem("Delete"))
+        Node *node = FindNode(contextNodeId);
+        if (strcmp(m_renamed, "") == 0) {
+            strncpy(m_renamed, node->Name.c_str(), sizeof(m_renamed));
+            m_renamed[sizeof(m_renamed) - 1] = '\0'; // Ensure null-terminated
+        }
+        ImGui::InputText("", m_renamed, IM_ARRAYSIZE(m_renamed));
+        if (ImGui::MenuItem("Delete")) {
             ed::DeleteNode(contextNodeId);
+        }
+        if (ImGui::MenuItem("Rename")) {
+            node->Name = m_renamed;
+            strcpy(m_renamed, "");
+        }
         ImGui::EndPopup();
     }
 

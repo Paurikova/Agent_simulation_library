@@ -1,6 +1,8 @@
 add_frontend_executable(CASE_tool
         src/CASE_tool.cpp
         src/agentGenerator.cpp
+        src/fileManager.cpp
+        src/uniqueDeque.cpp
         include/types.h
         utilities/builders.h
         utilities/drawing.h

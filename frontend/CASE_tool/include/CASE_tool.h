@@ -209,6 +209,7 @@ private:
     Button*              m_ActiveButton = nullptr; // << pointer to active button in condition node
     std::unique_ptr<AgentGenerator> agentGenerator = std::make_unique<AgentGenerator>();
     std::unique_ptr<FileManager> fileManager = std::make_unique<FileManager>();
+    char m_renamed[64] = "";
 public:
     /**
      * Constructor.
