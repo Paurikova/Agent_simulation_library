@@ -1774,13 +1774,13 @@ json CASE_tool::GetData() {
                         case (NodeType::SimpleCond):
                             node_json[TYPE] = CONDITION_ID;
                             node_json[CONDITION] = innerNode->Inputs.at(0).PinButton->Label;
-                            node_json[NODE_NAME] = node->Name;
+                            node_json[NODE_NAME] = innerNode->Name;
                             AddLinkedNode(innerNode->Outputs.at(0).LinkIds, IF, node_json);
                             AddLinkedNode(innerNode->Outputs.at(1).LinkIds, ELSE, node_json);
                             break;
                         case (NodeType::SimpleCode):
                             node_json[TYPE] = CODE_ID;
-                            node_json[NODE_NAME] = node->Name;
+                            node_json[NODE_NAME] = innerNode->Name;
                             AddLinkedNode(innerNode->Outputs.at(0).LinkIds, LINKED, node_json);
                             break;
                         case (NodeType::Function):

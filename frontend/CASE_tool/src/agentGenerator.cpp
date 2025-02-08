@@ -86,7 +86,7 @@ void AgentGenerator::processReactive(json data, std::string path, AgentId_t agen
             // Insert function definition into the header file
             agent_h.insert(posFun + SEARCH_FUNCT.length(), valuesToInsert);
             // Generate values to insert for function implementation
-            valuesToInsert = fmt::format(resources[REACTIVE][TEMPLATE][TEMP_FUNCTION_IMPL], agentId, funct[NAME]);
+            valuesToInsert = fmt::format(resources[REACTIVE][TEMPLATE][TEMP_FUNCTION_IMPL], agentName, agentId, funct[NAME]);
             // Insert function implementation into the source file
             agent_cpp.insert(posDef + SEARCH_REACTIVE_H.length(), valuesToInsert);
             // Find registration position in the source file
@@ -174,18 +174,18 @@ void AgentGenerator::processPetriNet(json data, std::string path, int agentId, s
             switch (static_cast<int>(node[TYPE])) {
                 case CONDITION_ID:
                     name = std::string(node[NODE_NAME]) + "_" + CONDITION + currId;
-                    valuesToInsert = fmt::format(resources[PETRI_NET][TEMPLATE][TEMP_IF_ELSE_NODE_IMPL], agentId, name, node[IF], node[ELSE]);
+                    valuesToInsert = fmt::format(resources[PETRI_NET][TEMPLATE][TEMP_IF_ELSE_NODE_IMPL], agentName, agentId, name, node[IF], node[ELSE]);
                     currentIds->push_back(std::string(node[IF]));
                     currentIds->push_back(std::string(node[ELSE]));
                     break;
                 case CODE_ID:
                     name = std::string(node[NODE_NAME]) + "_" + CODE + currId;
-                    valuesToInsert = fmt::format(resources[PETRI_NET][TEMPLATE][TEMP_NODE_IMPL], agentId, name, node[LINKED]);
+                    valuesToInsert = fmt::format(resources[PETRI_NET][TEMPLATE][TEMP_NODE_IMPL], agentName, agentId, name, node[LINKED]);
                     currentIds->push_back(std::string(node[LINKED]));
                     break;
                 case FUNCTION_ID:
                     name = std::string(node[NAME]) + "_" + FUNCTION + currId;
-                    valuesToInsert = fmt::format(resources[PETRI_NET][TEMPLATE][TEMP_FUNCTION_IMPL], agentId, name);
+                    valuesToInsert = fmt::format(resources[PETRI_NET][TEMPLATE][TEMP_FUNCTION_IMPL], agentName, agentId, name);
                     break;
             }
             // Insert node implementation into the implementation
