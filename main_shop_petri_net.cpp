@@ -1,20 +1,20 @@
 #include "library/include/simulationCore.h"
 
-#include "simulation_models/reactive/shop/include/manager.h"
-#include "simulation_models/reactive/shop/include/customer.h"
-#include "simulation_models/reactive/shop/include/shop.h"
-#include "simulation_models/reactive/shop/include/line.h"
-#include "simulation_models/reactive/shop/include/cash.h"
-#include "simulation_models/reactive/shop/include/state_shop.h"
-#include "simulation_models/reactive/shop/include/graph.h"
+#include "simulation_models/petri_net/shop/include/manager.h"
+#include "simulation_models/petri_net/shop/include/customer.h"
+#include "simulation_models/petri_net/shop/include/shop.h"
+#include "simulation_models/petri_net/shop/include/line.h"
+#include "simulation_models/petri_net/shop/include/cash.h"
+#include "simulation_models/petri_net/shop/include/state_shop.h"
+#include "simulation_models/petri_net/shop/include/graph.h"
 
 int main(int argc, char** argv) {
     StateShop* stateShop = new StateShop();
     Logger* logger = new Logger();
-    
+
     Manager* rManager = new Manager(20, logger);
     SimulationCore* aManager = new SimulationCore(rManager, logger);
-    
+
     Customer* rCustomer = new Customer(stateShop, logger);
     Agent* aCustomer = new Agent(2, aManager, rCustomer);
     aManager->registerAgent(aCustomer);
