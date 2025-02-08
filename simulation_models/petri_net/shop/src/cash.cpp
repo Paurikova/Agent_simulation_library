@@ -22,7 +22,8 @@ NodeId_t Cash::acceptCustomer_code1(int pSender, int pReceiver, SimTime_t pExecT
             break;
         }
     }
-    state = new StateBreak(breakTime);
+    StateBreak* stateBreak = dynamic_cast<StateBreak*>(state);
+    stateBreak->cashBreak = breakTime;
     return 5;
 }
 

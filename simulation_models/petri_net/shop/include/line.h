@@ -3,6 +3,7 @@
 
 #include "../../../../library/include/petriNetReasoning.h"
 #include "state_shop.h"
+#include "state_break.h"
 
 class Line : public PetriNetReasoning {
 private:

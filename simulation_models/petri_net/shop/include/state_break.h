@@ -7,4 +7,5 @@
 struct StateBreak : public State {
     int cashBreak;
     StateBreak(int pBreak) : State(), cashBreak(pBreak){};
+    StateBreak() {};
 };

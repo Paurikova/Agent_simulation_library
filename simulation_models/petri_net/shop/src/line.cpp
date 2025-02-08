@@ -14,7 +14,7 @@ NodeId_t Line::addToLine_cond1(int pSender, int pReceiver, SimTime_t pExecTime, 
 //5
 NodeId_t Line::addToLine_fun1(int pSender, int pReceiver, SimTime_t pExecTime, State* state) {
     logger->log(fmt::format("{}: addToLine_fun1\n", pReceiver));
-    sendMessage(1, pExecTime, pReceiver, pReceiver + 2);
+    sendMessage(1, pExecTime, pReceiver, pReceiver + 2, -1 , new StateBreak());
     return -1;
 }
 
@@ -49,7 +49,7 @@ NodeId_t Line::hasCustomer_cond1(int pSender, int pReceiver, SimTime_t pExecTime
 //6
 NodeId_t Line::hasCustomer_fun1(int pSender, int pReceiver, SimTime_t pExecTime, State* state) {
     logger->log(fmt::format("{}: hasCustomer_fun1\n", pReceiver));
-    sendMessage(1, pExecTime, pReceiver, pReceiver + 2);
+    sendMessage(1, pExecTime, pReceiver, pReceiver + 2, -1, new StateBreak());
     return -1;
 }
 
