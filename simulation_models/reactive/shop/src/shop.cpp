@@ -33,8 +33,8 @@ void Shop::removeCustomer(int pSender, int pReceiver, SimTime_t pExecTime, State
 
 void Shop::addCustomerToLine(int pSender, int pReceiver, SimTime_t pExecTime, State* state) {
     logger->log(fmt::format("{}: addCustomerToLine", pReceiver));
-    logger->log(fmt::format("   Line1[{}]     Line2 [{}]\n", stateShop->custInLine[0], stateShop->custInLine[1]));
-    if (stateShop->custInLine[0] >= stateShop->custInLine[1]) {
+    logger->log(fmt::format("   Line1[{}]     Line2[{}]\n", stateShop->custInLines[4].size(), stateShop->custInLines[5].size()));
+    if (stateShop->custInLines[4].size() >= stateShop->custInLines[5].size()) {
         sendMessage(1,pExecTime, pReceiver,5);
     } else {
         sendMessage(1,pExecTime, pReceiver,4);

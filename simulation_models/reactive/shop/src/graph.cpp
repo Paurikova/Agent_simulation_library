@@ -15,19 +15,16 @@ void Graph::draw(int pSender, int pReceiver, SimTime_t pExecTime, State* state) 
         //create data
         std::vector<float> data;
         data.push_back(stateShop->custInShop);  // current number of customers in shop
-        data.push_back(stateShop->custInLine[0]); // current number of customers in line 1
-        data.push_back(stateShop->custInLine[1]); //current number of customers in line 2
-        data.push_back(stateShop->shoppingTime/stateShop->customers);  // mean shopping time
-        data.push_back(stateShop->waitingTime[0]/stateShop->totalCustInLine[0]); // mean waiting time line 1
-        data.push_back(stateShop->waitingTime[1]/stateShop->totalCustInLine[1]); //mean waiting time line 2
-        data.push_back((stateShop->shoppingTime + stateShop->waitingTime[0] + stateShop->waitingTime[1] +
-        stateShop->payedTime)/stateShop->customers); // mean spending time in shop
+        data.push_back(stateShop->custInLines[4].size()); // current number of customers in line 1
+        data.push_back(stateShop->custInLines[5].size()); //current number of customers in line 2
+        data.push_back(stateShop->totalCustTimeInLine[4]/(stateShop->totalCustInLine[4] == 0 ? 1 : stateShop->totalCustInLine[4])); //mean waiting time in line 1 with paying
+        data.push_back(stateShop->totalCustTimeInLine[5]/(stateShop->totalCustInLine[5] == 0 ? 1 : stateShop->totalCustInLine[5]));  //mean waiting time in line 1 with paying
         // Draw the bar chart
         drawBarChart(data);
 
         // Display the window content
         window.display();
-        sendMessage(1, pExecTime + 1, pReceiver, pReceiver);
+        sendMessage(1, pExecTime + showStep, pReceiver, pReceiver);
     } else {
         // end simulation
         sendMessage(3, pExecTime, pReceiver, 1);
@@ -118,9 +115,9 @@ void Graph::drawBarChart(std::vector<float>& data) {
     // Draw column names (x-axis labels)
     for (size_t i = 0; i < data.size(); ++i) {
         std::ostringstream columnText;
-        columnText << "C" << i;
+        columnText << i;
 
-        sf::Text columnLabel(columnText.str(), font, 20);
+        sf::Text columnLabel(columnText.str(), font, 10);
         columnLabel.setFillColor(sf::Color::Black);
         columnLabel.setPosition(
                 i * (barWidth + spaceBetweenBars) + 100.f + barWidth / 2 - columnLabel.getLocalBounds().width / 2,

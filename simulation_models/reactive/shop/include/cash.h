@@ -2,8 +2,8 @@
 #include <cstdlib> // For rand()
 #include <vector>  // For std::vector
 
-#include "include/reactiveReasoning.h"
 #include "state_shop.h"
+#include "../../../../library/include/reactiveReasoning.h"
 
 class Cash : public ReactiveReasoning {
 private:

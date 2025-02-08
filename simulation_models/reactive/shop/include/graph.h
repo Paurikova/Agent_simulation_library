@@ -1,4 +1,4 @@
-#include "include/reactiveReasoning.h"
+#include "../../../../library/include/reactiveReasoning.h"
 #include "state_shop.h"
 #include <SFML/Graphics.hpp>
 #include <sstream>
@@ -7,6 +7,7 @@
 
 class Graph : public ReactiveReasoning {
 private:
+    int showStep;
     sf::RenderWindow& window;
     StateShop* stateShop;
 
@@ -14,6 +15,6 @@ private:
     void registerFunctions() override;
     void drawBarChart(std::vector<float>& data);
 public:
-    Graph(sf::RenderWindow& window, StateShop* pStateShop, Logger* logger) : ReactiveReasoning(logger),
-    window(window), stateShop(pStateShop) {};
+    Graph(int showStep, sf::RenderWindow& window, StateShop* pStateShop, Logger* logger) : ReactiveReasoning(logger),
+    showStep(showStep), window(window), stateShop(pStateShop) {};
 };

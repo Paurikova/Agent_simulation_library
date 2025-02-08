@@ -9,7 +9,6 @@
 
 #include "types.h"
 #include "agentReasoning.h"
-#include "uniqueDeque.h"
 
 /**
  * @brief Class representing Petri net reasoning functionality, derived from AgentReasoning.

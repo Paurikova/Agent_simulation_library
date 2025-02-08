@@ -4,8 +4,8 @@ project(Agent_library)
 
 set(CMAKE_CXX_STANDARD 17)
 
-# Add all source files for the library
-set(LIBRARY_SOURCES
+# Add source files
+set(SOURCES
         src/simulationCore.cpp
         src/agent.cpp
         src/message.cpp
@@ -17,11 +17,11 @@ set(LIBRARY_SOURCES
         include/state.h
 )
 
-# Create the library
-add_library(Agent_library ${LIBRARY_SOURCES})
+# Create a static library
+add_library(Agent_library STATIC ${SOURCES})
 
-# Include directories if needed
-target_include_directories(Agent_library PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+# Specify include directories
+target_include_directories(Agent_library PUBLIC include)
 
 # Link with the library
-target_link_libraries(Agent_library units)
+target_link_libraries(Agent_library PRIVATE units)

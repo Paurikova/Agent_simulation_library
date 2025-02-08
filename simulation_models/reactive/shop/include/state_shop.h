@@ -1,13 +1,19 @@
 #pragma once
-#include "include/state.h"
+#include "../../../../library/include/types.h"
+#include "../../../../library/include/state.h"
+
+#include <queue>
 
 struct StateShop : public State {
     float customers = 0;
     float custInShop = 0;
-    float custInLine[2] = {0, 0};
-    float totalCustInLine[2] = {0, 0};
+    std::unordered_map<int,  std::queue<float>> custInLines;
+    std::unordered_map<int, float> totalCustTimeInLine = {{4, 0}, {5, 0}};
+    std::unordered_map<int, int> totalCustInLine = {{4, 0}, {5, 0}};
     float shoppingTime = 0;
-    float waitingTime[2] = {0, 0};
-    float payedTime = 0;
-    StateShop() : State() {};
+    StateShop() : State() {
+        // Add empty queues to the map
+        custInLines[4] = std::queue<float>();
+        custInLines[5] = std::queue<float>();
+    };
 };

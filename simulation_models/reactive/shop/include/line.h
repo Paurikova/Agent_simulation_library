@@ -1,7 +1,7 @@
 #pragma once
 #include <cstdlib> // For rand()
 
-#include "include/reactiveReasoning.h"
+#include "../../../../library/include/reactiveReasoning.h"
 #include "state_shop.h"
 
 class Line : public ReactiveReasoning {

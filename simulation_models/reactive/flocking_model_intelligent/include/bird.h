@@ -5,7 +5,7 @@
 #include <SFML/Graphics.hpp>
 #include <random>  // For better randomness
 
-#include "include/reactiveReasoning.h"
+#include "../../../../library/include/reactiveReasoning.h"
 #include "state_bird.h"
 #include "state_move.h"
 

@@ -2,18 +2,20 @@
 
 void Line::addToLine(int pSender, int pReceiver, SimTime_t pExecTime, State* state) {
     logger->log(fmt::format("{}: addToLine", pReceiver));
-    stateShop->custInLine[pReceiver == 4 ? 0 : 1]++;
-    stateShop->totalCustInLine[pReceiver == 4 ? 0 : 1]++;
-    logger->log(fmt::format("  [{}]\n", stateShop->custInLine[pReceiver == 4 ? 0 : 1]));
-    if (stateShop->custInLine[pReceiver == 4 ? 0 : 1] == 1) {
+    stateShop->custInLines[pReceiver].push(pExecTime);
+    logger->log(fmt::format("  [{}]\n", stateShop->custInLines[pReceiver].size()));
+    if (stateShop->custInLines[pReceiver].size() == 1) {
         sendMessage(1, pExecTime, pReceiver, pReceiver + 2);
+        return;
     }
 }
 
 void Line::removeFromLine(int pSender, int pReceiver, SimTime_t pExecTime, State* state) {
     logger->log(fmt::format("{}: removeFromLine", pReceiver));
-    stateShop->custInLine[pReceiver == 4 ? 0 : 1]--;
-    logger->log(fmt::format("  [{}]\n", stateShop->custInLine[pReceiver == 4 ? 0 : 1]));
+    stateShop->totalCustTimeInLine[pReceiver] = pExecTime - stateShop->custInLines[pReceiver].front();
+    stateShop->totalCustInLine[pReceiver]++;
+    stateShop->custInLines[pReceiver].pop();
+    logger->log(fmt::format("  [{}]\n", stateShop->custInLines[pReceiver].size()));
     //process customer by cash
     sendMessage(2, pExecTime, pReceiver, pSender);
 }
@@ -25,7 +27,7 @@ void Line::removeFromShop(int pSender, int pReceiver, SimTime_t pExecTime, State
 
 void Line::hasCustomer(int pSender, int pReceiver, SimTime_t pExecTime, State* state) {
     logger->log(fmt::format("{}: hasCustomer\n", pReceiver));
-    if (stateShop->custInLine[pReceiver == 4 ? 0 : 1] > 0) {
+    if (stateShop->custInLines[pReceiver].size() > 0) {
         sendMessage(1, pExecTime, pReceiver, pReceiver + 2);
     }
 }

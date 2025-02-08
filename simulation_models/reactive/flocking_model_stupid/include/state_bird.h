@@ -1,5 +1,5 @@
 #pragma once
-#include "include/state.h"
+#include "../../../../library/include/state.h"
 
 struct StateBird : public State {
     float x, y; //position
