@@ -64,9 +64,9 @@ private:
      * @param data The reactive agent JSON data.
      * @param agentId The ID of the agent being processed.
      */
-    void processReactive(json data, std::string path, int agentId);
+    void processReactive(json data, std::string path, int agentId, std::string agentName);
 
-    void processPetriNet(json data, std::string path, int agentId);
-    void initMessage(std::string& agent_h, std::string& agent_cpp, std::string type, std::string searchType);
+    void processPetriNet(json data, std::string path, int agentId, std::string agentName);
+    void initMessage(std::string& agent_h, std::string& agent_cpp, std::string type, std::string searchType, std::string agentName);
     void processMain(json data);
 };

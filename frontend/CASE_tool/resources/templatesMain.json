@@ -1,5 +1,5 @@
 {
   "InitMessageDef": "\npublic:\n    void initMessage() override;",
-  "InitMessageImpl": "\nvoid Agent{}{}::initMessage() {{\n    // Add implementation of initial message\n    // Replace:\n    //      pServiceId by required service ID\n    //      pExecTime by execution time of event\n    //      pReceiver by the ID of the receiving agent\n    sendMessage(pServiceId, pExecTime, 1, pReceiver, 1);\n}}",
+  "InitMessageImpl": "\nvoid {}{}{}::initMessage() {{\n    // Add implementation of initial message\n    // Replace:\n    //      pServiceId by required service ID\n    //      pExecTime by execution time of event\n    //      pReceiver by the ID of the receiving agent\n    sendMessage(pServiceId, pExecTime, 1, pReceiver, 1);\n}}",
   "Attribute" : "\n    {} {} = {};"
 }

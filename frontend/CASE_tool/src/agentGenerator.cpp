@@ -29,27 +29,29 @@ void AgentGenerator::processJson(json data, std::string path) {
 
     // Initialize the starting ID for agents
     AgentId_t agentId;
+    std::string agentName;
     // Iterate through each agent in the source data
     for (auto& [key, value] : source.items()) {
         agentId = value[AGENT_ID];
+        agentName = value[NODE_NAME];
         // Map the node ID to the corresponding agent ID
         node2Agent[std::stoi(key)] = agentId;
 
         // Process the agent based on its type
         if (value.contains(REACTIVE)) {
             // Process a reactive agent
-            processReactive(value[REACTIVE], path, agentId);
+            processReactive(value[REACTIVE], path, agentId, agentName);
         }
         if (value.contains(PETRI_NET)) {
-            processPetriNet(value[PETRI_NET], path, agentId);
+            processPetriNet(value[PETRI_NET], path, agentId, agentName);
         }
     }
 }
 
-void AgentGenerator::processReactive(json data, std::string path, AgentId_t agentId) {
+void AgentGenerator::processReactive(json data, std::string path, AgentId_t agentId, std::string agentName) {
     // Deep copy the template files
-    std::string agent_h = fmt::format(resources[REACTIVE][FILE_H], agentId);
-    std::string agent_cpp = fmt::format(resources[REACTIVE][FILE_CPP], agentId, agentId);
+    std::string agent_h = fmt::format(resources[REACTIVE][FILE_H], agentName, agentId);
+    std::string agent_cpp = fmt::format(resources[REACTIVE][FILE_CPP], agentName, agentId, agentName, agentId);
 
     // Initialize positions for insertion points
     size_t posAtr, posFun, posReg, posDef, posOver;
@@ -98,20 +100,20 @@ void AgentGenerator::processReactive(json data, std::string path, AgentId_t agen
 
     // Insert initial message definition if the agent ID is 1 (manager)
     if (agentId == MANAGER_ID) {
-        initMessage(agent_h, agent_cpp, REACTIVE_REASONING, SEARCH_REACTIVE_H);
+        initMessage(agent_h, agent_cpp, REACTIVE_REASONING, SEARCH_REACTIVE_H, agentName);
     }
 
     // Save modified files
-    std::string fileName = fmt::format(resources[REACTIVE][TEMPLATE][TEMP_REACTIVE_FILE_NAME], agentId);
+    std::string fileName = fmt::format(resources[REACTIVE][TEMPLATE][TEMP_REACTIVE_FILE_NAME], agentName, agentId);
     fileManager->saveFile(path, fileName + ".h", agent_h);
     fileManager->saveFile(path, fileName + ".cpp", agent_cpp);
 }
 
 
-void AgentGenerator::processPetriNet(json data, std::string path, int agentId) {
+void AgentGenerator::processPetriNet(json data, std::string path, int agentId, std::string agentName) {
     // Deep copy the template files
-    std::string agent_h = fmt::format(resources[PETRI_NET][FILE_H], agentId);
-    std::string agent_cpp = fmt::format(resources[PETRI_NET][FILE_CPP], agentId, agentId, agentId);
+    std::string agent_h = fmt::format(resources[PETRI_NET][FILE_H], agentName, agentId);
+    std::string agent_cpp = fmt::format(resources[PETRI_NET][FILE_CPP], agentName, agentId, agentName, agentId, agentName, agentId);
 
     // Initialize positions for insertion points
     size_t posH, posDef, serReg, posReg;
@@ -171,18 +173,18 @@ void AgentGenerator::processPetriNet(json data, std::string path, int agentId) {
             // Name = type + nodeID
             switch (static_cast<int>(node[TYPE])) {
                 case CONDITION_ID:
-                    name = CONDITION + currId;
+                    name = std::string(node[NODE_NAME]) + "_" + CONDITION + currId;
                     valuesToInsert = fmt::format(resources[PETRI_NET][TEMPLATE][TEMP_IF_ELSE_NODE_IMPL], agentId, name, node[IF], node[ELSE]);
                     currentIds->push_back(std::string(node[IF]));
                     currentIds->push_back(std::string(node[ELSE]));
                     break;
                 case CODE_ID:
-                    name = CODE + currId;
+                    name = std::string(node[NODE_NAME]) + "_" + CODE + currId;
                     valuesToInsert = fmt::format(resources[PETRI_NET][TEMPLATE][TEMP_NODE_IMPL], agentId, name, node[LINKED]);
                     currentIds->push_back(std::string(node[LINKED]));
                     break;
                 case FUNCTION_ID:
-                    name = FUNCTION + currId;
+                    name = std::string(node[NAME]) + "_" + FUNCTION + currId;
                     valuesToInsert = fmt::format(resources[PETRI_NET][TEMPLATE][TEMP_FUNCTION_IMPL], agentId, name);
                     break;
             }
@@ -202,21 +204,21 @@ void AgentGenerator::processPetriNet(json data, std::string path, int agentId) {
 
     // Insert initial message definition if the agent ID is 1 (manager)
     if (agentId == MANAGER_ID) {
-        initMessage(agent_h, agent_cpp, PETRI_NET_REASONING, SEARCH_PETRI_NET_H);
+        initMessage(agent_h, agent_cpp, PETRI_NET_REASONING, SEARCH_PETRI_NET_H, agentName);
     }
 
     // Save modified files
-    std::string fileName = fmt::format(resources[PETRI_NET][TEMPLATE][TEMP_PETRI_NET_FILE_NAME], agentId);
+    std::string fileName = fmt::format(resources[PETRI_NET][TEMPLATE][TEMP_PETRI_NET_FILE_NAME], agentName, agentId);
     fileManager->saveFile(path, fileName + ".h", agent_h);
     fileManager->saveFile(path, fileName + ".cpp", agent_cpp);
 }
 
-void AgentGenerator::initMessage(std::string& agent_h, std::string& agent_cpp, std::string type, std::string searchType) {
+void AgentGenerator::initMessage(std::string& agent_h, std::string& agent_cpp, std::string type, std::string searchType, std::string agentName) {
     size_t pos = agent_h.find(SEARCH_OVERRIDE);
     // Insert template definition at position after SEARCH_OVERRIDE
     agent_h.insert(pos + SEARCH_OVERRIDE.length(), resources[MAIN][TEMPLATE][TEMP_MAIN_INITMSG_DEF]);
     // Format values for function registration and insert into agent_cpp
-    std::string valuesToInsert = fmt::format(resources[MAIN][TEMPLATE][TEMP_MAIN_INITMSG_IMPL], MANAGER_ID, type);
+    std::string valuesToInsert = fmt::format(resources[MAIN][TEMPLATE][TEMP_MAIN_INITMSG_IMPL], agentName, MANAGER_ID, type);
     pos = agent_cpp.find(searchType);
     agent_cpp.insert(pos + searchType.length(), valuesToInsert);
 }

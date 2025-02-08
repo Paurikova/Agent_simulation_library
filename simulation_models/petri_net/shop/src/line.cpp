@@ -57,22 +57,22 @@ NodeId_t Line::hasCustomer_fun1(int pSender, int pReceiver, SimTime_t pExecTime,
 void Line::registerNodes() {
     // Register a lambda function to handle function
     registerNode(1, [this](int pSender, int pReceiver, SimTime_t pExecTime, State* state) -> NodeId_t {
-        addToLine_cond1(pSender, pReceiver, pExecTime, state);
+        return addToLine_cond1(pSender, pReceiver, pExecTime, state);
     });
     registerNode(2, [this](int pSender, int pReceiver, SimTime_t pExecTime, State* state) -> NodeId_t {
-        removeFromLine(pSender, pReceiver, pExecTime, state);
+        return removeFromLine(pSender, pReceiver, pExecTime, state);
     });
     registerNode(3, [this](int pSender, int pReceiver, SimTime_t pExecTime, State* state) -> NodeId_t {
-        removeFromShop(pSender, pReceiver, pExecTime, state);
+        return removeFromShop(pSender, pReceiver, pExecTime, state);
     });
     registerNode(4, [this](int pSender, int pReceiver, SimTime_t pExecTime, State* state) -> NodeId_t {
-        hasCustomer_cond1(pSender, pReceiver, pExecTime, state);
+        return hasCustomer_cond1(pSender, pReceiver, pExecTime, state);
     });
     registerNode(5, [this](int pSender, int pReceiver, SimTime_t pExecTime, State* state) -> NodeId_t {
-        addToLine_fun1(pSender, pReceiver, pExecTime, state);
+        return addToLine_fun1(pSender, pReceiver, pExecTime, state);
     });
     registerNode(6, [this](int pSender, int pReceiver, SimTime_t pExecTime, State* state) -> NodeId_t {
-        hasCustomer_fun1(pSender, pReceiver, pExecTime, state);
+        return hasCustomer_fun1(pSender, pReceiver, pExecTime, state);
     });
 }
 

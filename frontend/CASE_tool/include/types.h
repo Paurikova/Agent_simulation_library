@@ -72,7 +72,7 @@ const std::string ID = "ID";
 
 //functions
 const std::string FUNCTIONS = "Functions";
-const std::string FUNCTION = "Function";
+const std::string FUNCTION = "fun";
 
 //reasoning types
 const std::string REACTIVE = "Reactive";
@@ -82,11 +82,11 @@ const std::string MAIN = "Main";
 
 //Petri net reasoning
 //condition
-const std::string CONDITION = "Condition";
+const std::string CONDITION = "cond";
 const std::string IF = "If";
 const std::string ELSE = "Else";
 //code, service
-const std::string CODE = "Code";
+const std::string CODE = "code";
 const std::string LINKED = "Linked";
 //service
 const std::string SERVICE = "Service";

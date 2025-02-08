@@ -4,7 +4,7 @@
 #include <string>
 using namespace std;
 
-class Agent{}ReactiveReasoning : public ReactiveReasoning {{
+class {}{}ReactiveReasoning : public ReactiveReasoning {{
 private:
     //attributes
     //functions

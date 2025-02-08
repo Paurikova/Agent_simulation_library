@@ -5,7 +5,7 @@
 
 using namespace std;
 
-class Agent{}PetriNetReasoning : public PetriNetReasoning {{
+class {}{}PetriNetReasoning : public PetriNetReasoning {{
 private:
     //attributes
     //nodes

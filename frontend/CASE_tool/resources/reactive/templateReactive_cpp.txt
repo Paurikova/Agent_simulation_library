@@ -1,6 +1,6 @@
 //TODO incluce
-#include "agent{}ReactiveReasoning.h"
+#include "{}{}ReactiveReasoning.h"
 
-void Agent{}ReactiveReasoning::registerFunctions() {{
+void {}{}ReactiveReasoning::registerFunctions() {{
     //registration
 }}

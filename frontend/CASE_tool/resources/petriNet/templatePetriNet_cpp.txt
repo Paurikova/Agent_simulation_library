@@ -1,10 +1,10 @@
 //TODO incluce
-#include "agent{}PetriNetReasoning.h"
+#include "{}{}PetriNetReasoning.h"
 
-void Agent{}PetriNetReasoning::registerNodes() {{
+void {}{}PetriNetReasoning::registerNodes() {{
     //registration
 }}
 
-void Agent{}PetriNetReasoning::registerServices() {{
+void {}{}PetriNetReasoning::registerServices() {{
     //services
 }}

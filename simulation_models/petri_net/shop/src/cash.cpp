@@ -78,25 +78,25 @@ NodeId_t Cash::endCustomer(int pSender, int pReceiver, SimTime_t pExecTime, Stat
 void Cash::registerNodes() {
     // Register a lambda function to handle function
     registerNode(1, [this](int pSender, int pReceiver, SimTime_t pExecTime, State* state) -> NodeId_t {
-        acceptCustomer_cond1(pSender, pReceiver, pExecTime, state);
+        return acceptCustomer_cond1(pSender, pReceiver, pExecTime, state);
     });
     registerNode(2, [this](int pSender, int pReceiver, SimTime_t pExecTime, State* state) -> NodeId_t {
-        processCustomer(pSender, pReceiver, pExecTime, state);
+        return processCustomer(pSender, pReceiver, pExecTime, state);
     });
     registerNode(3, [this](int pSender, int pReceiver, SimTime_t pExecTime, State* state) -> NodeId_t {
         endCustomer(pSender, pReceiver, pExecTime, state);
     });
     registerNode(4, [this](int pSender, int pReceiver, SimTime_t pExecTime, State* state) -> NodeId_t {
-        acceptCustomer_code1(pSender, pReceiver, pExecTime, state);
+        return acceptCustomer_code1(pSender, pReceiver, pExecTime, state);
     });
     registerNode(5, [this](int pSender, int pReceiver, SimTime_t pExecTime, State* state) -> NodeId_t {
-        acceptCustomer_cond2(pSender, pReceiver, pExecTime, state);
+        return acceptCustomer_cond2(pSender, pReceiver, pExecTime, state);
     });
     registerNode(6, [this](int pSender, int pReceiver, SimTime_t pExecTime, State* state) -> NodeId_t {
-        acceptCustomer_fun1(pSender, pReceiver, pExecTime, state);
+        return acceptCustomer_fun1(pSender, pReceiver, pExecTime, state);
     });
     registerNode(7, [this](int pSender, int pReceiver, SimTime_t pExecTime, State* state) -> NodeId_t {
-        acceptCustomer_fun2(pSender, pReceiver, pExecTime, state);
+        return acceptCustomer_fun2(pSender, pReceiver, pExecTime, state);
     });
 }
 

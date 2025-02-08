@@ -73,28 +73,28 @@ NodeId_t Shop::addCustomerToLine_fun2(int pSender, int pReceiver, SimTime_t pExe
 void Shop::registerNodes() {
     // Register a lambda function to handle function
     registerNode(1, [this](int pSender, int pReceiver, SimTime_t pExecTime, State* state) -> NodeId_t {
-        open(pSender, pReceiver, pExecTime, state);
+        return open(pSender, pReceiver, pExecTime, state);
     });
     registerNode(2, [this](int pSender, int pReceiver, SimTime_t pExecTime, State* state) -> NodeId_t {
-        close(pSender, pReceiver, pExecTime, state);
+        return close(pSender, pReceiver, pExecTime, state);
     });
     registerNode(3, [this](int pSender, int pReceiver, SimTime_t pExecTime, State* state) -> NodeId_t {
-        newCustomer(pSender, pReceiver, pExecTime, state);
+        return newCustomer(pSender, pReceiver, pExecTime, state);
     });
     registerNode(4, [this](int pSender, int pReceiver, SimTime_t pExecTime, State* state) -> NodeId_t {
-        removeCustomer_cond1(pSender, pReceiver, pExecTime, state);
+        return removeCustomer_cond1(pSender, pReceiver, pExecTime, state);
     });
     registerNode(5, [this](int pSender, int pReceiver, SimTime_t pExecTime, State* state) -> NodeId_t {
-        addCustomerToLine_cond1(pSender, pReceiver, pExecTime, state);
+        return addCustomerToLine_cond1(pSender, pReceiver, pExecTime, state);
     });
     registerNode(6, [this](int pSender, int pReceiver, SimTime_t pExecTime, State* state) -> NodeId_t {
-        removeCustomer_fun1(pSender, pReceiver, pExecTime, state);
+        return removeCustomer_fun1(pSender, pReceiver, pExecTime, state);
     });
     registerNode(7, [this](int pSender, int pReceiver, SimTime_t pExecTime, State* state) -> NodeId_t {
-        addCustomerToLine_fun1(pSender, pReceiver, pExecTime, state);
+        return addCustomerToLine_fun1(pSender, pReceiver, pExecTime, state);
     });
     registerNode(8, [this](int pSender, int pReceiver, SimTime_t pExecTime, State* state) -> NodeId_t {
-        addCustomerToLine_fun2(pSender, pReceiver, pExecTime, state);
+        return addCustomerToLine_fun2(pSender, pReceiver, pExecTime, state);
     });
 }
 
