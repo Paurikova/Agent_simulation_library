@@ -21,59 +21,56 @@ void Bird::calculate_direction(float x1, float y1, float x2, float y2, float &di
     dirY = dy / magnitude;
 }
 
+
+void Bird::isNeighbor(int pSender, int pReceiver, SimTime_t pExecTime, State* state) {
+    logger->log(fmt::format("{}: isNeighbor     [{}]\n", pReceiver, pSender));
+    StateBird* neighborState = dynamic_cast<StateBird*>(state);
+    // Find all neighbors within the visual distance
+    float x2 = neighborState->x, y2 = neighborState->y, velX2 = neighborState->velX, velY2 = neighborState->velY;
+    float dist = distance_to(birdState->x, birdState->y, x2, y2);
+    if (dist < visual_distance) {
+        N += 1;
+        // Calculate the behavior based on neighbors
+        float dirX, dirY;
+        calculate_direction(birdState->x, birdState->y, x2, y2, dirX, dirY);
+
+        // Cohesion: Move towards the average position of neighbors
+        stateMove->cohereX += dirX;
+        stateMove->cohereY += dirY;
+
+        // Separation: Move away if too close
+        if (dist < separation) {
+            stateMove->separateX -= dirX;
+            stateMove->separateY -= dirY;
+        }
+
+        // Match: Move in the same direction as neighbors
+        stateMove->matchX += velX2;
+        stateMove->matchY += velY2;
+    }
+    if ((pReceiver != number_of_birds + 1 && pSender < number_of_birds + 1) ||
+        (pReceiver == number_of_birds + 1 && pSender < number_of_birds)) {
+        return;
+    }
+    sendMessage(4, pExecTime, pReceiver, pReceiver);
+}
+
 void Bird::getPosition(int pSender, int pReceiver, SimTime_t pExecTime, State* state) {
     logger->log(fmt::format("{}: getPosition\n", pReceiver));
-    if (pSender == 1) {
-        sendMessage(1, pExecTime, pReceiver, pSender, -1, birdState);
-    } else {
-        sendMessage(3, pExecTime, pReceiver, pSender, -1, birdState);
-    }
+    sendMessage(1, pExecTime, pReceiver, pSender, -1, birdState);
 }
 
 void Bird::startMove(int pSender, int pReceiver, SimTime_t pExecTime, State* state) {
     logger->log(fmt::format("{}: startMove\n", pReceiver));
-    sendMessage(3,  pExecTime, pReceiver, pReceiver);
-}
-void Bird::isNeighbor(int pSender, int pReceiver, SimTime_t pExecTime, State* state) {
-    logger->log(fmt::format("{}: isNeighbor\n", pReceiver));
-    StateBird* neighborState = dynamic_cast<StateBird*>(state);
-    // Find all neighbors within the visual distance
-    float matchX = 0, matchY = 0, separateX = 0, separateY = 0, cohereX = 0, cohereY = 0;
-    if (pReceiver != pSender) {
-        float x2 = neighborState->x, y2 = neighborState->y, velX2 = neighborState->velX, velY2 = neighborState->velY;
-        float dist = distance_to(birdState->x, birdState->y, x2, y2);
-        if (dist < visual_distance) {
-            N += 1;
-            // Calculate the behavior based on neighbors
-            float dirX, dirY;
-            calculate_direction(birdState->x, birdState->y, x2, y2, dirX, dirY);
-
-            // Cohesion: Move towards the average position of neighbors
-            cohereX += dirX;
-            cohereY += dirY;
-
-            // Separation: Move away if too close
-            if (dist < separation) {
-                separateX -= dirX;
-                separateY -= dirY;
-            }
-
-            // Match: Move in the same direction as neighbors
-            matchX += velX2;
-            matchY += velY2;
+    for (int i = 0; i < number_of_birds; i++) {
+        if (i + 2 != pReceiver) {
+            sendMessage(2, pExecTime, pReceiver, i+2);
         }
     }
-    if (pSender < number_of_birds + 1) {
-        sendMessage(1, pExecTime, pReceiver, pSender + 1);
-        return;
-    }
-    sendMessage(4, pExecTime, pReceiver, pReceiver, -1,
-                new StateMove(cohereX, cohereY, separateX, separateY, matchX, matchY));
 }
 
 void Bird::move(int pSender, int pReceiver, SimTime_t pExecTime, State* state) {
     logger->log(fmt::format("{}: move\n", pReceiver));
-    StateMove* stateMove = dynamic_cast<StateMove*>(state);
     // Normalize the vectors to maintain the same speed
     if (N > 0) {
         stateMove->cohereX /= N;
@@ -109,35 +106,27 @@ void Bird::move(int pSender, int pReceiver, SimTime_t pExecTime, State* state) {
     if (birdState->y < 0) birdState->y = 600;
     if (birdState->y > 600) birdState->y = 0;
 
-    i = 0;
     N = 0;
     if (pReceiver < number_of_birds + 1) {
-        sendMessage(2, pExecTime, pReceiver, pReceiver + 1);
+        //move another birds
+        sendMessage(3, pExecTime, pReceiver, pReceiver + 1);
     } else {
-        sendMessage(4, pExecTime, pReceiver, 1);
+        //display
+        sendMessage(3, pExecTime, pReceiver, 1);
     }
-}
-
-void Bird::draw(int pSender, int pReceiver, SimTime_t pExecTime, State* state) {
-    logger->log(fmt::format("{}: draw\n", pReceiver));
-    window.draw(shape);
-    sendMessage(6, pExecTime, pReceiver, pSender);
 }
 
 void Bird::registerFunctions() {
     registerFunction(1, [this](int pSender, int pReceiver, SimTime_t pExecTime, State* state) {
-        return getPosition(pSender, pReceiver, pExecTime, state);
+        return isNeighbor(pSender, pReceiver, pExecTime, state);
     });
     registerFunction(2, [this](int pSender, int pReceiver, SimTime_t pExecTime, State* state) {
-        return startMove(pSender, pReceiver, pExecTime, state);
+        return getPosition(pSender, pReceiver, pExecTime, state);
     });
     registerFunction(3, [this](int pSender, int pReceiver, SimTime_t pExecTime, State* state) {
-        return isNeighbor(pSender, pReceiver, pExecTime, state);
+        return startMove(pSender, pReceiver, pExecTime, state);
     });
     registerFunction(4, [this](int pSender, int pReceiver, SimTime_t pExecTime, State* state) {
         return move(pSender, pReceiver, pExecTime, state);
-    });
-    registerFunction(5, [this](int pSender, int pReceiver, SimTime_t pExecTime, State* state) {
-        return draw(pSender, pReceiver, pExecTime, state);
     });
 };

@@ -26,29 +26,22 @@ void Manager::initialization(int pSender, int pReceiver, SimTime_t pExecTime, St
     StateBird* stateBird = dynamic_cast<StateBird*>(state);
     birds[pSender - 2] = stateBird;
     if (pSender < number_of_birds + 1) {
-        pSender += 1;
-        sendMessage(1, pExecTime, pReceiver, pSender);
         return;
     }
     sendMessage(2, pExecTime, pReceiver, pReceiver);
 }
 
-void Manager::isWindowOpen(int pSender, int pReceiver, SimTime_t pExecTime, State* state) {
-    logger->log(fmt::format("{}: isWindowOpen\n", pReceiver));
+void Manager::startWindow(int pSender, int pReceiver, SimTime_t pExecTime, State* state) {
+    logger->log(fmt::format("{}: startWindow\n", pReceiver));
     if (window.isOpen()) {
-        sendMessage(3, pExecTime, pSender, pReceiver);
+        // Handle events
+        sf::Event event;
+        while (window.pollEvent(event)) {
+            if (event.type == sf::Event::Closed)
+                window.close();
+        }
+        sendMessage(2, pExecTime, pReceiver, 2);
     }
-}
-
-void Manager::handleEvents(int pSender, int pReceiver, SimTime_t pExecTime, State* state) {
-    logger->log(fmt::format("{}: handle_events\n", pReceiver));
-    // Handle events
-    sf::Event event;
-    while (window.pollEvent(event)) {
-        if (event.type == sf::Event::Closed)
-            window.close();
-    }
-    sendMessage(2, pExecTime, pReceiver, 2);
 }
 
 // Function to simulate a step for each bird
@@ -133,26 +126,22 @@ void Manager::birdUpdated(int pSender, int pReceiver, SimTime_t pExecTime, State
         sendMessage(2, pExecTime, pReceiver, pSender + 1);
         return;
     }
-    sendMessage(6, pExecTime, pReceiver, pReceiver);
+    sendMessage(5, pExecTime, pReceiver, pReceiver);
 }
 
-void Manager::clearScreen(int pSender, int pReceiver, SimTime_t pExecTime, State* state) {
-    logger->log(fmt::format("{}: clearScreen\n", pReceiver));
+
+void Manager::draw(int pSender, int pReceiver, SimTime_t pExecTime, State* state) {
+    logger->log(fmt::format("{}: draw\n", pReceiver));
     // Clear the screen
     window.clear(sf::Color::Black);
     for (int i = 0; i < number_of_birds; i++) {
-        sendMessage(4, pExecTime, pReceiver, i + 2);
+        shape.setPosition(birds[i]->x, birds[i]->y);
+        window.draw(shape);
     }
-}
-
-void Manager::display(int pSender, int pReceiver, SimTime_t pExecTime, State* state) {
-    logger->log(fmt::format("{}: display\n", pReceiver));
-    if (pSender - 1 == number_of_birds) {
-        // Display everything on the screen
-        window.display();
-        //Do run again
-        sendMessage(1, pExecTime + 1, pReceiver, pReceiver);
-    }
+    // Display everything on the screen
+    window.display();
+    //Do run again
+    sendMessage(2, pExecTime + 1, pReceiver, pReceiver);
 }
 
 void Manager::registerFunctions() {
@@ -160,24 +149,17 @@ void Manager::registerFunctions() {
         return initialization(pSender, pReceiver, pExecTime, state);
     });
     registerFunction(2, [this](int pSender, int pReceiver, SimTime_t pExecTime, State* state) {
-        return isWindowOpen(pSender, pReceiver, pExecTime, state);
+        return startWindow(pSender, pReceiver, pExecTime, state);
     });
     registerFunction(3, [this](int pSender, int pReceiver, SimTime_t pExecTime, State* state) {
-        return handleEvents(pSender, pReceiver, pExecTime, state);
-    });
-    registerFunction(4, [this](int pSender, int pReceiver, SimTime_t pExecTime, State* state) {
         return move(pSender, pReceiver, pExecTime, state);
     });
-    registerFunction(5, [this](int pSender, int pReceiver, SimTime_t pExecTime, State* state) {
+    registerFunction(4, [this](int pSender, int pReceiver, SimTime_t pExecTime, State* state) {
         return birdUpdated(pSender, pReceiver, pExecTime, state);
     });
-    registerFunction(6, [this](int pSender, int pReceiver, SimTime_t pExecTime, State* state) {
-        return clearScreen(pSender, pReceiver, pExecTime, state);
+    registerFunction(5, [this](int pSender, int pReceiver, SimTime_t pExecTime, State* state) {
+        return draw(pSender, pReceiver, pExecTime, state);
     });
-    registerFunction(7, [this](int pSender, int pReceiver, SimTime_t pExecTime, State* state) {
-        return display(pSender, pReceiver, pExecTime, state);
-    });
-
 };
 
 void Manager::initMessage() {
@@ -187,5 +169,7 @@ void Manager::initMessage() {
     //      pExecTime by execution time of event
     //      pReceiver by the ID of the receiving agent
     //open
-    sendMessage(1, 0, 1, 2);
+    for (int i = 0; i < number_of_birds; i++) {
+        sendMessage(1, 0, 1, i+2);
+    }
 }

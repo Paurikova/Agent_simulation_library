@@ -2,7 +2,7 @@
 #include "../library/include/state.h"
 
 struct StateMove : public State {
-    float cohereX, cohereY, separateX, separateY, matchX, matchY;
-    StateMove(float cohereX,float cohereY,float separateX, float separateY, float matchX, float matchY) : cohereX(cohereX),
-    cohereY(cohereY), separateX(separateX), separateY(separateY), matchX(matchX), matchY(matchY) {};
+    float cohereX = 0, cohereY = 0, separateX = 0, separateY = 0, matchX = 0, matchY = 0;
+    StateMove() {};
+
 };

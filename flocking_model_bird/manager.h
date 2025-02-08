@@ -15,25 +15,24 @@ private:
     std::vector<StateBird*> birds;
     // Create an SFML window
     sf::RenderWindow& window;
-
+    sf::CircleShape shape;
 
 
     //function
     void initialization(int pSender, int pReceiver, SimTime_t pExecTime, State* state);
-    void isWindowOpen(int pSender, int pReceiver, SimTime_t pExecTime, State* state);
-    void handleEvents(int pSender, int pReceiver, SimTime_t pExecTime, State* state);
+    void startWindow(int pSender, int pReceiver, SimTime_t pExecTime, State* state);
     void getPosition(int pSender, int pReceiver, SimTime_t pExecTime, State* state);
-    void clearScreen(int pSender, int pReceiver, SimTime_t pExecTime, State* state);
-    void display(int pSender, int pReceiver, SimTime_t pExecTime, State* state);
+    void draw(int pSender, int pReceiver, SimTime_t pExecTime, State* state);
 
     void registerFunctions() override;
 
 public:
-    Manager(float speed, float cohere_factor, float separation, float separate_factor,
-            float match_factor, float visual_distance, int number_of_birds, sf::RenderWindow& window, Logger* logger)
-            : ReactiveReasoning(logger), window(window), speed(speed), cohere_factor(cohere_factor), separation(separation),
-              separate_factor(separate_factor), match_factor(match_factor),
-              visual_distance(visual_distance), number_of_birds(number_of_birds) {
+    Manager(int number_of_birds, sf::RenderWindow& window, Logger* logger)
+            : ReactiveReasoning(logger), window(window), number_of_birds(number_of_birds) {
+        // Initialize shape
+        shape.setRadius(5);
+        shape.setFillColor(sf::Color::White);
+        shape.setOrigin(5, 5);  // Center the shape at its origin
         birds.resize(number_of_birds);
     };
     void initMessage();
