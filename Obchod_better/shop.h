@@ -1,6 +1,6 @@
 #pragma once
 #include "../library/include/reactiveReasoning.h"
-#include "state_line.h"
+#include "state_shop.h"
 #include <iostream>
 
 class Shop : public ReactiveReasoning {

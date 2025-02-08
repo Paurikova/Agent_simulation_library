@@ -2,7 +2,7 @@
 #include <cstdlib> // For rand()
 
 #include "../library/include/reactiveReasoning.h"
-#include "state_line.h"
+#include "state_shop.h"
 
 class Line : public ReactiveReasoning {
 private:
