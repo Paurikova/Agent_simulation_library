@@ -1640,7 +1640,6 @@ std::vector<ed::NodeId> CASE_tool::DeserializeAgents(const json& agents_data) {
     return agents;
 }
 
-//TODO: petri net missing, agent relationships missing
 json CASE_tool::GetData() {
     // JSON object to hold the data
     json data_json = {};
@@ -1685,6 +1684,7 @@ json CASE_tool::GetData() {
         json agent_json = {};
         // Add Agent Id
         agent_json[AGENT_ID] = node->AgentId;
+        agent_json[NODE_NAME] = node->Name;
         for (ed::NodeId respId: node->InsideIds) {
             Node *respNode = FindNode(respId);
             // Check if it's reactive reasoning
@@ -1774,11 +1774,13 @@ json CASE_tool::GetData() {
                         case (NodeType::SimpleCond):
                             node_json[TYPE] = CONDITION_ID;
                             node_json[CONDITION] = innerNode->Inputs.at(0).PinButton->Label;
+                            node_json[NODE_NAME] = node->Name;
                             AddLinkedNode(innerNode->Outputs.at(0).LinkIds, IF, node_json);
                             AddLinkedNode(innerNode->Outputs.at(1).LinkIds, ELSE, node_json);
                             break;
                         case (NodeType::SimpleCode):
                             node_json[TYPE] = CODE_ID;
+                            node_json[NODE_NAME] = node->Name;
                             AddLinkedNode(innerNode->Outputs.at(0).LinkIds, LINKED, node_json);
                             break;
                         case (NodeType::Function):
