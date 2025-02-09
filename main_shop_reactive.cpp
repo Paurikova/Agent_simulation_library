@@ -8,9 +8,13 @@
 #include "simulation_models/reactive/shop/include/state_shop.h"
 #include "simulation_models/reactive/shop/include/graph.h"
 
+#include "units/include/configReader.h"
+
 int main(int argc, char** argv) {
     StateShop* stateShop = new StateShop();
-    Logger* logger = new Logger();
+    ConfigReader* configReader = new ConfigReader("/home/miska/CLionProjects/Agent_simulation_library/local.cfg");
+    // Create a flock of birds
+    Logger* logger = new Logger(configReader->get("logs"), false);
     
     Manager* rManager = new Manager(20, logger);
     SimulationCore* aManager = new SimulationCore(rManager, logger);

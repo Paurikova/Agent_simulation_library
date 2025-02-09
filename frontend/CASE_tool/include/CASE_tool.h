@@ -16,7 +16,7 @@
 #include "../../application/include/application.h"
 #include "../utilities/builders.h"
 #include "../utilities/widgets.h"
-#include "../../../imgui_project/imgui_node_editor.h"
+#include "../../../imgui/imgui_node_editor.h"
 #include "../../../external/imgui/imgui_internal.h"
 #include "agentGenerator.h"
 
@@ -187,7 +187,9 @@ bool Splitter(bool split_vertically, float thickness, float* size1, float* size2
 
 struct CASE_tool : public Application {
     using Application::Application;
-    const std::string RESOURCE_PATH = "/home/miska/CLionProjects/Agent_simulation_library/frontend/CASE_tool/resources"; /**< Default path to resources. */
+    const std::string PROJECT_PATH = "/home/miska/CLionProjects/Agent_simulation_library";
+    const std::string CASE_TOOL_PATH = PROJECT_PATH + "/frontend/CASE_tool";
+    const std::string RESOURCE_PATH = CASE_TOOL_PATH + "/resources"; /**< Default path to resources. */
     typedef int AgentId;
 
 private:

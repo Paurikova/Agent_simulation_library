@@ -127,6 +127,4 @@ endmacro()
 
 # Add subdirectories (for various frontend examples)
 add_subdirectory(application)
-add_subdirectory(simple-example)
-add_subdirectory(blueprints-example)
 add_subdirectory(CASE_tool)

@@ -9,6 +9,7 @@ set(SOURCES
         scr/fileManager.cpp
         scr/logger.cpp
         scr/uniqueDeque.cpp
+        scr/configReader.cpp
 )
 
 # Create a static library
