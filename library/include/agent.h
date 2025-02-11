@@ -6,7 +6,7 @@
 #include <unordered_map>
 #include <memory>
 
-#include "types.h"
+#include "types_library.h"
 #include "schedule.h"
 #include "petriNetReasoning.h"
 #include "agentReasoning.h"

@@ -1,6 +1,6 @@
 #pragma once
 #include <string>
-//TODO clean it
+
 using AgentId_t = int; // type for agent ID
 
 const AgentId_t MANAGER_ID = 1;

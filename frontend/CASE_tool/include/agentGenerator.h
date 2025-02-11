@@ -9,7 +9,7 @@
 #include <string>
 #include <unordered_set>
 
-#include "types.h"
+#include "types_frontend.h"
 #include "units/include/fileManager.h"
 #include "uniqueDeque.h"
 

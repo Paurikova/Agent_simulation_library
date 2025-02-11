@@ -1,24 +1,23 @@
-#include "library/include/simulationCore.h"
+#include "../../../../library/include/simulationCore.h"
 
-#include "simulation_models/reactive/shop/include/manager.h"
-#include "simulation_models/reactive/shop/include/customer.h"
-#include "simulation_models/reactive/shop/include/shop.h"
-#include "simulation_models/reactive/shop/include/line.h"
-#include "simulation_models/reactive/shop/include/cash.h"
-#include "simulation_models/reactive/shop/include/state_shop.h"
-#include "simulation_models/reactive/shop/include/graph.h"
-
-#include "units/include/configReader.h"
+#include "../include/manager.h"
+#include "../include/customer.h"
+#include "../include/shop.h"
+#include "../include/line.h"
+#include "../include/cash.h"
+#include "../include/state_shop.h"
+#include "../include/graph.h"
+#include "configReader.h"
 
 int main(int argc, char** argv) {
     StateShop* stateShop = new StateShop();
     ConfigReader* configReader = new ConfigReader("/home/miska/CLionProjects/Agent_simulation_library/local.cfg");
     // Create a flock of birds
     Logger* logger = new Logger(configReader->get("logs"), false);
-    
+
     Manager* rManager = new Manager(20, logger);
     SimulationCore* aManager = new SimulationCore(rManager, logger);
-    
+
     Customer* rCustomer = new Customer(stateShop, logger);
     Agent* aCustomer = new Agent(2, aManager, rCustomer);
     aManager->registerAgent(aCustomer);

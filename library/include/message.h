@@ -1,5 +1,5 @@
 #pragma once
-#include "types.h"
+#include "types_library.h"
 
 /**
  * @brief Definition of the Message structure.

@@ -1,8 +1,8 @@
-#include "library/include/simulationCore.h"
+#include "../../../../library/include/simulationCore.h"
 
-#include "simulation_models/reactive/flocking_model_intelligent/include/bird.h"
-#include "simulation_models/reactive/flocking_model_intelligent/include/manager.h"
-#include "units/include/configReader.h"
+#include "../include/bird.h"
+#include "../include/manager.h"
+#include "configReader.h"
 
 int main(int argc, char** argv) {
     srand(time(0)); // Initialize random number generator

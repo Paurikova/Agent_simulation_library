@@ -1,7 +1,7 @@
 #include "frontend/CASE_tool/include/CASE_tool.h"
 
 #include "imgui_internal.h"
-#include "frontend/CASE_tool/include/types.h"
+#include "frontend/CASE_tool/include/types_frontend.h"
 
 static inline auto ImGui_GetItemRect() -> ImRect
 {

@@ -1,5 +1,5 @@
 #pragma once
-#include "../../../../library/include/types.h"
+#include "../../../../library/include/types_library.h"
 #include "../../../../library/include/state.h"
 
 #include <queue>
