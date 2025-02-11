@@ -3,6 +3,9 @@
 //TODO clean it
 using AgentId_t = int; // type for agent ID
 
+// TODO Michal Mrena: tu by som odporucal
+// namiesto std::string pouzit std::string_view
+
 const AgentId_t MANAGER_ID = 1;
 const std::string REACTIVE_REASONING = "ReactiveReasoning";
 const std::string PETRI_NET_REASONING = "PetriNetReasoning";
