@@ -15,11 +15,10 @@ private:
     FileManager* fileManager = new FileManager();
     bool console;
     std::string data;
-    std::string path;
+    std::string path = "/home/miska/CLionProjects/Agent_simulation_library/logs";
     void addToFile();
 public:
     void log(std::string msg);
-    Logger(std::string pPath, bool pConsole = true) :
-    path(pPath), console(pConsole) {};
+    Logger(bool pConsole = true) : console(pConsole) {};
     ~Logger();
 };

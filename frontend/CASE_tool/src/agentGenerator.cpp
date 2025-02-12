@@ -138,7 +138,7 @@ void AgentGenerator::processPetriNet(json data, std::string path, int agentId, s
     std::unique_ptr<std::unordered_set<std::string>> createdIds = std::make_unique<std::unordered_set<std::string>>();
     // Current IDs that have to be created
     // It is queue because of the else condition (more than one linked node)
-    std::unique_ptr<UniqueDeque> currentIds = std::make_unique<UniqueDeque>();
+    std::unique_ptr<UniqueDeque<std::string>> currentIds = std::make_unique<UniqueDeque<std::string>>();
 
     // Loop over all nodes
     for (std::string serviceId : data[SERVICES]) {
@@ -151,7 +151,7 @@ void AgentGenerator::processPetriNet(json data, std::string path, int agentId, s
         // Save linked
         currentIds->push_back(linkedId);
         // Generate values to insert for service registration
-        valuesToInsert = fmt::format(resources[PETRI_NET][TEMPLATE][TEMP_SERVICE_REG], serviceId, linkedId);
+        valuesToInsert = fmt::format(resources[PETRI_NET][TEMPLATE][TEMP_SERVICE_REG], service[SERVICE], linkedId);
         // Insert function registration into the source file
         serReg = agent_cpp.find(SEARCH_SERVICE);
         agent_cpp.insert(serReg + SEARCH_SERVICE.length(), valuesToInsert);
@@ -176,7 +176,9 @@ void AgentGenerator::processPetriNet(json data, std::string path, int agentId, s
                     name = std::string(node[NODE_NAME]) + "_" + CONDITION + currId;
                     valuesToInsert = fmt::format(resources[PETRI_NET][TEMPLATE][TEMP_IF_ELSE_NODE_IMPL], agentName, agentId, name, node[IF], node[ELSE]);
                     currentIds->push_back(std::string(node[IF]));
-                    currentIds->push_back(std::string(node[ELSE]));
+                    if (node[ELSE] != std::to_string(-1)) {
+                        currentIds->push_back(std::string(node[ELSE]));
+                    }
                     break;
                 case CODE_ID:
                     name = std::string(node[NODE_NAME]) + "_" + CODE + currId;

@@ -44,7 +44,7 @@ public:
      *
      * @param pAgentId The ID of the agent to be unregistered.
      */
-    void unregisterAgent(int pAgentId);
+    void unregisterAgent(AgentId_t pAgentId);
 
     /**
      * @brief Runs the simulation.
@@ -74,7 +74,7 @@ private:
     *
     * @param agent Pointer to the agent from which messages are received.
     */
-    void receiveAgentMessages(Agent* agent);
+    void receiveAgentMessages(Agent* pAgent);
 
     /**
      * @brief Checks if an agent with the specified ID exists in the simulation core.

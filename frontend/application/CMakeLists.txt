@@ -33,7 +33,7 @@ if (WIN32)
         source/imgui_impl_win32.h
     )
 
-    set(_DXSDK_Dir  ${IMGUI_NODE_EDITOR_ROOT_DIR}/external/DXSDK)
+    set(_DXSDK_Dir  ${IMGUI_NODE_EDITOR_EXTERNAL_DIR}/DXSDK)
     set(_DXSDK_Arch x86)
     if (${CMAKE_SIZEOF_VOID_P} EQUAL 8)
         set(_DXSDK_Arch x64)

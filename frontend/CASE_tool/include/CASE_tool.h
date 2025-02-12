@@ -16,7 +16,7 @@
 #include "../../application/include/application.h"
 #include "../utilities/builders.h"
 #include "../utilities/widgets.h"
-#include "../../../imgui/imgui_node_editor.h"
+#include "../../../external/imgui_node/imgui_node_editor.h"
 #include "../../../external/imgui/imgui_internal.h"
 #include "agentGenerator.h"
 

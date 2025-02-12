@@ -2,7 +2,6 @@
 add_library(units STATIC
         scr/fileManager.cpp
         scr/logger.cpp
-        scr/uniqueDeque.cpp
         scr/configReader.cpp
 )
 

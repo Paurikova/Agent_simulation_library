@@ -84,7 +84,7 @@ void Cash::registerNodes() {
         return processCustomer(pSender, pReceiver, pExecTime, state);
     });
     registerNode(3, [this](int pSender, int pReceiver, SimTime_t pExecTime, State* state) -> NodeId_t {
-        endCustomer(pSender, pReceiver, pExecTime, state);
+        return endCustomer(pSender, pReceiver, pExecTime, state);
     });
     registerNode(4, [this](int pSender, int pReceiver, SimTime_t pExecTime, State* state) -> NodeId_t {
         return acceptCustomer_code1(pSender, pReceiver, pExecTime, state);

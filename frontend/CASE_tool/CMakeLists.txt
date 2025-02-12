@@ -9,6 +9,3 @@ add_frontend_executable(CASE_tool
         utilities/drawing.cpp
         utilities/widgets.cpp
 )
-
-#Link with the library
-target_link_libraries(CASE_tool PRIVATE units)

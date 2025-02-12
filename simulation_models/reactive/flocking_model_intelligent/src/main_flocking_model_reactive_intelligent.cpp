@@ -8,7 +8,7 @@ int main(int argc, char** argv) {
     srand(time(0)); // Initialize random number generator
     ConfigReader* configReader = new ConfigReader("/home/miska/CLionProjects/Agent_simulation_library/local.cfg");
     // Create a flock of birds
-    Logger* logger = new Logger(configReader->get("logs"), false);
+    Logger* logger = new Logger(false);
     int n_birds = 300;
     sf::RenderWindow window(sf::VideoMode(800, 600), "Flocking Simulation");
     Manager* manager = new Manager(n_birds, window, logger);

@@ -2,8 +2,8 @@ if (TARGET imgui)
     return()
 endif()
 
-set(_imgui_SourceDir ${IMGUI_NODE_EDITOR_ROOT_DIR}/external/imgui)
-set(_imgui_BinaryDir ${CMAKE_BINARY_DIR}/external/imgui)
+set(_imgui_SourceDir ${IMGUI_NODE_EDITOR_EXTERNAL_DIR}/imgui)
+set(_imgui_BinaryDir ${CMAKE_BINARY_DIR}/imgui)
 
 add_subdirectory(${_imgui_SourceDir} ${_imgui_BinaryDir})
 

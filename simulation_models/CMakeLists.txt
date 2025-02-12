@@ -7,12 +7,12 @@ add_library(Simulation_interface INTERFACE)
 
 # Interface library that groups common properties of simulation
 target_link_libraries(Simulation_interface
-        PUBLIC fmt
-        PUBLIC sfml-graphics
-        PUBLIC sfml-window
-        PUBLIC sfml-system
-        PUBLIC Agent_library
-        PUBLIC units
+        INTERFACE fmt
+        INTERFACE sfml-graphics
+        INTERFACE sfml-window
+        INTERFACE sfml-system
+        INTERFACE Agent_library
+        INTERFACE units
 )
 
 # Add subdirectories

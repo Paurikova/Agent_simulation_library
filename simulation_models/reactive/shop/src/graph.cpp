@@ -17,8 +17,8 @@ void Graph::draw(int pSender, int pReceiver, SimTime_t pExecTime, State* state) 
         data.push_back(stateShop->custInShop);  // current number of customers in shop
         data.push_back(stateShop->custInLines[4].size()); // current number of customers in line 1
         data.push_back(stateShop->custInLines[5].size()); //current number of customers in line 2
-        data.push_back(stateShop->totalCustTimeInLine[4]/(stateShop->totalCustInLine[4] == 0 ? 1 : stateShop->totalCustInLine[4])); //mean waiting time in line 1 with paying
-        data.push_back(stateShop->totalCustTimeInLine[5]/(stateShop->totalCustInLine[5] == 0 ? 1 : stateShop->totalCustInLine[5]));  //mean waiting time in line 1 with paying
+        data.push_back(stateShop->totalCustTimeInLine[4]/(stateShop->totalCustInLine[4] == 0 ? 1 : stateShop->totalCustInLine[4])); //average waiting time in line 1 with paying
+        data.push_back(stateShop->totalCustTimeInLine[5]/(stateShop->totalCustInLine[5] == 0 ? 1 : stateShop->totalCustInLine[5]));  //average waiting time in line 1 with paying
         // Draw the bar chart
         drawBarChart(data);
 

@@ -3,7 +3,7 @@
 class Manager : public ReactiveReasoning {
 private:
     //attributes
-    int run = true;
+    bool run = true;
     int newCust;
     //functions
     void generateCustomer(int pSender, int pReceiver, SimTime_t pExecTime, State* state);

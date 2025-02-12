@@ -1,7 +1,7 @@
-#include "frontend/CASE_tool/include/CASE_tool.h"
+#include "../include/CASE_tool.h"
 
 #include "imgui_internal.h"
-#include "frontend/CASE_tool/include/types_frontend.h"
+#include "../include/types_frontend.h"
 
 static inline auto ImGui_GetItemRect() -> ImRect
 {
@@ -1776,7 +1776,11 @@ json CASE_tool::GetData() {
                             node_json[CONDITION] = innerNode->Inputs.at(0).PinButton->Label;
                             node_json[NODE_NAME] = innerNode->Name;
                             AddLinkedNode(innerNode->Outputs.at(0).LinkIds, IF, node_json);
-                            AddLinkedNode(innerNode->Outputs.at(1).LinkIds, ELSE, node_json);
+                            if (innerNode->Outputs.at(1).LinkIds.size() > 0) {
+                                AddLinkedNode(innerNode->Outputs.at(1).LinkIds, ELSE, node_json);
+                            } else {
+                                node_json[ELSE] = std::to_string(-1);
+                            }
                             break;
                         case (NodeType::SimpleCode):
                             node_json[TYPE] = CODE_ID;

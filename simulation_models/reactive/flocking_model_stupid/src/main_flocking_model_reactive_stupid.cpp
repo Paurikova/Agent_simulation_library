@@ -9,7 +9,7 @@ int main(int argc, char** argv) {
 
     ConfigReader* configReader = new ConfigReader("/home/miska/CLionProjects/Agent_simulation_library/local.cfg");
     // Create a flock of birds
-    Logger* logger = new Logger(configReader->get("logs"), false);
+    Logger* logger = new Logger(false);
     int n_birds = 300;
     sf::RenderWindow window(sf::VideoMode(800, 600), "Flocking Simulation");
     Manager* manager = new Manager(3, 0.1, 2.0, 0.25, 0.04, 50.0,

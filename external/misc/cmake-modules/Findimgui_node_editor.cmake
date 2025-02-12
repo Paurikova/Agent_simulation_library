@@ -2,7 +2,7 @@ if (TARGET imgui_node_editor)
     return()
 endif()
 
-#set(_imgui_node_editor_SourceDir ${IMGUI_NODE_EDITOR_ROOT_DIR})
+#set(_imgui_node_editor_SourceDir ${IMGUI_NODE_EDITOR_EXTERNAL_DIR})
 #set(_imgui_node_editor_BinaryDir ${CMAKE_BINARY_DIR}/NodeEditor)
 
 #add_subdirectory(${_imgui_node_editor_SourceDir} ${_imgui_node_editor_BinaryDir})
@@ -10,22 +10,22 @@ endif()
 find_package(imgui REQUIRED)
 
 set(_imgui_node_editor_Sources
-    ${IMGUI_NODE_EDITOR_ROOT_DIR}/external/imgui_node/crude_json.cpp
-    ${IMGUI_NODE_EDITOR_ROOT_DIR}/external/imgui_node/crude_json.h
-    ${IMGUI_NODE_EDITOR_ROOT_DIR}/external/imgui_node/imgui_bezier_math.h
-    ${IMGUI_NODE_EDITOR_ROOT_DIR}/external/imgui_node/imgui_bezier_math.inl
-    ${IMGUI_NODE_EDITOR_ROOT_DIR}/external/imgui_node/imgui_canvas.cpp
-    ${IMGUI_NODE_EDITOR_ROOT_DIR}/external/imgui_node/imgui_canvas.cpp
-    ${IMGUI_NODE_EDITOR_ROOT_DIR}/external/imgui_node/imgui_canvas.h
-    ${IMGUI_NODE_EDITOR_ROOT_DIR}/external/imgui_node/imgui_canvas.h
-    ${IMGUI_NODE_EDITOR_ROOT_DIR}/external/imgui_node/imgui_extra_math.h
-    ${IMGUI_NODE_EDITOR_ROOT_DIR}/external/imgui_node/imgui_extra_math.inl
-    ${IMGUI_NODE_EDITOR_ROOT_DIR}/external/imgui_node/imgui_node_editor_api.cpp
-    ${IMGUI_NODE_EDITOR_ROOT_DIR}/external/imgui_node/imgui_node_editor_internal.h
-    ${IMGUI_NODE_EDITOR_ROOT_DIR}/external/imgui_node/imgui_node_editor_internal.inl
-    ${IMGUI_NODE_EDITOR_ROOT_DIR}/external/imgui_node/imgui_node_editor.cpp
-    ${IMGUI_NODE_EDITOR_ROOT_DIR}/external/imgui_node/imgui_node_editor.h
-    ${IMGUI_NODE_EDITOR_ROOT_DIR}/external/misc/imgui_node_editor.natvis
+    ${IMGUI_NODE_EDITOR_EXTERNAL_DIR}/imgui_node/crude_json.cpp
+    ${IMGUI_NODE_EDITOR_EXTERNAL_DIR}/imgui_node/crude_json.h
+    ${IMGUI_NODE_EDITOR_EXTERNAL_DIR}/imgui_node/imgui_bezier_math.h
+    ${IMGUI_NODE_EDITOR_EXTERNAL_DIR}/imgui_node/imgui_bezier_math.inl
+    ${IMGUI_NODE_EDITOR_EXTERNAL_DIR}/imgui_node/imgui_canvas.cpp
+    ${IMGUI_NODE_EDITOR_EXTERNAL_DIR}/imgui_node/imgui_canvas.cpp
+    ${IMGUI_NODE_EDITOR_EXTERNAL_DIR}/imgui_node/imgui_canvas.h
+    ${IMGUI_NODE_EDITOR_EXTERNAL_DIR}/imgui_node/imgui_canvas.h
+    ${IMGUI_NODE_EDITOR_EXTERNAL_DIR}/imgui_node/imgui_extra_math.h
+    ${IMGUI_NODE_EDITOR_EXTERNAL_DIR}/imgui_node/imgui_extra_math.inl
+    ${IMGUI_NODE_EDITOR_EXTERNAL_DIR}/imgui_node/imgui_node_editor_api.cpp
+    ${IMGUI_NODE_EDITOR_EXTERNAL_DIR}/imgui_node/imgui_node_editor_internal.h
+    ${IMGUI_NODE_EDITOR_EXTERNAL_DIR}/imgui_node/imgui_node_editor_internal.inl
+    ${IMGUI_NODE_EDITOR_EXTERNAL_DIR}/imgui_node/imgui_node_editor.cpp
+    ${IMGUI_NODE_EDITOR_EXTERNAL_DIR}/imgui_node/imgui_node_editor.h
+    ${IMGUI_NODE_EDITOR_EXTERNAL_DIR}/misc/imgui_node_editor.natvis
 )
 
 add_library(imgui_node_editor STATIC
@@ -33,17 +33,17 @@ add_library(imgui_node_editor STATIC
 )
 
 target_include_directories(imgui_node_editor PUBLIC
-    ${IMGUI_NODE_EDITOR_ROOT_DIR}
+    ${IMGUI_NODE_EDITOR_EXTERNAL_DIR}
 )
 
 target_link_libraries(imgui_node_editor PUBLIC imgui)
 
-source_group(TREE ${IMGUI_NODE_EDITOR_ROOT_DIR} FILES ${_imgui_node_editor_Sources})
+source_group(TREE ${IMGUI_NODE_EDITOR_EXTERNAL_DIR} FILES ${_imgui_node_editor_Sources})
 
 include(${CMAKE_ROOT}/Modules/FindPackageHandleStandardArgs.cmake)
 
 find_package_handle_standard_args(
     imgui_node_editor
     REQUIRED_VARS
-        IMGUI_NODE_EDITOR_ROOT_DIR
+        IMGUI_NODE_EDITOR_EXTERNAL_DIR
 )
