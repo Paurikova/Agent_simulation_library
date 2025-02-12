@@ -11,6 +11,9 @@ void Manager1ReactiveReasoning::initMessage() {
 void Manager1ReactiveReasoning::closeSimulation(int pSender, int pReceiver, SimTime_t pExecTime, State* state) {
     //add your code
 }
+void Manager1ReactiveReasoning::acceptCustomer(int pSender, int pReceiver, SimTime_t pExecTime, State* state) {
+    //add your code
+}
 void Manager1ReactiveReasoning::generateCustomer(int pSender, int pReceiver, SimTime_t pExecTime, State* state) {
     //add your code
 }
@@ -19,6 +22,9 @@ void Manager1ReactiveReasoning::registerFunctions() {
     //registration
     registerFunction(3, [this](int pSender, int pReceiver, SimTime_t pExecTime, State* state) {
         closeSimulation(pSender, pReceiver, pExecTime, state);
+    });
+    registerFunction(2, [this](int pSender, int pReceiver, SimTime_t pExecTime, State* state) {
+        acceptCustomer(pSender, pReceiver, pExecTime, state);
     });
     registerFunction(1, [this](int pSender, int pReceiver, SimTime_t pExecTime, State* state) {
         generateCustomer(pSender, pReceiver, pExecTime, state);

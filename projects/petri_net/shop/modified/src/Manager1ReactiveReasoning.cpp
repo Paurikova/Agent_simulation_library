@@ -17,6 +17,7 @@ void Manager1ReactiveReasoning::closeSimulation(int pSender, int pReceiver, SimT
     run = false;
 }
 void Manager1ReactiveReasoning::acceptCustomer(int pSender, int pReceiver, SimTime_t pExecTime, State* state) {
+    //add your code
     logger->log(fmt::format("{}: acceptCustomer\n", pReceiver));
     sendMessage(3, pExecTime, pReceiver, 3);
 }
