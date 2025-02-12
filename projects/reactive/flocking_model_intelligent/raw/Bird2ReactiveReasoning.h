@@ -1,8 +1,6 @@
 #pragma once
 //TODO incluce
-#include "../../library/include/reactiveReasoning.h"
-#include <string>
-using namespace std;
+#include "library/include/reactiveReasoning.h"
 
 class Bird2ReactiveReasoning : public ReactiveReasoning {
 private:
@@ -18,10 +16,10 @@ private:
     float cohere_factor = 0.1;
     float speed = 3.0;
     //functions
-    void move(int pSender, SimTime_t pExecTime, State* state);
-    void startMove(int pSender, SimTime_t pExecTime, State* state);
-    void getPosition(int pSender, SimTime_t pExecTime, State* state);
-    void isNeighbout(int pSender, SimTime_t pExecTime, State* state);
+    void move(int pSender, int pReceiver, SimTime_t pExecTime, State* state);
+    void startMove(int pSender, int pReceiver, SimTime_t pExecTime, State* state);
+    void getPosition(int pSender, int pReceiver, SimTime_t pExecTime, State* state);
+    void isNeighbout(int pSender, int pReceiver, SimTime_t pExecTime, State* state);
     //registration
     void registerFunctions() override;
 };

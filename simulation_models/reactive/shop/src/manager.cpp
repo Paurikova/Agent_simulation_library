@@ -20,6 +20,7 @@ void Manager::acceptCustomer(int pSender, int pReceiver, SimTime_t pExecTime, St
 }
 
 void Manager::closeSimulation(int pSender, int pReceiver, SimTime_t pExecTime, State* state) {
+    logger->log(fmt::format("{}: closeSimulation\n", pReceiver));
     run = false;
 }
 
@@ -44,11 +45,8 @@ void Manager::initMessage() {
     //      pReceiver by the ID of the receiving agent
     //open
     sendMessage(1, 0, 1, 3);
-    //close
-    //sendMessage(2, end, 1, 3);
     //window
     sendMessage(1, 0, 1, 8);
     // new customer
     sendMessage(1, 0, 1, 1);
-
 }

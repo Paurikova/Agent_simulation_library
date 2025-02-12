@@ -1,8 +1,6 @@
 #pragma once
 //TODO incluce
-#include "../../library/include/reactiveReasoning.h"
-#include <string>
-using namespace std;
+#include "library/include/reactiveReasoning.h"
 
 class Graph4ReactiveReasoning : public ReactiveReasoning {
 private:
@@ -12,7 +10,7 @@ private:
     sf::RenderWindow& window = ;
     int showStep = 60;
     //functions
-    void draw(int pSender, SimTime_t pExecTime, State* state);
+    void draw(int pSender, int pReceiver, SimTime_t pExecTime, State* state);
     //registration
     void registerFunctions() override;
 };

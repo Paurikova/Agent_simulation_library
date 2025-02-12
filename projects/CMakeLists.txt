@@ -17,3 +17,4 @@ target_link_libraries(Simulation_interface_CASE_tool
 
 # Add subdirectories
 add_subdirectory(petri_net)
+add_subdirectory(reactive)

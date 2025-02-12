@@ -20,3 +20,9 @@
 - **Shop_reactive** - Shop simulation using reactive agents.
 - **Shop_petri_net** - Shop simulation using Petri nets.
 - **CASE_tool** - CASE tool for creating models used by the Agent simulation library.
+
+Generated code by CASE tool and modified.
+- **Flocking_mode_reactive_stupid_CASE_tool**
+- **Flocking_mode_reactive_intelligent_CASE_tool**
+- **Shop_reactive_CASE_tool**
+- **Shop_petri_net_CASE_tool**

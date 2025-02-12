@@ -20,7 +20,6 @@ private:
     //function
     void initialization(int pSender, int pReceiver, SimTime_t pExecTime, State* state);
     void startWindow(int pSender, int pReceiver, SimTime_t pExecTime, State* state);
-    void getPosition(int pSender, int pReceiver, SimTime_t pExecTime, State* state);
     void draw(int pSender, int pReceiver, SimTime_t pExecTime, State* state);
 
     void registerFunctions() override;

@@ -1,6 +1,8 @@
 #pragma once
-//TODO incluce
-#include "library/include/reactiveReasoning.h"
+#include <cstdlib> // For rand()
+
+#include "../../../../../library/include/reactiveReasoning.h"
+#include "state_shop.h"
 
 class Line5ReactiveReasoning : public ReactiveReasoning {
 private:
@@ -13,4 +15,6 @@ private:
     void addToLine(int pSender, int pReceiver, SimTime_t pExecTime, State* state);
     //registration
     void registerFunctions() override;
+public:
+    Line5ReactiveReasoning(StateShop* pState, Logger* pLogger) : ReactiveReasoning(pLogger), stateShop(pState) {};
 };

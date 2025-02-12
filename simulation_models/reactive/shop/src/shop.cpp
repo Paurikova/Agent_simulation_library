@@ -1,6 +1,5 @@
 #include "../include/shop.h"
 #include <cstdlib>
-#include <iostream>
 
 //functions
 void Shop::open(int pSender, int pReceiver, SimTime_t pExecTime, State* state) {
