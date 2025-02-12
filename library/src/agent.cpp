@@ -10,12 +10,10 @@ Agent::Agent(AgentId_t pId, Agent* pParent, AgentReasoning* pAgentReasoning) {
     currTime  = -1;
     schedule = std::make_unique<Schedule>();
     if (pAgentReasoning == nullptr) {
-        // Throw an exception that agent type is invalid.
         throw std::runtime_error(
                 "Agent type is invalid.");
     }
     agentReasoning = pAgentReasoning;
-    // Register agent as child of his parent.
     registerAsChild(pParent);
 }
 
@@ -24,16 +22,15 @@ AgentId_t Agent::getId() const {
 }
 
 void Agent::receiveMessage(Message* pMsg) {
-    // Add the received message to the agent's schedule
     schedule->pushMessage(pMsg);
 }
 
 void Agent::execute() {
-    Message* message = schedule->popMessage(); // Get the next scheduled message
-    while (message) { // Loop until there are no more messages scheduled
-        currTime = message->execTime; //Set the current time to the execution time of current message
-        process(message->serviceId, message->sender, message->receiver, message->execTime, message->state); // Process the message
-        message = schedule->popMessage(); // Get the next scheduled message
+    Message* message = schedule->popMessage();
+    while (message) {
+        currTime = message->execTime;
+        process(message->serviceId, message->sender, message->receiver, message->execTime, message->state);
+        message = schedule->popMessage();
     }
 }
 
@@ -46,19 +43,15 @@ Message* Agent::getTopOutboxMessage() {
 }
 
 void Agent::registerAsChild(Agent* pParent) {
-    // Call the parent's registerChild method to add the current agent to its list of children
-    //Agent of simulation core doesn't have parent.
     if (!pParent) {
         return;
     }
     pParent->registerChild(this);
-    // Set the parent pointer of the current agent
     setParent(pParent);
 }
 
 void Agent::registerChild(Agent* pChild) {
     if (childExists(pChild->getId())) {
-        // Throw an exception if the child already exist
         throw std::runtime_error("Agent with ID " + std::to_string(pChild->getId()) +
         " is already registered as child of agent with ID " + std::to_string(id) + ".");
     }
@@ -66,13 +59,10 @@ void Agent::registerChild(Agent* pChild) {
 }
 
 void Agent::unregisterAsChild() {
-    // Simulation core agent doesn't have parent
     if (!parent) {
         return;
     }
-    // Unregister agent from parent child's map.
     parent->unregisterChild(id);
-    // Set agent's parent to nullptr.
     parent = nullptr;
 }
 
@@ -124,7 +114,6 @@ bool Agent::childExists(AgentId_t pChildId) {
 }
 
 void Agent::initialization() {
-    // Call all necessary functions for agent initialization
     agentReasoning->initialization();
 }
 

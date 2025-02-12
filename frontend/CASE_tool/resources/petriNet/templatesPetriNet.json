@@ -1,9 +1,9 @@
 {
-  "NodeDef" : "\n    NodeId_t {}();",
-  "NodeImpl" : "\nNodeId_t {}{}PetriNetReasoning::{}() {{\n    //add your code\n    return {};\n}}",
-  "FunctionImpl" : "\nNodeId_t {}{}PetriNetReasoning::{}() {{\n    //add your code\n    return -1;\n}}",
-  "NodeReg" : "\n    registerNode({}, [this](int pSender, int pReceiver, SimTime_t pExecTime, State* state))->NodeId_t{{\n        return {}(pSender, pReceiver, pExecTime, state);\n    }});",
-  "IfElseNodeImpl" : "\nNodeId_t {}{}PetriNetReasoning::{}() {{\n    if () {{\n        //add your code\n        return {};\n    }} else {{\n        //add your code\n        return {};\n    }}\n}}",
+  "NodeDef" : "\n    NodeId_t {}(int pSender, int pReceiver, SimTime_t pExecTime, State* state);",
+  "NodeImpl" : "\nNodeId_t {}{}PetriNetReasoning::{}(int pSender, int pReceiver, SimTime_t pExecTime, State* state) {{\n    //add your code\n    return {};\n}}",
+  "FunctionImpl" : "\nNodeId_t {}{}PetriNetReasoning::{}(int pSender, int pReceiver, SimTime_t pExecTime, State* state) {{\n    //add your code\n    return -1;\n}}",
+  "NodeReg" : "\n    registerNode({}, [this](int pSender, int pReceiver, SimTime_t pExecTime, State* state)->NodeId_t{{\n        return {}(pSender, pReceiver, pExecTime, state);\n    }});",
+  "IfElseNodeImpl" : "\nNodeId_t {}{}PetriNetReasoning::{}(int pSender, int pReceiver, SimTime_t pExecTime, State* state) {{\n    if () {{\n        //add your code\n        return {};\n    }} else {{\n        //add your code\n        return {};\n    }}\n}}",
   "ServiceReg" : "\n    registerService({}, {});",
   "PetriNetFileName" : "{}{}PetriNetReasoning"
 }

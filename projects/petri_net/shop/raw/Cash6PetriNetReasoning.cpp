@@ -1,22 +1,22 @@
 //TODO incluce
 #include "Cash6PetriNetReasoning.h"
-NodeId_t Cash6PetriNetReasoning::endCustomer_fun389() {
+NodeId_t Cash6PetriNetReasoning::endCustomer_fun389(int pSender, int pReceiver, SimTime_t pExecTime, State* state) {
     //add your code
     return -1;
 }
-NodeId_t Cash6PetriNetReasoning::processCustomer_fun386() {
+NodeId_t Cash6PetriNetReasoning::processCustomer_fun386(int pSender, int pReceiver, SimTime_t pExecTime, State* state) {
     //add your code
     return -1;
 }
-NodeId_t Cash6PetriNetReasoning::acceptCustomerFun2_fun383() {
+NodeId_t Cash6PetriNetReasoning::acceptCustomerFun2_fun383(int pSender, int pReceiver, SimTime_t pExecTime, State* state) {
     //add your code
     return -1;
 }
-NodeId_t Cash6PetriNetReasoning::acceptCustomer_fun1_fun380() {
+NodeId_t Cash6PetriNetReasoning::acceptCustomer_fun1_fun380(int pSender, int pReceiver, SimTime_t pExecTime, State* state) {
     //add your code
     return -1;
 }
-NodeId_t Cash6PetriNetReasoning::Condition_cond375() {
+NodeId_t Cash6PetriNetReasoning::Condition_cond375(int pSender, int pReceiver, SimTime_t pExecTime, State* state) {
     if () {
         //add your code
         return 380;
@@ -25,11 +25,11 @@ NodeId_t Cash6PetriNetReasoning::Condition_cond375() {
         return 383;
     }
 }
-NodeId_t Cash6PetriNetReasoning::Code_code371() {
+NodeId_t Cash6PetriNetReasoning::Code_code371(int pSender, int pReceiver, SimTime_t pExecTime, State* state) {
     //add your code
     return 375;
 }
-NodeId_t Cash6PetriNetReasoning::Condition_cond366() {
+NodeId_t Cash6PetriNetReasoning::Condition_cond366(int pSender, int pReceiver, SimTime_t pExecTime, State* state) {
     if () {
         //add your code
         return 371;

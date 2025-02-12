@@ -33,6 +33,7 @@ private:
      * @param pSender The ID of the sender.
      * * @param pSender The ID of the receiver.
      * @param pExecTime The time of execution.
+     * @param state The additional parameters.
      */
     void process(ServiceId_t pServiceId, AgentId_t pSender, AgentId_t  pReceiver, SimTime_t pExecTime, State* state);
 

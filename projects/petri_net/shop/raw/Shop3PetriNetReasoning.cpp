@@ -1,14 +1,14 @@
 //TODO incluce
 #include "Shop3PetriNetReasoning.h"
-NodeId_t Shop3PetriNetReasoning::addCustomerToLine_fun2_fun341() {
+NodeId_t Shop3PetriNetReasoning::addCustomerToLine_fun2_fun341(int pSender, int pReceiver, SimTime_t pExecTime, State* state) {
     //add your code
     return -1;
 }
-NodeId_t Shop3PetriNetReasoning::addCustomerToLine_fun1_fun338() {
+NodeId_t Shop3PetriNetReasoning::addCustomerToLine_fun1_fun338(int pSender, int pReceiver, SimTime_t pExecTime, State* state) {
     //add your code
     return -1;
 }
-NodeId_t Shop3PetriNetReasoning::Condition_cond333() {
+NodeId_t Shop3PetriNetReasoning::Condition_cond333(int pSender, int pReceiver, SimTime_t pExecTime, State* state) {
     if () {
         //add your code
         return 338;
@@ -17,11 +17,11 @@ NodeId_t Shop3PetriNetReasoning::Condition_cond333() {
         return 341;
     }
 }
-NodeId_t Shop3PetriNetReasoning::removeCustomer_fun1_fun330() {
+NodeId_t Shop3PetriNetReasoning::removeCustomer_fun1_fun330(int pSender, int pReceiver, SimTime_t pExecTime, State* state) {
     //add your code
     return -1;
 }
-NodeId_t Shop3PetriNetReasoning::Condition_cond325() {
+NodeId_t Shop3PetriNetReasoning::Condition_cond325(int pSender, int pReceiver, SimTime_t pExecTime, State* state) {
     if () {
         //add your code
         return 330;
@@ -30,15 +30,15 @@ NodeId_t Shop3PetriNetReasoning::Condition_cond325() {
         return -1;
     }
 }
-NodeId_t Shop3PetriNetReasoning::newCustomer_fun322() {
+NodeId_t Shop3PetriNetReasoning::newCustomer_fun322(int pSender, int pReceiver, SimTime_t pExecTime, State* state) {
     //add your code
     return -1;
 }
-NodeId_t Shop3PetriNetReasoning::close_fun319() {
+NodeId_t Shop3PetriNetReasoning::close_fun319(int pSender, int pReceiver, SimTime_t pExecTime, State* state) {
     //add your code
     return -1;
 }
-NodeId_t Shop3PetriNetReasoning::open_fun316() {
+NodeId_t Shop3PetriNetReasoning::open_fun316(int pSender, int pReceiver, SimTime_t pExecTime, State* state) {
     //add your code
     return -1;
 }

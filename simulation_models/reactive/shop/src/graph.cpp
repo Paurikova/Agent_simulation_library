@@ -135,4 +135,5 @@ void Graph::drawBarChart(std::vector<float>& data) {
         yText.setPosition(60.f, window.getSize().y - 50.f - i * 40);  // Position Y values along the Y-axis
         window.draw(yText);
     }
+
 }

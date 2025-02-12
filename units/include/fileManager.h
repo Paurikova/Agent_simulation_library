@@ -34,5 +34,11 @@ public:
      */
     void saveFile(std::string path, std::string fileName, std::string data);
 
+    /**
+     * @brief Saves data to a json.
+     * @param path The path to the directory where the file will be saved.
+     * @param fileName The name of the file.
+     * @param data The data to be written to the json.
+     */
     void saveJson(std::string path, std::string fileName, json data);
 };

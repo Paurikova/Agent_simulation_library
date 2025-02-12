@@ -1,10 +1,10 @@
 //TODO incluce
 #include "Line5PetriNetReasoning.h"
-NodeId_t Line5PetriNetReasoning::hasCustomer_fun1_fun363() {
+NodeId_t Line5PetriNetReasoning::hasCustomer_fun1_fun363(int pSender, int pReceiver, SimTime_t pExecTime, State* state) {
     //add your code
     return -1;
 }
-NodeId_t Line5PetriNetReasoning::Condition_cond358() {
+NodeId_t Line5PetriNetReasoning::Condition_cond358(int pSender, int pReceiver, SimTime_t pExecTime, State* state) {
     if () {
         //add your code
         return 363;
@@ -13,19 +13,19 @@ NodeId_t Line5PetriNetReasoning::Condition_cond358() {
         return -1;
     }
 }
-NodeId_t Line5PetriNetReasoning::removeFromShop_fun355() {
+NodeId_t Line5PetriNetReasoning::removeFromShop_fun355(int pSender, int pReceiver, SimTime_t pExecTime, State* state) {
     //add your code
     return -1;
 }
-NodeId_t Line5PetriNetReasoning::removeFromLine_fun352() {
+NodeId_t Line5PetriNetReasoning::removeFromLine_fun352(int pSender, int pReceiver, SimTime_t pExecTime, State* state) {
     //add your code
     return -1;
 }
-NodeId_t Line5PetriNetReasoning::addToLine_fun1_fun349() {
+NodeId_t Line5PetriNetReasoning::addToLine_fun1_fun349(int pSender, int pReceiver, SimTime_t pExecTime, State* state) {
     //add your code
     return -1;
 }
-NodeId_t Line5PetriNetReasoning::Condition_cond344() {
+NodeId_t Line5PetriNetReasoning::Condition_cond344(int pSender, int pReceiver, SimTime_t pExecTime, State* state) {
     if () {
         //add your code
         return 349;

@@ -3,42 +3,71 @@
 #include <unordered_set>
 #include <stdexcept>
 
+/**
+ * @class UniqueDeque
+ * @brief A deque implementation that ensures uniqueness of its elements.
+ * @tparam T The type of elements stored in the deque.
+ */
 template <typename T>
 class UniqueDeque {
 private:
     std::deque<T> deque;                // The deque to store elements
     std::unordered_set<T> set;          // The set to ensure uniqueness
 
-    // Private helper to check if a value is unique
+    /**
+     * @brief Private helper function to check if a value is unique.
+     *
+     * @param value The value to check for uniqueness.
+     * @return `true` if the value is not already in the set, `false` otherwise.
+     */
     bool uniqueValue(const T& value);
 
 public:
+    /**
+     * @brief Default constructor for the UniqueDeque class.
+     */
     UniqueDeque() = default;
 
-    // Add a single element to the back of the deque
+    /**
+     * @brief Adds a single element to the back of the deque.
+     *
+     * @param value The value to be added to the deque.
+     * @return `true` if the element was added successfully, `false` if the element was a duplicate.
+     */
     bool push_back(const T& value);
 
-    // Add multiple elements from another deque
+    /**
+     * @brief Adds multiple elements from another deque.
+     *
+     * @param values The deque of values to be added to the current deque.
+     * @return `true` if any element was added successfully, `false` otherwise.
+     */
     bool push_back(const std::deque<T>& values);
 
-    // Remove and return the element from the front of the deque
+    /**
+     * @brief Removes and returns the element from the front of the deque.
+     *
+     * @return The value removed from the front of the deque.
+     * @throws std::runtime_error If the deque is empty.
+     */
     T pop_front();
 
-    // Check if the deque is empty
+    /**
+     * @brief Checks if the deque is empty.
+     *
+     * @return `true` if the deque is empty, `false` otherwise.
+     */
     bool empty() const;
 };
 
-// Template specialization for NodeId_t or any type T
 template <typename T>
 bool UniqueDeque<T>::uniqueValue(const T& value) {
     return set.find(value) == set.end();
 }
 
-// Template specialization for NodeId_t or any type T
 template <typename T>
 bool UniqueDeque<T>::push_back(const T& value) {
     if (uniqueValue(value)) {
-        // If not found, insert into both deque and set
         deque.push_back(value);
         set.insert(value);
         return true;
@@ -46,21 +75,18 @@ bool UniqueDeque<T>::push_back(const T& value) {
     return false;
 }
 
-// Template specialization for NodeId_t or any type T
 template <typename T>
 bool UniqueDeque<T>::push_back(const std::deque<T>& values) {
     // Push only unique values
     bool addedAny = false;
     for (const auto& value : values) {
-        // Check if the value is already in the set
         if (uniqueValue(value)) {
             addedAny |= push_back(value);
         }
     }
-    return addedAny; // Return true if any element was added
+    return addedAny;
 }
 
-// Template specialization for NodeId_t or any type T
 template <typename T>
 T UniqueDeque<T>::pop_front() {
     if (deque.empty()) {
@@ -77,7 +103,6 @@ T UniqueDeque<T>::pop_front() {
     return output;
 }
 
-// Template specialization for NodeId_t or any type T
 template <typename T>
 bool UniqueDeque<T>::empty() const {
     return deque.empty();

@@ -59,13 +59,34 @@ public:
 
 private:
     /**
-     * @brief Processes reactive agent data to generate header and source files.
-     * @param data The reactive agent JSON data.
-     * @param agentId The ID of the agent being processed.
+     * @brief Processes the creation of a reactive agent by generating its header and source files.
+     *
+     * @param data A JSON object containing the agent configuration (attributes, services, etc.).
+     * @param path The path where the generated files will be saved.
+     * @param agentId The ID of the agent.
+     * @param agentName The name of the agent.
      */
     void processReactive(json data, std::string path, int agentId, std::string agentName);
 
+    /**
+     * @brief Processes the creation of a Petri Net-based agent by generating its header and source files.
+     *
+     * @param data A JSON object containing the agent configuration (attributes, services, etc.).
+     * @param path The path where the generated files will be saved.
+     * @param agentId The ID of the agent.
+     * @param agentName The name of the agent.
+     */
     void processPetriNet(json data, std::string path, int agentId, std::string agentName);
+
+    /**
+    * @brief Inserts an initial message definition for the main agent initialization.
+    *
+    * @param agent_h A reference to the header file content.
+    * @param agent_cpp A reference to the source file content.
+    * @param type The type of reasoning (e.g., reactive or Petri net).
+    * @param searchType Searching type.
+     * @param agentName The name of the agent.
+     *
+     */
     void initMessage(std::string& agent_h, std::string& agent_cpp, std::string type, std::string searchType, std::string agentName);
-    void processMain(json data);
 };

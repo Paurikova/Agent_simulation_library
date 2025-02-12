@@ -14,7 +14,7 @@ int main(int argc, char** argv) {
     StateShop* stateShop = new StateShop();
     ConfigReader* configReader = new ConfigReader("/home/miska/CLionProjects/Agent_simulation_library/local.cfg");
     // Create a flock of birds
-    Logger* logger = new Logger(configReader->get("logs"), false);
+    Logger* logger = new Logger(false);
     
     Manager* rManager = new Manager(20, logger);
     SimulationCore* aManager = new SimulationCore(rManager, logger);
@@ -41,7 +41,7 @@ int main(int argc, char** argv) {
     aManager->registerAgent(aCash2);
 
     sf::RenderWindow window(sf::VideoMode(800, 600), "Flocking Simulation");
-    Graph* rGraph = new Graph(60, window, stateShop, logger);
+    Graph* rGraph = new Graph(500, window, stateShop, logger);
     Agent* aGraph = new Agent(8, aManager, rGraph);
     aManager->registerAgent(aGraph);
 
