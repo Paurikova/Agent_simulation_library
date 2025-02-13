@@ -1338,6 +1338,7 @@ void CASE_tool::OnFrame(float deltaTime) {
     if (ImGui::BeginPopup("Create New Node")) {
         auto newNodePostion = openPopupPosition;
         Node *node = nullptr;
+        Node *newNode = nullptr;
         if (m_Inside.Get() == 0) {
             // outside view to agents structure
             // user can only create new agent
@@ -1359,29 +1360,29 @@ void CASE_tool::OnFrame(float deltaTime) {
             } else if (node->Type == NodeType::RespAgent) {
                 //level of agent's features
                 if (ImGui::MenuItem("Attribute")) {
-                    node = SpawnAttributeNode(node->ID);
+                    newNode = SpawnAttributeNode(node->ID);
                 }
             } else if (node->Type == NodeType::RespReasoningReactive) {
                 //level of agent's reactive reasoning
                 if (ImGui::MenuItem("Function")) {
-                    node = SpawnFunctionNode(node->ID);
+                    newNode = SpawnFunctionNode(node->ID);
                 }
                 if (ImGui::MenuItem("Attribute")) {
-                    node = SpawnAttributeNode(node->ID);
+                    newNode = SpawnAttributeNode(node->ID);
                 }
             } else if (node->Type == NodeType::RespReasoningIntelligent) {
                 // level of agent's intelligent reasoning
                 if (ImGui::MenuItem("Condition")) {
-                    node = SpawnConditionNode(node->ID);
+                    newNode = SpawnConditionNode(node->ID);
                 }
                 if (ImGui::MenuItem("Code")) {
-                    node = SpawnCodeNode(node->ID);
+                    newNode = SpawnCodeNode(node->ID);
                 }
                 if (ImGui::MenuItem("Function")) {
-                    node = SpawnFunctionNode(node->ID);
+                    newNode = SpawnFunctionNode(node->ID);
                 }
                 if (ImGui::MenuItem("Attribute")) {
-                    node = SpawnAttributeNode(node->ID);
+                    newNode = SpawnAttributeNode(node->ID);
                 }
             }
         }
@@ -1397,10 +1398,10 @@ void CASE_tool::OnFrame(float deltaTime) {
             }
         }
 
-        if (node) {
+        if (newNode) {
             BuildNodes();
             createNewNode = false;
-            ed::SetNodePosition(node->ID, newNodePostion);
+            ed::SetNodePosition(newNode->ID, newNodePostion);
             if (auto startPin = newNodeLinkPin) {
                 auto &pins = startPin->Kind == PinKind::Input ? node->Outputs : node->Inputs;
 
