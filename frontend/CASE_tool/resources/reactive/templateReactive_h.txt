@@ -1,0 +1,11 @@
+#pragma once
+//TODO incluce
+#include "library/include/reactiveReasoning.h"
+
+class {}{}ReactiveReasoning : public ReactiveReasoning {{
+private:
+    //attributes
+    //functions
+    //registration
+    void registerFunctions() override;
+}};

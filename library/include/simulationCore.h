@@ -1,10 +1,12 @@
 #pragma once
 
 #include <unordered_map>
+#include <fstream>
 
 #include "agent.h"
 #include "message.h"
-#include "types.h"
+#include "types_library.h"
+#include "../../units/include/logger.h"
 
 /**
  * @brief Represents the core of a simulation.
@@ -15,18 +17,17 @@
 class SimulationCore : public Agent{
 private:
     SimTime_t currTime; /**< Current simulation time. */
-    SimTime_t endTime; /**< End time of the simulation. */
     std::unordered_map<AgentId_t, Agent*> agents; /**< Map of agent IDs to agent objects. */
     std::unique_ptr<Schedule> mainSchedule; /**< Unique pointer to the main schedule. */
-
+    Logger* logger;
 public:
     /**
      * @brief Constructs a new SimulationCore object.
      *
-     * @param pStartTime The start time of the simulation.
-     * @param pEndTime The end time of the simulation.
+     * @param pAgentReasoning The reasoning of the agent.
+     * @param pLogger Logging to console and creating log file.
      */
-    SimulationCore(SimTime_t pStartTime, SimTime_t pEndTime);
+    SimulationCore(AgentReasoning* pAgentReasoning, Logger* pLogger);
 
     /**
      * @brief Registers an agent with the simulation core.
@@ -43,7 +44,7 @@ public:
      *
      * @param pAgentId The ID of the agent to be unregistered.
      */
-    void unregisterAgent(int pAgentId);
+    void unregisterAgent(AgentId_t pAgentId);
 
     /**
      * @brief Runs the simulation.
@@ -60,14 +61,6 @@ public:
 
 private:
     /**
-    * @brief Registers functions required by offered services.
-    *
-    * This function overrides the registerFunctions() method of the base class.
-    * New function has to be added as lambda function.
-    */
-    void registerFunctions() override;
-
-    /**
      * @brief Initializes the simulation.
      *
      * This function performs initialization tasks before starting the simulation.
@@ -81,7 +74,7 @@ private:
     *
     * @param agent Pointer to the agent from which messages are received.
     */
-    void receiveAgentMessages(Agent* agent);
+    void receiveAgentMessages(Agent* pAgent);
 
     /**
      * @brief Checks if an agent with the specified ID exists in the simulation core.
@@ -97,7 +90,4 @@ private:
      * @param pMessage Pointer to the message being received.
      */
     void addReceiver(Message* pMessage);
-
-    //function
-    void allDone(int sender);
 };

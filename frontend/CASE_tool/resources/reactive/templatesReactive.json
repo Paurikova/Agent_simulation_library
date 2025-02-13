@@ -1,0 +1,6 @@
+{
+  "FunctionDef" : "\n    void {}(int pSender, int pReceiver, SimTime_t pExecTime, State* state);",
+  "FunctionImpl" : "\nvoid {}{}ReactiveReasoning::{}(int pSender, int pReceiver, SimTime_t pExecTime, State* state) {{\n    //add your code\n}}",
+  "FunctionReg" : "\n    registerFunction({}, [this](int pSender, int pReceiver, SimTime_t pExecTime, State* state) {{\n        {}(pSender, pReceiver, pExecTime, state);\n    }});",
+  "ReactiveFileName" : "{}{}ReactiveReasoning"
+}

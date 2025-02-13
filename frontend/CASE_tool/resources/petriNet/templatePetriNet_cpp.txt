@@ -1,0 +1,10 @@
+//TODO incluce
+#include "{}{}PetriNetReasoning.h"
+
+void {}{}PetriNetReasoning::registerNodes() {{
+    //registration
+}}
+
+void {}{}PetriNetReasoning::registerServices() {{
+    //services
+}}

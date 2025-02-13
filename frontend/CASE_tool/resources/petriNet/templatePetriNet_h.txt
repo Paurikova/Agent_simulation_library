@@ -1,0 +1,11 @@
+#pragma once
+//TODO incluce
+#include "library/include/petriNetReasoning.h"
+
+class {}{}PetriNetReasoning : public PetriNetReasoning {{
+private:
+    //attributes
+    //nodes
+    void registerNodes() override;
+    void registerServices() override;
+}};

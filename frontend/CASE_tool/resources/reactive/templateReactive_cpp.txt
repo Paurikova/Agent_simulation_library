@@ -1,0 +1,6 @@
+//TODO incluce
+#include "{}{}ReactiveReasoning.h"
+
+void {}{}ReactiveReasoning::registerFunctions() {{
+    //registration
+}}

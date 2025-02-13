@@ -1,6 +1,5 @@
 #pragma once
-
-#include "types.h"
+#include "types_library.h"
 
 /**
  * @brief Definition of the Message structure.
@@ -15,6 +14,7 @@ struct Message {
     AgentId_t sender; /**< ID of the sender agent */
     AgentId_t receiver; /**< ID of the receiver agent */
     ServiceId_t serviceId; /**< ID of the service */
+    State* state; /**< Another args */
 
     /**
      * @brief Overloaded greater-than operator for comparing messages.
@@ -35,8 +35,9 @@ struct Message {
      * @param pExecTime The execution time of the message.
      * @param pPriority The priority of the message.
      * @param pSdr The ID of the sender agent.
-     * @param pRcvr The ID of the receiver agent. */
-    Message(SimTime_t pExecTime, int pPriority, ServiceId_t pServiceId, AgentId_t pSdr, AgentId_t pRcvr);
+     * @param pRcvr The ID of the receiver agent.
+     * @param pState Another args of message */
+    Message(SimTime_t pExecTime, int pPriority, ServiceId_t pServiceId, AgentId_t pSdr, AgentId_t pRcvr, State* pState);
 };
 
 // Define a custom comparison functor

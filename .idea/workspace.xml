@@ -3,11 +3,29 @@
   <component name="AutoImportSettings">
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
-  <component name="CMakePresetLoader"><![CDATA[{
-  "useNewFormat": true
-}]]></component>
+  <component name="CMakePresetLoader">{
+  &quot;useNewFormat&quot;: true
+}</component>
   <component name="CMakeReloadState">
     <option name="reloaded" value="true" />
+  </component>
+  <component name="CMakeRunConfigurationManager">
+    <generated>
+      <config projectName="Agent_simulation_library" targetName="Shop_petri_net_CASE_tool" />
+      <config projectName="Agent_simulation_library" targetName="Shop_petri_net" />
+      <config projectName="Agent_simulation_library" targetName="application" />
+      <config projectName="Agent_simulation_library" targetName="units" />
+      <config projectName="Agent_simulation_library" targetName="CASE_tool" />
+      <config projectName="Agent_simulation_library" targetName="imgui" />
+      <config projectName="Agent_simulation_library" targetName="Flocking_model_reactive_stupid_CASE_tool" />
+      <config projectName="Agent_simulation_library" targetName="Flocking_model_reactive_intelligent" />
+      <config projectName="Agent_simulation_library" targetName="Flocking_model_reactive_intelligent_CASE_tool" />
+      <config projectName="Agent_simulation_library" targetName="Flocking_model_reactive_stupid" />
+      <config projectName="Agent_simulation_library" targetName="Shop_reactive_CASE_tool" />
+      <config projectName="Agent_simulation_library" targetName="Agent_library" />
+      <config projectName="Agent_simulation_library" targetName="imgui_node_editor" />
+      <config projectName="Agent_simulation_library" targetName="Shop_reactive" />
+    </generated>
   </component>
   <component name="CMakeSettings">
     <configurations>
@@ -15,7 +33,129 @@
     </configurations>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="c25e9dc2-7e6c-45dc-aa5e-8733c945e1d0" name="Changes" comment="" />
+    <list default="true" id="c25e9dc2-7e6c-45dc-aa5e-8733c945e1d0" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/Agent_simulation_library.iml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/CMakeLists.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/library/CMakeLists.txt" beforeDir="false" afterPath="$PROJECT_DIR$/library/CMakeLists.txt" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/library/include/agent.h" beforeDir="false" afterPath="$PROJECT_DIR$/library/include/agent.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/library/include/message.h" beforeDir="false" afterPath="$PROJECT_DIR$/library/include/message.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/library/include/schedule.h" beforeDir="false" afterPath="$PROJECT_DIR$/library/include/schedule.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/library/include/simulationCore.h" beforeDir="false" afterPath="$PROJECT_DIR$/library/include/simulationCore.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/library/src/agent.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/library/src/agent.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/library/src/message.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/library/src/message.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/library/src/schedule.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/library/src/schedule.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/library/src/simulationCore.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/library/src/simulationCore.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/library_test/CMakeLists.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/library_test/agents/include/agent1.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/library_test/agents/include/agent2.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/library_test/agents/src/agent1.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/library_test/agents/src/agent2.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/main.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tool/CASE_tool/CASE_tool.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tool/CASE_tool/CMakeLists.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tool/CASE_tool/data/RespAgentBackground.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tool/CASE_tool/data/ic_restore_white_24dp.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tool/CASE_tool/data/ic_save_white_24dp.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tool/CASE_tool/data/templates.json" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tool/CASE_tool/source_generator/include/agentGenerator.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tool/CASE_tool/source_generator/include/agentTemplate.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tool/CASE_tool/source_generator/scr/agentGenerator.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tool/CASE_tool/source_generator/scr/agentTemplate.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tool/CASE_tool/utilities/builders.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tool/CASE_tool/utilities/builders.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tool/CASE_tool/utilities/drawing.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tool/CASE_tool/utilities/drawing.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tool/CASE_tool/utilities/widgets.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tool/CASE_tool/utilities/widgets.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tool/CMakeLists.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tool/application/CMakeLists.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tool/application/include/application.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tool/application/source/application.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tool/application/source/config.h.in" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tool/application/source/entry_point.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tool/application/source/imgui_extra_keys.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tool/application/source/imgui_impl_dx11.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tool/application/source/imgui_impl_dx11.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tool/application/source/imgui_impl_glfw.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tool/application/source/imgui_impl_glfw.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tool/application/source/imgui_impl_opengl3.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tool/application/source/imgui_impl_opengl3.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tool/application/source/imgui_impl_opengl3_loader.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tool/application/source/imgui_impl_win32.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tool/application/source/imgui_impl_win32.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tool/application/source/platform.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tool/application/source/platform_glfw.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tool/application/source/platform_win32.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tool/application/source/renderer.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tool/application/source/renderer_dx11.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tool/application/source/renderer_ogl3.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tool/application/source/setup.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tool/application/support/Icon.icns" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tool/application/support/Icon.ico" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tool/application/support/Icon.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tool/application/support/Info.plist.in" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tool/application/support/Resource.rc.in" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tool/data/Cuprum-Bold.ttf" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tool/data/Cuprum-OFL.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tool/data/Oswald-OFL.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tool/data/Oswald-Regular.ttf" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tool/data/Play-OFL.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tool/data/Play-Regular.ttf" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tool/external_resources/external/DXSDK/include/D3DX11.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tool/external_resources/external/DXSDK/include/D3DX11async.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tool/external_resources/external/DXSDK/include/D3DX11core.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tool/external_resources/external/DXSDK/include/D3DX11tex.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tool/external_resources/external/DXSDK/include/dxerr.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tool/external_resources/external/DXSDK/lib/x64/d3dx11.lib" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tool/external_resources/external/DXSDK/lib/x64/d3dx11d.lib" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tool/external_resources/external/DXSDK/lib/x86/d3dx11.lib" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tool/external_resources/external/DXSDK/lib/x86/d3dx11d.lib" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tool/external_resources/external/DXSDK/src/dxerr.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tool/external_resources/external/ScopeGuard/CMakeLists.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tool/external_resources/external/ScopeGuard/ScopeGuard.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tool/external_resources/external/imgui/CMakeLists.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tool/external_resources/external/imgui/LICENSE.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tool/external_resources/external/imgui/imconfig.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tool/external_resources/external/imgui/imgui.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tool/external_resources/external/imgui/imgui.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tool/external_resources/external/imgui/imgui.natvis" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tool/external_resources/external/imgui/imgui_demo.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tool/external_resources/external/imgui/imgui_draw.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tool/external_resources/external/imgui/imgui_internal.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tool/external_resources/external/imgui/imgui_tables.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tool/external_resources/external/imgui/imgui_widgets.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tool/external_resources/external/imgui/imstb_rectpack.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tool/external_resources/external/imgui/imstb_textedit.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tool/external_resources/external/imgui/imstb_truetype.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tool/external_resources/external/stb_image/CMakeLists.txt" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tool/external_resources/external/stb_image/stb_image.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tool/external_resources/imgui_project/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tool/external_resources/imgui_project/LICENSE" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tool/external_resources/imgui_project/crude_json.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tool/external_resources/imgui_project/crude_json.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tool/external_resources/imgui_project/editor.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tool/external_resources/imgui_project/imgui_bezier_math.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tool/external_resources/imgui_project/imgui_bezier_math.inl" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tool/external_resources/imgui_project/imgui_canvas.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tool/external_resources/imgui_project/imgui_canvas.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tool/external_resources/imgui_project/imgui_extra_math.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tool/external_resources/imgui_project/imgui_extra_math.inl" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tool/external_resources/imgui_project/imgui_node_editor.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tool/external_resources/imgui_project/imgui_node_editor.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tool/external_resources/imgui_project/imgui_node_editor_api.cpp" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tool/external_resources/imgui_project/imgui_node_editor_internal.h" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tool/external_resources/imgui_project/imgui_node_editor_internal.inl" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tool/external_resources/misc/cmake-modules/FindScopeGuard.cmake" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tool/external_resources/misc/cmake-modules/Findgl3w.cmake" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tool/external_resources/misc/cmake-modules/Findimgui.cmake" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tool/external_resources/misc/cmake-modules/Findimgui_node_editor.cmake" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tool/external_resources/misc/cmake-modules/Findstb_image.cmake" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tool/external_resources/misc/crude_json.natvis" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tool/external_resources/misc/imgui_node_editor.natvis" beforeDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -24,14 +164,18 @@
   <component name="ClangdSettings">
     <option name="formatViaClangd" value="false" />
   </component>
+  <component name="ExecutionTargetManager" SELECTED_TARGET="CMakeBuildProfile:Debug" />
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
   <component name="ProjectApplicationVersion">
     <option name="ide" value="CLion" />
     <option name="majorVersion" value="2023" />
     <option name="minorVersion" value="3.4" />
   </component>
-  <component name="ProjectColorInfo"><![CDATA[{
-  "associatedIndex": 0
-}]]></component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 0
+}</component>
   <component name="ProjectId" id="2cleKWHQ2Pp5TFVT0KoUMP16vEn" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
@@ -45,10 +189,104 @@
     "RunOnceActivity.readMode.enableVisualFormatting": "true",
     "cf.first.check.clang-format": "false",
     "cidr.known.project.marker": "true",
+    "node.js.selected.package.tslint": "(autodetect)",
     "nodejs_package_manager_path": "npm",
     "vue.rearranger.settings.migration": "true"
   }
 }]]></component>
+  <component name="RunManager" selected="CMake Application.CASE_tool">
+    <configuration default="true" type="CLionExternalRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true">
+      <method v="2">
+        <option name="CLION.EXTERNAL.BUILD" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="Agent_library" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="Agent_simulation_library" TARGET_NAME="Agent_library" CONFIG_NAME="Debug">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="CASE_tool" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="Agent_simulation_library" TARGET_NAME="CASE_tool" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="Agent_simulation_library" RUN_TARGET_NAME="CASE_tool">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="Flocking_model_reactive_intelligent" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="Agent_simulation_library" TARGET_NAME="Flocking_model_reactive_intelligent" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="Agent_simulation_library" RUN_TARGET_NAME="Flocking_model_reactive_intelligent">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="Flocking_model_reactive_intelligent_CASE_tool" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="Agent_simulation_library" TARGET_NAME="Flocking_model_reactive_intelligent_CASE_tool" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="Agent_simulation_library" RUN_TARGET_NAME="Flocking_model_reactive_intelligent_CASE_tool">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="Flocking_model_reactive_stupid" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="Agent_simulation_library" TARGET_NAME="Flocking_model_reactive_stupid" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="Agent_simulation_library" RUN_TARGET_NAME="Flocking_model_reactive_stupid">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="Flocking_model_reactive_stupid_CASE_tool" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="Agent_simulation_library" TARGET_NAME="Flocking_model_reactive_stupid_CASE_tool" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="Agent_simulation_library" RUN_TARGET_NAME="Flocking_model_reactive_stupid_CASE_tool">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="Shop_petri_net" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="Agent_simulation_library" TARGET_NAME="Shop_petri_net" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="Agent_simulation_library" RUN_TARGET_NAME="Shop_petri_net">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="Shop_petri_net_CASE_tool" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="Agent_simulation_library" TARGET_NAME="Shop_petri_net_CASE_tool" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="Agent_simulation_library" RUN_TARGET_NAME="Shop_petri_net_CASE_tool">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="Shop_reactive" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="Agent_simulation_library" TARGET_NAME="Shop_reactive" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="Agent_simulation_library" RUN_TARGET_NAME="Shop_reactive">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="Shop_reactive_CASE_tool" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="Agent_simulation_library" TARGET_NAME="Shop_reactive_CASE_tool" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="Agent_simulation_library" RUN_TARGET_NAME="Shop_reactive_CASE_tool">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="application" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="Agent_simulation_library" TARGET_NAME="application" CONFIG_NAME="Debug">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="imgui" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="Agent_simulation_library" TARGET_NAME="imgui" CONFIG_NAME="Debug">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="imgui_node_editor" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="Agent_simulation_library" TARGET_NAME="imgui_node_editor" CONFIG_NAME="Debug">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <configuration name="units" type="CMakeRunConfiguration" factoryName="Application" REDIRECT_INPUT="false" ELEVATE="false" USE_EXTERNAL_CONSOLE="false" EMULATE_TERMINAL="false" PASS_PARENT_ENVS_2="true" PROJECT_NAME="Agent_simulation_library" TARGET_NAME="units" CONFIG_NAME="Debug">
+      <method v="2">
+        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
+      </method>
+    </configuration>
+    <list>
+      <item itemvalue="CMake Application.imgui" />
+      <item itemvalue="CMake Application.application" />
+      <item itemvalue="CMake Application.CASE_tool" />
+      <item itemvalue="CMake Application.imgui_node_editor" />
+      <item itemvalue="CMake Application.Agent_library" />
+      <item itemvalue="CMake Application.Shop_petri_net_CASE_tool" />
+      <item itemvalue="CMake Application.Flocking_model_reactive_intelligent_CASE_tool" />
+      <item itemvalue="CMake Application.Flocking_model_reactive_stupid_CASE_tool" />
+      <item itemvalue="CMake Application.Shop_reactive_CASE_tool" />
+      <item itemvalue="CMake Application.Shop_petri_net" />
+      <item itemvalue="CMake Application.Flocking_model_reactive_intelligent" />
+      <item itemvalue="CMake Application.Flocking_model_reactive_stupid" />
+      <item itemvalue="CMake Application.Shop_reactive" />
+      <item itemvalue="CMake Application.units" />
+    </list>
+  </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
@@ -60,5 +298,10 @@
       <workItem from="1708690531501" duration="1000" />
     </task>
     <servers />
+  </component>
+  <component name="VCPKGProject">
+    <isAutomaticCheckingOnLaunch value="false" />
+    <isAutomaticFoundErrors value="true" />
+    <isAutomaticReloadCMake value="true" />
   </component>
 </project>
