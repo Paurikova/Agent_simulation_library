@@ -212,6 +212,7 @@ private:
     std::unique_ptr<AgentGenerator> agentGenerator = std::make_unique<AgentGenerator>();
     std::unique_ptr<FileManager> fileManager = std::make_unique<FileManager>();
     char m_renamed[64] = "";
+    int counter = 1;
 public:
     /**
      * Constructor.

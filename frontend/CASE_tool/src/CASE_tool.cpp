@@ -513,7 +513,6 @@ Node* CASE_tool::SpawnServiceIdNodeReasoning(ed::NodeId outsideId, TextBuffer* b
     m_Nodes.emplace_back(GetNextId(), "Service", NodeType::ReasService, outsideId,ImColor(128, 195, 248));
     // add associated ID to node
     m_Nodes.back().AssociatedIds.push_back(associatedId);
-    Node* outsideNode = FindNode(outsideId);
     m_Nodes.back().Outputs.emplace_back(GetNextId(), "Id", PinType::Function, buffer);
     // add node to its outside node
     AddInsideNodeId(outsideId, m_Nodes.back().ID);
@@ -524,6 +523,7 @@ Node* CASE_tool::SpawnServiceIdNodeReasoning(ed::NodeId outsideId, TextBuffer* b
 void CASE_tool::SpawnServiceIdNode(ImVec2 position, ed::NodeId outsideId) {
     // create service on responsibility level
     Node *node = SpawnServiceIdNodeResponsibilities(outsideId);
+    ed::NodeId creadetNodeId = node->ID;
     ed::SetNodePosition(node->ID, position);
     Node* outsideNode = FindNode(outsideId);
     // find reasoning nodes added to agent
@@ -534,6 +534,7 @@ void CASE_tool::SpawnServiceIdNode(ImVec2 position, ed::NodeId outsideId) {
             // associate it with created node
             Node* serviceNode = SpawnServiceIdNodeReasoning(id, node->Inputs.back().PinBuffer, node->ID);
             // add created service ID to node associated IDs
+            node = FindNode(creadetNodeId);
             node->AssociatedIds.push_back(serviceNode->ID);
         }
     }
@@ -1437,61 +1438,41 @@ void CASE_tool::OnFrame(float deltaTime) {
 void CASE_tool::DeleteNode(ed::NodeId nodeId) {
     // find deleted node
     Node* node = FindNode(nodeId);
+    if (node->Deleted) return;
     //we don't wanna delete master node
     if ((node->Type == NodeType::ExtAgent && node->ID.Get() == 1) ||
-            (node->Type == NodeType::RespAgent && FindNode(node->OutsideId)->ID.Get() == 1))
+        (node->Type == NodeType::RespAgent && FindNode(node->OutsideId)->ID.Get() == 1))
         return;
+
     // prevents to never ending loop in deleting
     node->Deleted = true;
+
     // if deleted node is responsible agent, remove the whole agent
     if (node->Type == NodeType::RespAgent) {
         ed::NodeId outsideId = node->OutsideId;
         Node* outsideNode = FindNode(outsideId);
-        if (!outsideNode->Deleted) {
-            outsideNode->Deleted = true;
-            if (outsideNode->Type == NodeType::RespAgent) {
-                outsideId = outsideNode->OutsideId;
-                outsideNode = FindNode(outsideId);
-                if (!outsideNode->Deleted) {
-                    outsideNode->Deleted = true;
-                }
-            }
-            node = outsideNode;
-            nodeId = outsideId;
-        }
+        DeleteNode(outsideId);
+        m_Inside = 0;
     }
-    // if node is Responsible Service, delete service node that is associated with this node
-    if (node->Type == NodeType::RespService) {
-        for (ed::NodeId id : node->AssociatedIds) {
-            Node *associatedNode = FindNode(id);
-            if (!associatedNode->Deleted) {
-                DeleteNode(id);
-            }
-        }
-    }
-    // if node is Reasoning Service, delete it from associated list of its associated node
-    if (node->Type == NodeType::ReasService) {
-        // control, if node is deleted because its outside node is deleted or its associated node is deleted
-        // else we cannot delete reasoning service node
-        Node* outsideNode = FindNode(node->OutsideId);
-        Node* assocNode = FindNode(node->AssociatedIds.at(0));
-        if (!outsideNode->Deleted && !assocNode->Deleted) {
-            node->Deleted = false;
-            return;
-        }
-        if (!assocNode->Deleted) {
-            auto id = std::find_if(assocNode->AssociatedIds.begin(), assocNode->AssociatedIds.end(),
-                                   [nodeId](auto &insideId) { return insideId == nodeId; });
-            if (id != assocNode->AssociatedIds.end())
-                assocNode->AssociatedIds.erase(id);
-        }
-    }
+
     // if node is associated by other node, delete them as first
     if (!node->InsideIds.empty()) {
         //delete all inside nodes
-        for (auto &id: node->InsideIds)
+        while(!node->InsideIds.empty()) {
+            ed::NodeId id = node->InsideIds.back();
+            node->InsideIds.pop_back();
             DeleteNode(id);
+        }
     }
+    // if node is Responsible Service, delete service node that is associated with this node
+    if (node->Type == NodeType::RespService || node->Type == NodeType::ReasService) {
+        while(!node->AssociatedIds.empty()) {
+            ed::NodeId id = node->AssociatedIds.back();
+            node->AssociatedIds.pop_back();
+            DeleteNode(id);
+        }
+    }
+
     // delete node links
     for(Pin& pin: node->Inputs) {
         DeleteLinks(pin);
@@ -1500,14 +1481,13 @@ void CASE_tool::DeleteNode(ed::NodeId nodeId) {
         DeleteLinks(pin);
     }
     //delete node id from outside node
-    if (node->OutsideId.Get() != 0) {
-        Node* outsideNode = FindNode(node->OutsideId);
-        if (!outsideNode->Deleted) {
-            auto id = std::find_if(outsideNode->InsideIds.begin(), outsideNode->InsideIds.end(),
-                                   [nodeId](auto &insideId) { return insideId == nodeId; });
-            if (id != outsideNode->InsideIds.end())
-                outsideNode->InsideIds.erase(id);
-        }
+    node = FindNode(nodeId);
+    Node* outsideNode = FindNode(node->OutsideId);
+    if (!outsideNode->Deleted) {
+        auto id = std::find_if(outsideNode->InsideIds.begin(), outsideNode->InsideIds.end(),
+                               [nodeId](auto &insideId) { return insideId == nodeId; });
+        if (id != outsideNode->InsideIds.end())
+            outsideNode->InsideIds.erase(id);
     }
     //delete node
     //if node is ext agent, delete it from agent list and go up
@@ -1528,7 +1508,8 @@ void CASE_tool::DeleteNode(ed::NodeId nodeId) {
 
 void CASE_tool::DeleteLinks(Pin& pin) {
     //loop over all link id assocaited with the pin
-    for (auto& linkId : pin.LinkIds) {
+    while(!pin.LinkIds.empty()) {
+        auto& linkId = pin.LinkIds.back();
         DeleteLink(linkId);
     }
 }
@@ -1882,7 +1863,8 @@ void CASE_tool::ShowGenerateCodeEditor(bool* show) {
         if (ImGui::Button("Generate")) {
             *show = false;
             json data = GetData();
-            //fileManager->saveJson(PROJECT_PATH + "/", "test-generovanie", data);
+            fileManager->saveJson(PROJECT_PATH + "/", "test-generovanie" + std::to_string(counter), data);
+            counter++;
             agentGenerator->processJson(data, strFilePath);
         }
     } catch (const std::runtime_error &e) {
