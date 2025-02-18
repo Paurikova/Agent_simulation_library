@@ -1863,8 +1863,8 @@ void CASE_tool::ShowGenerateCodeEditor(bool* show) {
         if (ImGui::Button("Generate")) {
             *show = false;
             json data = GetData();
-            fileManager->saveJson(PROJECT_PATH + "/", "test-generovanie" + std::to_string(counter), data);
-            counter++;
+            //fileManager->saveJson(PROJECT_PATH + "/", "test-generovanie" + std::to_string(counter), data);
+            //counter++;
             agentGenerator->processJson(data, strFilePath);
         }
     } catch (const std::runtime_error &e) {
