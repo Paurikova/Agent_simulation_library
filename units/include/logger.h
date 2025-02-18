@@ -21,11 +21,13 @@ private:
     std::string data;
     std::string path = "/home/miska/CLionProjects/Agent_simulation_library/logs";
 
-    /**
-     * @brief Private helper function to add log data to the file.
-     */
-    void addToFile();
 public:
+
+    /**
+    * @brief Function to add log data to the file.
+    */
+    void addToFile();
+
     /**
      * @brief Public method to log a message.
      *
@@ -39,10 +41,4 @@ public:
      * @param pConsole A boolean flag to determine where to log the messages (default is `true`).
      */
     Logger(bool pConsole = true) : console(pConsole) {};
-
-
-    /**
-     * @brief Destructor that cleans up resources used by the `Logger` instance.
-     */
-    ~Logger();
 };

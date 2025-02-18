@@ -20,6 +20,6 @@ int main(int argc, char** argv) {
 
     // Run the simulation
     simCore->runSimulation();
-    delete logger;
+    logger->addToFile();
     return 0;
 }

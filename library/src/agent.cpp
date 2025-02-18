@@ -30,6 +30,7 @@ void Agent::execute() {
     while (message) {
         currTime = message->execTime;
         process(message->serviceId, message->sender, message->receiver, message->execTime, message->state);
+        delete message;
         message = schedule->popMessage();
     }
 }

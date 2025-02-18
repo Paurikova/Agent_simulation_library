@@ -659,6 +659,16 @@ void CASE_tool::OnStop()
 
     if (m_Editor)
     {
+        //destroy pin buffers
+        for (Node& node : m_Nodes) {
+            // delete node links
+            for (Pin &pin: node.Inputs) {
+                delete pin.PinBuffer;
+            }
+            for (Pin &pin: node.Outputs) {
+                delete pin.PinBuffer;
+            }
+        }
         ed::DestroyEditor(m_Editor);
         m_Editor = nullptr;
     }
@@ -1474,12 +1484,14 @@ void CASE_tool::DeleteNode(ed::NodeId nodeId) {
         }
     }
 
-    // delete node links
+    // delete node links and pins
     for(Pin& pin: node->Inputs) {
         DeleteLinks(pin);
+        delete pin.PinBuffer;
     }
     for(Pin& pin: node->Outputs) {
         DeleteLinks(pin);
+        delete pin.PinBuffer;
     }
     //delete node id from outside node
     Node* outsideNode = FindNode(node->OutsideId);

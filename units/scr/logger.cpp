@@ -17,7 +17,3 @@ void Logger::addToFile() {
     ss << std::put_time(&tm, "%y%m%d_%H%M%S");  // Format as yyMMDDhhmmss
     fileManager->saveFile(path, fmt::format("{}.log", ss.str()), data);
 }
-
-Logger::~Logger() {
-    addToFile();
-}

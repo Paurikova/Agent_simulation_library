@@ -46,7 +46,7 @@ int main(int argc, char** argv) {
     aManager->registerAgent(aGraph);
 
     aManager->runSimulation();
-    delete logger;
+    logger->addToFile();
 
     return 0;
 }
