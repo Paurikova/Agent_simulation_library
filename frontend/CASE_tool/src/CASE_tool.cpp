@@ -411,6 +411,7 @@ Node* CASE_tool::SpawnReasoningAttributes(ed::NodeId outsideId)
 {
     m_Nodes.emplace_back(GetNextId(), "Attributes", NodeType::Group, outsideId, ImColor(255, 255, 255));
     m_Nodes.back().Size = ImVec2(280, 500);
+    AddInsideNodeId(outsideId, m_Nodes.back().ID);
     return &m_Nodes.back();
 }
 
@@ -427,7 +428,6 @@ Node* CASE_tool::SpawnIntelligentReasoningNode(ImVec2 position, ed::NodeId outsi
     Node* attributeNode = SpawnReasoningAttributes(reasoningId);
     position.x = position.x + 100;
     ed::SetNodePosition(attributeNode->ID, position);
-    AddInsideNodeId(reasoningId, attributeNode->ID);
     //create service node if service exists on level of responsibility
     Node* outsideNode = FindNode(outsideId);
     for (ed::NodeId id : outsideNode->InsideIds) {
@@ -459,7 +459,6 @@ Node* CASE_tool::SpawnReactiveReasoningNode(ImVec2 position, ed::NodeId outsideI
     Node* attributeNode = SpawnReasoningAttributes(reasoningId);
     position.x = position.x + 100;
     ed::SetNodePosition(attributeNode->ID, position);
-    AddInsideNodeId(reasoningId, attributeNode->ID);
     //create service node if service exists
     Node* outsideNode = FindNode(outsideId);
     for (ed::NodeId id : outsideNode->InsideIds) {
@@ -1450,8 +1449,8 @@ void CASE_tool::DeleteNode(ed::NodeId nodeId) {
     // if deleted node is responsible agent, remove the whole agent
     if (node->Type == NodeType::RespAgent) {
         ed::NodeId outsideId = node->OutsideId;
-        Node* outsideNode = FindNode(outsideId);
         DeleteNode(outsideId);
+        node = FindNode(nodeId);
         m_Inside = 0;
     }
 
@@ -1462,6 +1461,7 @@ void CASE_tool::DeleteNode(ed::NodeId nodeId) {
             ed::NodeId id = node->InsideIds.back();
             node->InsideIds.pop_back();
             DeleteNode(id);
+            node = FindNode(nodeId);
         }
     }
     // if node is Responsible Service, delete service node that is associated with this node
@@ -1470,6 +1470,7 @@ void CASE_tool::DeleteNode(ed::NodeId nodeId) {
             ed::NodeId id = node->AssociatedIds.back();
             node->AssociatedIds.pop_back();
             DeleteNode(id);
+            node = FindNode(nodeId);
         }
     }
 
@@ -1481,7 +1482,6 @@ void CASE_tool::DeleteNode(ed::NodeId nodeId) {
         DeleteLinks(pin);
     }
     //delete node id from outside node
-    node = FindNode(nodeId);
     Node* outsideNode = FindNode(node->OutsideId);
     if (!outsideNode->Deleted) {
         auto id = std::find_if(outsideNode->InsideIds.begin(), outsideNode->InsideIds.end(),
