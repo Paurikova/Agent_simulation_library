@@ -21,5 +21,8 @@ int main(int argc, char** argv) {
     // Run the simulation
     simCore->runSimulation();
     logger->addToFile();
+    delete logger;
+    delete manager
+    f
     return 0;
 }

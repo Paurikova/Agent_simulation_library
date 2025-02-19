@@ -23,4 +23,7 @@ public:
         birdState = new StateBird(static_cast<float>(rand() % 500), static_cast<float>(rand() % 500),
                               static_cast<float>(rand() % 2) * 2 - 1, static_cast<float>(rand() % 2) * 2 - 1);
     }
+    ~Bird() {
+        delete birdState;
+    }
 };

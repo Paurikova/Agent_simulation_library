@@ -33,5 +33,6 @@ public:
         shape.setOrigin(5, 5);  // Center the shape at its origin
         birds.resize(number_of_birds);
     };
+    ~Manager();
     void initMessage();
 };

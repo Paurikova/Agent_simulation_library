@@ -17,6 +17,9 @@ Agent::Agent(AgentId_t pId, Agent* pParent, AgentReasoning* pAgentReasoning) {
     registerAsChild(pParent);
 }
 
+Agent::~Agent() {
+}
+
 AgentId_t Agent::getId() const {
     return id;
 }

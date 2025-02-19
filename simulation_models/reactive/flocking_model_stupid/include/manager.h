@@ -21,6 +21,7 @@ private:
     sf::RenderWindow& window;
     sf::CircleShape shape;
 
+
     void normalize_velocity(float& velX, float& velY);
     float distance_to(float x1, float y1, float x2, float y2);
     void calculate_direction(float x1, float y1, float x2, float y2, float &dirX, float &dirY);
@@ -46,5 +47,6 @@ public:
         shape.setOrigin(5, 5);  // Center the shape at its origin
         birds.resize(number_of_birds);
     };
+    ~Manager();
     void initMessage();
 };

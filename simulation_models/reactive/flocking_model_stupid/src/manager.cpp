@@ -37,8 +37,9 @@ void Manager::startWindow(int pSender, int pReceiver, SimTime_t pExecTime, State
         // Handle events
         sf::Event event;
         while (window.pollEvent(event)) {
-            if (event.type == sf::Event::Closed)
+            if (event.type == sf::Event::Closed) {
                 window.close();
+            }
         }
         sendMessage(2, pExecTime, pReceiver, 2);
     }
@@ -172,4 +173,11 @@ void Manager::initMessage() {
     for (int i = 0; i < number_of_birds; i++) {
         sendMessage(1, 0, 1, i+2);
     }
+}
+
+Manager::~Manager() {
+    for(int i = 0; i < birds.size(); i++) {
+        delete birds[i];
+    }
+    birds.clear();
 }

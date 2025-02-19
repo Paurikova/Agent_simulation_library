@@ -17,6 +17,7 @@ void Bird::setPosition(int pSender, int pReceiver, SimTime_t pExecTime, State* s
     birdState->y = inputState->y;
     birdState->velX = inputState->velX;
     birdState->velY = inputState->velY;
+    delete state;
 
     sendMessage(4, pExecTime, pReceiver, pSender);
 }

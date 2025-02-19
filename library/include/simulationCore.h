@@ -29,6 +29,8 @@ public:
      */
     SimulationCore(AgentReasoning* pAgentReasoning, Logger* pLogger);
 
+    ~SimulationCore();
+
     /**
      * @brief Registers an agent with the simulation core.
      *
