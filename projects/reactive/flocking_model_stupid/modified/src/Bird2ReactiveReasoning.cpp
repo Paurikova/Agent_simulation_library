@@ -8,7 +8,7 @@ void Bird2ReactiveReasoning::setPosition(int pSender, int pReceiver, SimTime_t p
     birdState->y = inputState->y;
     birdState->velX = inputState->velX;
     birdState->velY = inputState->velY;
-
+    delete inputState;
     sendMessage(4, pExecTime, pReceiver, pSender);
 }
 void Bird2ReactiveReasoning::move(int pSender, int pReceiver, SimTime_t pExecTime, State* state) {

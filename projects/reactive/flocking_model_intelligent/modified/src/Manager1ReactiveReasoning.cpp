@@ -10,6 +10,14 @@ void Manager1ReactiveReasoning::initMessage() {
         sendMessage(2, 0, 1, i+2);
     }
 }
+
+Manager1ReactiveReasoning::~Manager1ReactiveReasoning() {
+    for(int i = 0; i < birds.size(); i++) {
+        delete birds[i];
+    }
+    birds.clear();
+}
+
 void Manager1ReactiveReasoning::draw(int pSender, int pReceiver, SimTime_t pExecTime, State* state) {
     //add your code
     logger->log(fmt::format("{}: draw\n", pReceiver));

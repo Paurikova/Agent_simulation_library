@@ -20,6 +20,14 @@ void Manager1ReactiveReasoning::calculate_direction(float x1, float y1, float x2
     dirX = dx / magnitude;
     dirY = dy / magnitude;
 }
+
+Manager1ReactiveReasoning::~Manager1ReactiveReasoning() {
+    for(int i = 0; i < birds.size(); i++) {
+        delete birds[i];
+    }
+    birds.clear();
+}
+
 void Manager1ReactiveReasoning::initMessage() {
     // Add implementation of initial message
     // Replace:
