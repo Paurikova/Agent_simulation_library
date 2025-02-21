@@ -41,4 +41,9 @@ public:
      * @param pConsole A boolean flag to determine where to log the messages (default is `true`).
      */
     Logger(bool pConsole = true) : console(pConsole) {};
+
+    /**
+     * @brief Destructor.
+     */
+    ~Logger() { delete fileManager;}
 };

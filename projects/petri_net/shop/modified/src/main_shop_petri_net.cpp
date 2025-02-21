@@ -10,60 +10,42 @@
 #include "configReader.h"
 
 int main(int argc, char** argv) {
-    StateShop* stateShop = new StateShop();
-    ConfigReader* configReader = new ConfigReader("/home/miska/CLionProjects/Agent_simulation_library/local.cfg");
-    // Create a flock of birds
-    Logger* logger = new Logger(false);
+    // Use smart pointers for automatic memory management
+    std::unique_ptr<StateShop> stateShop = std::make_unique<StateShop>();
+    std::unique_ptr<Logger> logger = std::make_unique<Logger>(false);
 
-    Manager1ReactiveReasoning* rManager = new Manager1ReactiveReasoning(20, logger);
-    SimulationCore* aManager = new SimulationCore(rManager, logger);
+    std::unique_ptr<Manager1ReactiveReasoning> rManager = std::make_unique<Manager1ReactiveReasoning>(20, logger.get());
+    std::unique_ptr<SimulationCore> aManager = std::make_unique<SimulationCore>(rManager.get(), logger.get());
 
-    Customer2ReactiveReasoning* rCustomer = new Customer2ReactiveReasoning(stateShop, logger);
-    Agent* aCustomer = new Agent(2, aManager, rCustomer);
-    aManager->registerAgent(aCustomer);
+    std::unique_ptr<Customer2ReactiveReasoning> rCustomer = std::make_unique<Customer2ReactiveReasoning>(stateShop.get(), logger.get());
+    std::unique_ptr<Agent> aCustomer = std::make_unique<Agent>(2, aManager.get(), rCustomer.get());
+    aManager->registerAgent(aCustomer.get());
 
-    Shop3PetriNetReasoning* rShop = new Shop3PetriNetReasoning(4, stateShop, logger);
-    Agent* aShop = new Agent(3, aManager, rShop);
-    aManager->registerAgent(aShop);
+    std::unique_ptr<Shop3PetriNetReasoning> rShop = std::make_unique<Shop3PetriNetReasoning>(4, stateShop.get(), logger.get());
+    std::unique_ptr<Agent> aShop = std::make_unique<Agent>(3, aManager.get(), rShop.get());
+    aManager->registerAgent(aShop.get());
 
-    Line5PetriNetReasoning* rLine = new Line5PetriNetReasoning(stateShop, logger);
-    Agent* aLine1 = new Agent(4, aManager, rLine);
-    Agent* aLine2 = new Agent(5, aManager, rLine);
-    aManager->registerAgent(aLine1);
-    aManager->registerAgent(aLine2);
+    std::unique_ptr<Line5PetriNetReasoning> rLine = std::make_unique<Line5PetriNetReasoning>(stateShop.get(), logger.get());
+    std::unique_ptr<Agent> aLine1 = std::make_unique<Agent>(4, aManager.get(), rLine.get());
+    std::unique_ptr<Agent> aLine2 = std::make_unique<Agent>(5, aManager.get(), rLine.get());
+    aManager->registerAgent(aLine1.get());
+    aManager->registerAgent(aLine2.get());
 
-    Cash6PetriNetReasoning* rCash1 = new Cash6PetriNetReasoning({100, 500, 900}, 500, 70, stateShop, logger);
-    Cash6PetriNetReasoning* rCash2 = new Cash6PetriNetReasoning({200, 600, 1000}, 500, 80, stateShop, logger);
-    Agent* aCash1 = new Agent(6, aManager, rCash1);
-    Agent* aCash2 = new Agent(7, aManager, rCash2);
-    aManager->registerAgent(aCash1);
-    aManager->registerAgent(aCash2);
+    std::unique_ptr<Cash6PetriNetReasoning> rCash1 = std::make_unique<Cash6PetriNetReasoning>(std::vector<int>{100, 500, 900}, 500, 80, stateShop.get(), logger.get());
+    std::unique_ptr<Cash6PetriNetReasoning> rCash2 = std::make_unique<Cash6PetriNetReasoning>(std::vector<int>{200, 600, 1000}, 500, 80, stateShop.get(), logger.get());
+    std::unique_ptr<Agent> aCash1 = std::make_unique<Agent>(6, aManager.get(), rCash1.get());
+    std::unique_ptr<Agent> aCash2 = std::make_unique<Agent>(7, aManager.get(), rCash2.get());
+    aManager->registerAgent(aCash1.get());
+    aManager->registerAgent(aCash2.get());
 
-    sf::RenderWindow window(sf::VideoMode(800, 600), "Flocking Simulation");
-    Graph4ReactiveReasoning* rGraph = new Graph4ReactiveReasoning(60, window, stateShop, logger);
-    Agent* aGraph = new Agent(8, aManager, rGraph);
-    aManager->registerAgent(aGraph);
+    sf::RenderWindow window(sf::VideoMode(800, 600), "Shop Simulation");
+    std::unique_ptr<Graph4ReactiveReasoning> rGraph = std::make_unique<Graph4ReactiveReasoning>(500, window, stateShop.get(), logger.get());
+    std::unique_ptr<Agent> aGraph = std::make_unique<Agent>(8, aManager.get(), rGraph.get());
+    aManager->registerAgent(aGraph.get());
 
     aManager->runSimulation();
     logger->addToFile();
 
-    delete aManager;
-    delete aCustomer;
-    delete aShop;
-    delete aLine1;
-    delete aLine2;
-    delete aCash1;
-    delete aCash2;
-    delete aGraph;
-
-    delete rManager;
-    delete rCustomer;
-    delete rLine;
-    delete rCash1;
-    delete rCash2;
-    delete rGraph;
-
-    delete logger;
-    delete stateShop;
+    // No need to manually delete anything, since smart pointers take care of that.
     return 0;
 }

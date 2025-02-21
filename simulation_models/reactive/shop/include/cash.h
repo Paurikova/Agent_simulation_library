@@ -20,6 +20,9 @@ private:
     void registerFunctions() override;
 public:
     Cash(std::vector<int> pBreaks, int pBreakLength, int pProcessLength, StateShop* pStateShop, Logger* pLogger) :
-    ReactiveReasoning(pLogger), breaks(pBreaks), breakLength(pBreakLength), processLength(pProcessLength),
+    ReactiveReasoning(pLogger), breaks(std::move(pBreaks)), breakLength(pBreakLength), processLength(pProcessLength),
     stateShop(pStateShop) {}
+    ~Cash() {
+        breaks.clear();
+    }
 };

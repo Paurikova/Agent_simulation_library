@@ -6,8 +6,6 @@
 
 int main(int argc, char** argv) {
     srand(time(0)); // Initialize random number generator
-
-    ConfigReader* configReader = new ConfigReader("/home/miska/CLionProjects/Agent_simulation_library/local.cfg");
     // Create a flock of birds
     Logger* logger = new Logger(false);
     int n_birds = 300;

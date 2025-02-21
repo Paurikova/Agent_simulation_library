@@ -57,28 +57,6 @@ void Graph4ReactiveReasoning::drawBarChart(std::vector<float>& data) {
 
         // Draw the bar
         window.draw(bar);
-
-        // Display the value on top of each bar
-        sf::Text text;
-        text.setString(std::to_string(data[i]));
-        text.setCharacterSize(20);
-        text.setFillColor(sf::Color::Black);
-
-        // Load the system font (DejaVu Sans as a default on Linux)
-        if (!text.getFont()) {
-            sf::Font font;
-            if (!font.loadFromFile("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf")) {
-                std::cerr << "Failed to load DejaVuSans font!" << std::endl;
-                return;
-            }
-            text.setFont(font);
-        }
-
-        // Set position for the value text above the bar
-        text.setPosition(bar.getPosition().x + barWidth / 2 - text.getLocalBounds().width / 2,
-                         bar.getPosition().y - text.getLocalBounds().height - 5);
-
-        window.draw(text);
     }
 
     // Draw X and Y axis lines
@@ -101,13 +79,6 @@ void Graph4ReactiveReasoning::drawBarChart(std::vector<float>& data) {
     title.setString("Shop simulation");
     title.setCharacterSize(30);
     title.setFillColor(sf::Color::Black);
-
-    // Use a system font (DejaVu Sans or fallback)
-    sf::Font font;
-    if (!font.loadFromFile("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf")) {
-        std::cerr << "Failed to load DejaVuSans font!" << std::endl;
-        return;
-    }
     title.setFont(font);
 
     title.setPosition(window.getSize().x / 2 - title.getLocalBounds().width / 2, 20.f);

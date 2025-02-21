@@ -7,6 +7,7 @@
 
 class Graph : public ReactiveReasoning {
 private:
+    sf::Font font;
     int showStep;
     sf::RenderWindow& window;
     StateShop* stateShop;
@@ -17,5 +18,10 @@ private:
     void drawBarChart(std::vector<float>& data);
 public:
     Graph(int showStep, sf::RenderWindow& window, StateShop* pStateShop, Logger* logger) : ReactiveReasoning(logger),
-    showStep(showStep), window(window), stateShop(pStateShop) {};
+    showStep(showStep), window(window), stateShop(pStateShop) {
+        // Load the font once during initialization
+        if (!font.loadFromFile("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf")) {
+            std::cerr << "Failed to load DejaVuSans font!" << std::endl;
+        }
+    };
 };
