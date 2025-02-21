@@ -17,6 +17,7 @@ NodeId_t Cash6PetriNetReasoning::processCustomer_fun386(int pSender, int pReceiv
     return -1;
 }
 NodeId_t Cash6PetriNetReasoning::acceptCustomerFun2_fun383(int pSender, int pReceiver, SimTime_t pExecTime, State* state) {
+    delete state;
     //add your code
     logger->log(fmt::format("{}: acceptCustomerFun2_fun383", pReceiver));
     // The cash accept customer
@@ -31,6 +32,7 @@ NodeId_t Cash6PetriNetReasoning::acceptCustomer_fun1_fun380(int pSender, int pRe
     logger->log(fmt::format("       Break [{}] [{}]\n", pReceiver, cashBreak->cashBreak));
     //accept customer after break
     sendMessage(2, cashBreak->cashBreak + breakLength, pReceiver, pSender);
+    delete state;
     return -1;
 }
 NodeId_t Cash6PetriNetReasoning::Condition_cond375(int pSender, int pReceiver, SimTime_t pExecTime, State* state) {
@@ -68,6 +70,7 @@ NodeId_t Cash6PetriNetReasoning::Condition_cond366(int pSender, int pReceiver, S
         return 371;
     } else {
         //add your code
+        delete state;
         return -1;
     }
 }

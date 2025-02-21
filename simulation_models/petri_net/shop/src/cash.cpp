@@ -6,6 +6,7 @@ NodeId_t Cash::acceptCustomer_cond1(int pSender, int pReceiver, SimTime_t pExecT
     if (!hasCustom) {
         return 4;
     }
+    delete state;
     return -1;
 }
 
@@ -46,11 +47,13 @@ NodeId_t Cash::acceptCustomer_fun1(int pSender, int pReceiver, SimTime_t pExecTi
     logger->log(fmt::format("       Break [{}] [{}]\n", pReceiver, cashBreak->cashBreak));
     //accept customer after break
     sendMessage(2, cashBreak->cashBreak + breakLength, pReceiver, pSender);
+    delete state;
     return -1;
 }
 
 //7
 NodeId_t Cash::acceptCustomer_fun2(int pSender, int pReceiver, SimTime_t pExecTime, State* state) {
+    delete state;
     logger->log(fmt::format("{}: acceptCustomer_fun2", pReceiver));
     // The cash accept customer
     sendMessage(2, pExecTime, pReceiver, pSender);

@@ -48,11 +48,6 @@ public:
     explicit Agent(AgentId_t pId, Agent* pParent, AgentReasoning* pAgentReasoning);
 
     /**
-     * @brief Destructor. Remove reasoning type.
-     */
-    virtual ~Agent();
-
-    /**
      * @brief Gets the ID of the agent.
      *
      * @return The ID of the agent.
@@ -152,4 +147,10 @@ public:
      * Method provides initialization of agent reasoning.
      */
     void initialization();
+
+    /**
+     * Get agent reasoning.
+     * @return pointer to agent reasoning
+     */
+    AgentReasoning* getReasoning();
 };

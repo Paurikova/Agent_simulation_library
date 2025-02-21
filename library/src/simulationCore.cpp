@@ -75,6 +75,17 @@ void SimulationCore::pushToMainSchedule(Message* pMessage) {
     mainSchedule->pushMessage(pMessage);
 }
 
+int SimulationCore::getAgentsSize() {
+    return agents.size();
+}
+
+Agent* SimulationCore::getAgent(int pos) {
+    if (pos < 0 || pos >= agents.size()) {
+        return nullptr;
+    }
+    return agents[pos];
+}
+
 void SimulationCore::initSimulation() {
     agentReasoning->initMessage();
     receiveAgentMessages(this);

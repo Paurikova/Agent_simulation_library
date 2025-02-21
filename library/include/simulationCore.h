@@ -28,8 +28,7 @@ public:
      * @param pLogger Logging to console and creating log file.
      */
     SimulationCore(AgentReasoning* pAgentReasoning, Logger* pLogger);
-
-    ~SimulationCore();
+    //~SimulationCore(){};
 
     /**
      * @brief Registers an agent with the simulation core.
@@ -60,6 +59,19 @@ public:
      * @param pMessage Pushed message.
      */
     void pushToMainSchedule(Message* pMessage);
+
+    /**
+     * @brief Get size of agent's array.
+     * @return Size
+     */
+    int getAgentsSize();
+
+    /**
+     * Get agent at position in array;
+     * @param pos position of agent in array
+     * @return pointer to agent
+     */
+    Agent* getAgent(int pos);
 
 private:
     /**

@@ -47,5 +47,23 @@ int main(int argc, char** argv) {
     aManager->runSimulation();
     logger->addToFile();
 
+    delete aManager;
+    delete aCustomer;
+    delete aShop;
+    delete aLine1;
+    delete aLine2;
+    delete aCash1;
+    delete aCash2;
+    delete aGraph;
+
+    delete rManager;
+    delete rCustomer;
+    delete rLine;
+    delete rCash1;
+    delete rCash2;
+    delete rGraph;
+
+    delete stateShop;
+    delete logger;
     return 0;
 }

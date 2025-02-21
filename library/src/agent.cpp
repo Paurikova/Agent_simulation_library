@@ -17,9 +17,6 @@ Agent::Agent(AgentId_t pId, Agent* pParent, AgentReasoning* pAgentReasoning) {
     registerAsChild(pParent);
 }
 
-Agent::~Agent() {
-}
-
 AgentId_t Agent::getId() const {
     return id;
 }
@@ -119,5 +116,9 @@ bool Agent::childExists(AgentId_t pChildId) {
 
 void Agent::initialization() {
     agentReasoning->initialization();
+}
+
+AgentReasoning* Agent::getReasoning() {
+    return agentReasoning;
 }
 

@@ -64,5 +64,6 @@ int main(int argc, char** argv) {
     delete rGraph;
 
     delete logger;
+    delete stateShop;
     return 0;
 }
