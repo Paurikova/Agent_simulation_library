@@ -152,7 +152,7 @@ public:
      *
      * Method provides initialization of agent reasoning.
      */
-    void initialization();
+    virtual void initialization();
 
     /**
      * Get agent reasoning.

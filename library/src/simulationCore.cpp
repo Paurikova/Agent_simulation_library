@@ -13,11 +13,10 @@ void SimulationCore::registerAgent(Agent* pAgent) {
     if (!pAgent) {
         throw std::runtime_error("Cannot register agent because the agent is nullptr.");
     }
-    if (!pAgent->getParent()) {
+    if (pAgent->getId() != SIMULATION_CORE_ID && !pAgent->getParent()) {
         throw std::runtime_error("Cannot register agent because the agent's parent is nullptr.");
     }
     agents[pAgent->getId()] = pAgent;
-    pAgent->initialization();
 }
 
 void SimulationCore::unregisterAgent(int agentId) {
@@ -30,6 +29,7 @@ void SimulationCore::unregisterAgent(int agentId) {
 
 void SimulationCore::runSimulation(int pNumberOfRepl, int pLengthOfRepl) {
     for (int i = 0; i < pNumberOfRepl; i++) {
+        initialization();
         //Run
         // Set to store IDs of agents that received messages
         std::unique_ptr<std::set<AgentId_t>> receivedAgentIds = std::make_unique<std::set<AgentId_t>>();
@@ -96,6 +96,9 @@ void SimulationCore::initialization() {
     while (msg) {
         delete msg;
         msg = mainSchedule->popMessage();
+    }
+    for (auto& [id, agent] : agents) {
+        agent->initialization();
     }
 }
 

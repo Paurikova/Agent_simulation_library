@@ -20,11 +20,11 @@ public:
     AgentManager(AgentReasoning* pAgentReasoning, Logger* pLogger);
 
     /**
-     * @brief Initializes the simulation environment.
+     * @brief Initializes the agent with the init messages.
      *
      * This method prepares necessary components before executing the simulation.
      */
-    void initSimulation();
+    void initialization() override;
 
     /**
      * @brief Runs the simulation for a specified number of replications and duration.

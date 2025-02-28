@@ -6,17 +6,13 @@ AgentManager::AgentManager(AgentReasoning *pAgentReasoning, Logger* pLogger) :
     simCore->registerAgent(this);
 }
 
-void AgentManager::initSimulation() {
-    for (int i = 0; i < simCore->getAgentsSize(); i++) {
-        simCore->getAgent(i)->initialization();
-    }
-    simCore->initialization();
+void AgentManager::initialization() {
+    Agent::initialization();
     agentReasoning->initMessage();
     simCore->receiveAgentMessages(this);
 }
 
 void AgentManager::runSimulation(int numberOfReplications, int lengthOfReplication) {
-    initSimulation();
     simCore->runSimulation(numberOfReplications, lengthOfReplication);
 }
 
