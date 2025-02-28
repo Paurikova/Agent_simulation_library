@@ -1,4 +1,4 @@
-//TODO incluce
+//TODO include
 #include "{}{}ReactiveReasoning.h"
 
 void {}{}ReactiveReasoning::registerFunctions() {{

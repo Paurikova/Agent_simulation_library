@@ -118,6 +118,15 @@ const std::string TEMP_REACTIVE_FILE_NAME = "ReactiveFileName";
 const std::string TEMP_PETRI_NET_FILE_NAME = "PetriNetFileName";
 const std::string TEMP_MAIN_INITMSG_DEF = "InitMessageDef";
 const std::string TEMP_MAIN_INITMSG_IMPL = "InitMessageImpl";
+const std::string TEMP_MAIN_INCLUDE = "MainInclude";
+const std::string TEMP_MAIN_REAS_DEF = "MainReasoningDef";
+const std::string TEMP_MAIN_MANAGER_DEF = "MainManagerDef";
+const std::string TEMP_MAIN_AGENT_DEF = "MainAgentDef";
+const std::string TEMP_MAIN_REGISTER_AGENT = "MainRegisterAgent";
 const std::string FILE_H = "File_h";
 const std::string FILE_CPP = "File_cpp";
 const std::string TEMPLATE = "Template";
+
+const std::string INCLUDE = "//TODO include";
+const std::string MANAGER = "//manager";
+const std::string AGENTS = "//agents";

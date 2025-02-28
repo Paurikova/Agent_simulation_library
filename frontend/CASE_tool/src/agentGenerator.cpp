@@ -20,12 +20,18 @@ AgentGenerator::AgentGenerator() {
 
     //main
     resources[MAIN][TEMPLATE] = fileManager->readJson(RESOURCE_MAIN_PATH, TEMPLATE_MAIN_JSON);
+    resources[MAIN][FILE_CPP] = fileManager->readFile(RESOURCE_MAIN_PATH, CLASS_MAIN_CPP);
 }
 
 void AgentGenerator::processJson(json data, std::string path) {
     // Extract relevant JSON objects
     json source = data[DATA];
     json hierarchy = data[HIERARCHY];
+
+    std::string main = resources[MAIN][FILE_CPP];
+    // Initialize positions for insertion points
+    size_t pos;
+    std::string valuesToInsert;
 
     // Initialize the starting ID for agents
     AgentId_t agentId;
@@ -45,7 +51,39 @@ void AgentGenerator::processJson(json data, std::string path) {
         if (value.contains(PETRI_NET)) {
             processPetriNet(value[PETRI_NET], path, agentId, agentName);
         }
+
+        //add agent to main file
+        //include
+        pos = main.find(INCLUDE);
+        std::string agent = agentName + std::to_string(agentId) + (value.contains(REACTIVE) ? REACTIVE_REASONING : PETRI_NET_REASONING);
+        valuesToInsert = fmt::format(resources[MAIN][TEMPLATE][TEMP_MAIN_INCLUDE], agent);
+        main.insert(pos + INCLUDE.length(), valuesToInsert);
+
+        if (agentId == MANAGER_ID) {
+            //manager reasoning
+            pos = main.find(MANAGER);
+            valuesToInsert = fmt::format(resources[MAIN][TEMPLATE][TEMP_MAIN_REAS_DEF], agent, agent, agent);
+            main.insert(pos + MANAGER.length(), valuesToInsert);
+            pos = pos + MANAGER.length() + valuesToInsert.length();
+            //manager
+            valuesToInsert = fmt::format(resources[MAIN][TEMPLATE][TEMP_MAIN_MANAGER_DEF], agent);
+            main.insert(pos, valuesToInsert);
+        } else {
+            //agent reasoning
+            pos = main.find(AGENTS);
+            valuesToInsert = fmt::format(resources[MAIN][TEMPLATE][TEMP_MAIN_REAS_DEF], agent, agent, agent);
+            main.insert(pos + AGENTS.length(), valuesToInsert);
+            pos = pos + AGENTS.length() + valuesToInsert.length();
+            //agent
+            valuesToInsert = fmt::format(resources[MAIN][TEMPLATE][TEMP_MAIN_AGENT_DEF], agent, agentId, agent);
+            main.insert(pos, valuesToInsert);
+            pos = pos + valuesToInsert.length();
+            //register agent
+            valuesToInsert = fmt::format(resources[MAIN][TEMPLATE][TEMP_MAIN_REGISTER_AGENT], agent);
+            main.insert(pos, valuesToInsert);
+        }
     }
+    fileManager->saveFile(path, "main.cpp", main);
 }
 
 void AgentGenerator::processReactive(json data, std::string path, AgentId_t agentId, std::string agentName) {

@@ -388,7 +388,7 @@ void CASE_tool::SetButtonLabel(Button* button, const char* label) {
 Node* CASE_tool::SpawnAgentNodeTree()
 {
     AgentId_t agentId = GetNextAgentId();
-    m_Nodes.emplace_back(GetNextId(), "Agent Relationships " + std::to_string(agentId), NodeType::ExtAgent, 0, ImColor(255, 255, 255), agentId);
+    m_Nodes.emplace_back(GetNextId(), "Agent " + std::to_string(agentId), NodeType::ExtAgent, 0, ImColor(255, 255, 255), agentId);
     m_Nodes.back().Inputs.emplace_back(GetNextId(), "", PinType::Relationship, NewTextBuffer(BufferType::Empty));
     m_Nodes.back().Outputs.emplace_back(GetNextId(), "", PinType::Relationship, NewTextBuffer(BufferType::Empty));
     BuildNode(&m_Nodes.back());
@@ -399,7 +399,8 @@ Node* CASE_tool::SpawnAgentNodeTree()
 
 Node* CASE_tool::SpawnAgentNodeResponsibilities(ed::NodeId outsideId)
 {
-    m_Nodes.emplace_back(GetNextId(), "Agent Responsibilities", NodeType::RespAgent, outsideId, ImColor(255, 255, 255));
+    Node* node = FindNode(outsideId);
+    m_Nodes.emplace_back(GetNextId(), "Responsibilities of Agent " + std::to_string(node->AgentId), NodeType::RespAgent, outsideId, ImColor(255, 255, 255));
     m_Nodes.back().Inputs.emplace_back(GetNextId(), "Reasoning", PinType::Reasoning, NewTextBuffer(BufferType::Empty));
     m_Nodes.back().Outputs.emplace_back(GetNextId(), "Services", PinType::Service, NewTextBuffer(BufferType::Empty));
     BuildNode(&m_Nodes.back());
@@ -1395,16 +1396,16 @@ void CASE_tool::OnFrame(float deltaTime) {
                     newNode = SpawnAttributeNode(node->ID);
                 }
             }
-        }
-        // in each level can user made step back - step to higher level
-        if (ImGui::MenuItem("Back")) {
-            //step back
-            if (m_Inside.Get() != 0) {
-                Node *nodeInside = FindNode(m_Inside);
-                if (nodeInside->Type != NodeType::ExtAgent)
-                    m_Inside = (FindNode(nodeInside->OutsideId))->ID;
-                else
-                    m_Inside = 0;
+            // in each level can user made step back - step to higher level
+            if (ImGui::MenuItem("Back")) {
+                //step back
+                if (m_Inside.Get() != 0) {
+                    Node *nodeInside = FindNode(m_Inside);
+                    if (nodeInside->Type != NodeType::ExtAgent)
+                        m_Inside = (FindNode(nodeInside->OutsideId))->ID;
+                    else
+                        m_Inside = 0;
+                }
             }
         }
 
@@ -1495,7 +1496,7 @@ void CASE_tool::DeleteNode(ed::NodeId nodeId) {
     }
     //delete node id from outside node
     Node* outsideNode = FindNode(node->OutsideId);
-    if (!outsideNode->Deleted) {
+    if (outsideNode && !outsideNode->Deleted) {
         auto id = std::find_if(outsideNode->InsideIds.begin(), outsideNode->InsideIds.end(),
                                [nodeId](auto &insideId) { return insideId == nodeId; });
         if (id != outsideNode->InsideIds.end())
@@ -1843,9 +1844,9 @@ void CASE_tool::ShowProjectEditor(bool* show) {
         ImGui::End();
         return;
     }
-    static char strFileName[128] = "Input";
+    static char strFileName[128] = "model";
     ImGui::InputText("File Name", strFileName, IM_ARRAYSIZE(strFileName));
-    static char strFilePath[128] = "Input";
+    static char strFilePath[128] = "/home";
     ImGui::InputText("File Path", strFilePath, IM_ARRAYSIZE(strFilePath));
     try {
         if (ImGui::Button("Load")) {
@@ -1869,7 +1870,7 @@ void CASE_tool::ShowGenerateCodeEditor(bool* show) {
         ImGui::End();
         return;
     }
-    static char strFilePath[128] = "Input";
+    static char strFilePath[128] = "/home";
     ImGui::InputText("File Path", strFilePath, IM_ARRAYSIZE(strFilePath));
     try {
         if (ImGui::Button("Generate")) {

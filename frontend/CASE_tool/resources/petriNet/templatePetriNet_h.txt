@@ -1,5 +1,5 @@
 #pragma once
-//TODO incluce
+//TODO include
 #include "library/include/petriNetReasoning.h"
 
 class {}{}PetriNetReasoning : public PetriNetReasoning {{

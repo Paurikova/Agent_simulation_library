@@ -1,4 +1,4 @@
-//TODO incluce
+//TODO include
 #include "{}{}PetriNetReasoning.h"
 
 void {}{}PetriNetReasoning::registerNodes() {{

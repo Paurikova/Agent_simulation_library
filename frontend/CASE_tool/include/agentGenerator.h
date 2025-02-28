@@ -36,7 +36,8 @@ private:
     const std::string RESOURCE_PETRINET_PATH = RESOURCE_PATH + "/resources/petriNet"; /**< Default path to resources. */
 
     // main templates
-    const std::string TEMPLATE_MAIN_JSON = "templatesMain.json"; /**< Default template JSON file name. */
+    const std::string TEMPLATE_MAIN_JSON = "templateMain.json"; /**< Default template JSON file name. */
+    const std::string CLASS_MAIN_CPP = "templateMain_cpp.txt"; /**< Default output main JSON file name. */
     const std::string RESOURCE_MAIN_PATH = RESOURCE_PATH + "/resources"; /**< Default path to resources. */
 
     std::unique_ptr<FileManager> fileManager;

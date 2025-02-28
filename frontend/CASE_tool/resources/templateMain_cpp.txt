@@ -1,0 +1,11 @@
+//TODO include
+#include "library/include/agentManager.h"
+
+int main(int argc, char** argv) {{
+    std::unique_ptr<Logger> logger = std::make_unique<Logger>(false);
+    //manager
+    //agents
+    aManager->runSimulation(1, -1);
+    logger->addToFile();
+    return 0;
+}}
