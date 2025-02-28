@@ -19,6 +19,15 @@ Message* AgentReasoning::getTopOutboxMessage() {
     return topMessage;
 }
 
+void AgentReasoning::initialization() {
+    Message* msg = outBox->back();
+    while (msg) {
+        outBox->pop_back();
+        delete msg;
+        msg = outBox->back();
+    }
+}
+
 void AgentReasoning::initMessage() {
     // this function is defined only for simulation core reasoning
 }

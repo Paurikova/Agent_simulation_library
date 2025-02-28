@@ -55,6 +55,12 @@ public:
     AgentId_t getId() const;
 
     /**
+     * @brief Get child of agent;
+     * @return hash map of childs of agent
+     */
+    std::unordered_map<AgentId_t, Agent*> getChilds();
+
+    /**
      * @brief Receives a message and push it into agent's schedule.
      *
      * @param msg pMsg message to be received.

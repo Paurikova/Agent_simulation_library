@@ -42,7 +42,9 @@ public:
      *
      * @param pServiceId The service ID.
      * @param pSender    The sender ID.
+     * @param pReceiver  The receiver ID.
      * @param pExecTime  The time of process execution.
+     * @param state      Sending state.
      */
     virtual void process(ServiceId_t pServiceId, AgentId_t pSender, AgentId_t  pReceiver, SimTime_t pExecTime, State* state) = 0;
 

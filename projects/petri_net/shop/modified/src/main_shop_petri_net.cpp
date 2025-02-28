@@ -1,4 +1,4 @@
-#include "../../../../../library/include/simulationCore.h"
+#include "../../../../../library/include/agentManager.h"
 
 #include "../include/Manager1ReactiveReasoning.h"
 #include "../include/Customer2ReactiveReasoning.h"
@@ -15,7 +15,7 @@ int main(int argc, char** argv) {
     std::unique_ptr<Logger> logger = std::make_unique<Logger>(false);
 
     std::unique_ptr<Manager1ReactiveReasoning> rManager = std::make_unique<Manager1ReactiveReasoning>(20, logger.get());
-    std::unique_ptr<SimulationCore> aManager = std::make_unique<SimulationCore>(rManager.get(), logger.get());
+    std::unique_ptr<AgentManager> aManager = std::make_unique<AgentManager>(rManager.get(), logger.get());
 
     std::unique_ptr<Customer2ReactiveReasoning> rCustomer = std::make_unique<Customer2ReactiveReasoning>(stateShop.get(), logger.get());
     std::unique_ptr<Agent> aCustomer = std::make_unique<Agent>(2, aManager.get(), rCustomer.get());
@@ -43,7 +43,7 @@ int main(int argc, char** argv) {
     std::unique_ptr<Agent> aGraph = std::make_unique<Agent>(8, aManager.get(), rGraph.get());
     aManager->registerAgent(aGraph.get());
 
-    aManager->runSimulation();
+    aManager->runSimulation(1, -1);
     logger->addToFile();
 
     // No need to manually delete anything, since smart pointers take care of that.

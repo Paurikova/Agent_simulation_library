@@ -3,10 +3,8 @@
 
 //ID = 1
 //parent = nullptr
-SimulationCore::SimulationCore(AgentReasoning* pAgentReasoning, Logger* pLogger) :
-    Agent(SIMULATION_CORE_ID, nullptr, pAgentReasoning), logger(pLogger) {
+SimulationCore::SimulationCore(Logger* pLogger) : logger(pLogger) {
     currTime = -1;
-    registerAgent(this);
     mainSchedule = std::make_unique<Schedule>();
 }
 
@@ -14,6 +12,9 @@ void SimulationCore::registerAgent(Agent* pAgent) {
     //Note: The registration of an agent as a parent-child is done when the agent is created.
     if (!pAgent) {
         throw std::runtime_error("Cannot register agent because the agent is nullptr.");
+    }
+    if (!pAgent->getParent()) {
+        throw std::runtime_error("Cannot register agent because the agent's parent is nullptr.");
     }
     agents[pAgent->getId()] = pAgent;
     pAgent->initialization();
@@ -27,41 +28,45 @@ void SimulationCore::unregisterAgent(int agentId) {
     agents.erase(agentId);
 }
 
-void SimulationCore::runSimulation() {
-    initSimulation();
-    //Run
-    // Set to store IDs of agents that received messages
-    std::unique_ptr<std::set<AgentId_t>> receivedAgentIds = std::make_unique<std::set<AgentId_t>>();
-    // Get the next scheduled message
-    Message* message = mainSchedule->popMessage();
-    // Loop until there are no more messages scheduled for the current time
-    int last_exec_time = -1;
-    while (message) {
-        if (message->execTime > last_exec_time) {
-            logger->log(fmt::format("Exec time: {}\n", message->execTime));
-            last_exec_time = message->execTime;
-        }
-        currTime = message->execTime;
+void SimulationCore::runSimulation(int numberOfReplications, int lengthOfReplication) {
+    for (int i = 0; i < numberOfReplications; i++) {
+        //Run
+        // Set to store IDs of agents that received messages
+        std::unique_ptr<std::set<AgentId_t>> receivedAgentIds = std::make_unique<std::set<AgentId_t>>();
+        // Get the next scheduled message
+        Message *message = mainSchedule->popMessage();
+        // Loop until there are no more messages scheduled for the current time
+        int last_exec_time = -1;
         while (message) {
-            if (not agentExists(message->receiver)) {
-                throw std::runtime_error("No agent is registered under ID " + std::to_string(message->receiver) + ".");
+            if (message->execTime > last_exec_time) {
+                logger->log(fmt::format("Exec time: {}\n", message->execTime));
+                last_exec_time = message->execTime;
             }
-            receivedAgentIds->insert(message->receiver);
-            // Retrieve the receiver agent and deliver the message
-            Agent *agent = agents[message->receiver];
-            agent->receiveMessage(message);
-            message = mainSchedule->popMessage(currTime);
-        }
+            currTime = message->execTime;
+            if (lengthOfReplication > 0 && currTime > lengthOfReplication) {
+                break;
+            }
+            while (message) {
+                if (not agentExists(message->receiver)) {
+                    throw std::runtime_error("No agent is registered under ID " + std::to_string(message->receiver) + ".");
+                }
+                receivedAgentIds->insert(message->receiver);
+                // Retrieve the receiver agent and deliver the message
+                Agent *agent = agents[message->receiver];
+                agent->receiveMessage(message);
+                message = mainSchedule->popMessage(currTime);
+            }
 
-        // Execute agents that received messages and process their outbound messages
-        for (AgentId_t id: *receivedAgentIds) {
-            Agent *agent = agents[id];
-            agent->execute();
-            receiveAgentMessages(agent);
-        }
-        receivedAgentIds->clear();
+            // Execute agents that received messages and process their outbound messages
+            for (AgentId_t id: *receivedAgentIds) {
+                Agent *agent = agents[id];
+                agent->execute();
+                receiveAgentMessages(agent);
+            }
+            receivedAgentIds->clear();
 
-        message = mainSchedule->popMessage();
+            message = mainSchedule->popMessage();
+        }
     }
 }
 
@@ -86,9 +91,12 @@ Agent* SimulationCore::getAgent(int pos) {
     return agents[pos];
 }
 
-void SimulationCore::initSimulation() {
-    agentReasoning->initMessage();
-    receiveAgentMessages(this);
+void SimulationCore::initialization() {
+    Message* msg = mainSchedule->popMessage();
+    while (msg) {
+        delete msg;
+        msg = mainSchedule->popMessage();
+    }
 }
 
 void SimulationCore::receiveAgentMessages(Agent* agent) {
@@ -113,7 +121,19 @@ void SimulationCore::addReceiver(Message* pMessage) {
     Agent* sender = agents[pMessage->sender];
     AgentId_t receiverId = -1;
     AgentId_t controlled = -1;
+
+    // Create a set to track visited agents
+    std::unordered_set<AgentId_t> visitedAgents;
+
     do {
+        // Check if the sender has already been visited (detect loop)
+        if (visitedAgents.find(sender->getId()) != visitedAgents.end()) {
+            throw std::runtime_error("Detected a loop in the agent hierarchy.");
+        }
+
+        // Add the current sender to the visited set
+        visitedAgents.insert(sender->getId());
+
         // Search for an agent ID providing the required service
         receiverId = sender->getAgentIdProvidedService(pMessage->serviceId, sender->getId(), controlled);
         controlled = sender->getId();

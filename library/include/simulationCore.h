@@ -14,7 +14,7 @@
  * This class manages the execution of the simulation and interaction
  * between different agents.
  */
-class SimulationCore : public Agent{
+class SimulationCore {
 private:
     SimTime_t currTime; /**< Current simulation time. */
     std::unordered_map<AgentId_t, Agent*> agents; /**< Map of agent IDs to agent objects. */
@@ -27,7 +27,7 @@ public:
      * @param pAgentReasoning The reasoning of the agent.
      * @param pLogger Logging to console and creating log file.
      */
-    SimulationCore(AgentReasoning* pAgentReasoning, Logger* pLogger);
+    SimulationCore(Logger* pLogger);
     //~SimulationCore(){};
 
     /**
@@ -52,7 +52,7 @@ public:
      *
      * This function executes the simulation until the end time is reached.
      */
-    void runSimulation();
+    void runSimulation(int numberOfReplications, int lengthOfReplication);
 
     /**
      * @brief Push messsage to simulation core schedule.
@@ -73,14 +73,6 @@ public:
      */
     Agent* getAgent(int pos);
 
-private:
-    /**
-     * @brief Initializes the simulation.
-     *
-     * This function performs initialization tasks before starting the simulation.
-     */
-    void initSimulation();
-
     /**
     * @brief Receives messages from agents.
     *
@@ -90,6 +82,14 @@ private:
     */
     void receiveAgentMessages(Agent* pAgent);
 
+    /**
+     * @brief Initializes the simulation.
+     *
+     * This function performs initialization tasks before starting the simulation.
+     */
+    void initialization();
+
+private:
     /**
      * @brief Checks if an agent with the specified ID exists in the simulation core.
      *

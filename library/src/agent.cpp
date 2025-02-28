@@ -21,6 +21,10 @@ AgentId_t Agent::getId() const {
     return id;
 }
 
+std::unordered_map<AgentId_t, Agent*> Agent::getChilds() {
+    return childs;
+}
+
 void Agent::receiveMessage(Message* pMsg) {
     schedule->pushMessage(pMsg);
 }
@@ -86,28 +90,32 @@ void Agent::setParent(Agent* pPrent) {
 
 AgentId_t Agent::getAgentIdProvidedService(ServiceId_t pServiceId, AgentId_t pSenderId, AgentId_t pControlled) {
     // Search among the agent's child
-    for (const auto& pair : childs) {
-        Agent* child = pair.second;
+    std::queue<Agent*> queue;
+    for (const auto &pair: childs) {
+        Agent *child = pair.second;
         if (child->getId() == pSenderId || child->getId() == pControlled) {
             continue;
         }
         if (child->providedService(pServiceId)) {
             return child->getId();
         }
+        queue.push(child);
     }
 
-    // Recursively search among the children of each agent
-    for (const auto& pair : childs) {
-        Agent* child = pair.second;
-        if (child->getId() == pSenderId || child->getId() == pControlled) {
-            continue;
+    // breadth-first search among agent's childs
+    while (!queue.empty()) {
+        Agent* controlledAgent = queue.front();
+        queue.pop();
+        for (const auto &pair: controlledAgent->getChilds()) {
+            Agent *child = pair.second;
+            if (child->providedService(pServiceId)) {
+                return child->getId();
+            }
+            queue.push(child);
         }
-        AgentId_t id = child->getAgentIdProvidedService(pServiceId, pSenderId, pControlled);
-        if (id != -1) {
-            return id;
-        }
-    }
-    return -1;
+    } while (!queue.empty());
+
+    return -1; // no agent provided the service in subhierarchy
 }
 
 bool Agent::childExists(AgentId_t pChildId) {

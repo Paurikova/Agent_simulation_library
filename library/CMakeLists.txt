@@ -6,6 +6,7 @@ add_library(Agent_library STATIC
         src/petriNetReasoning.cpp
         src/reactiveReasoning.cpp
         src/agentReasoning.cpp
+        src/agentManager.cpp
 )
 
 target_include_directories(Agent_library PUBLIC include)
