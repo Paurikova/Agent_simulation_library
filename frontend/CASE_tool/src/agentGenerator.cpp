@@ -75,11 +75,11 @@ void AgentGenerator::processJson(json data, std::string path) {
             main.insert(pos + AGENTS.length(), valuesToInsert);
             pos = pos + AGENTS.length() + valuesToInsert.length();
             //agent
-            valuesToInsert = fmt::format(resources[MAIN][TEMPLATE][TEMP_MAIN_AGENT_DEF], agent, agentId, agent);
+            valuesToInsert = fmt::format(resources[MAIN][TEMPLATE][TEMP_MAIN_AGENT_DEF], agentName + std::to_string(agentId), agentId, agent);
             main.insert(pos, valuesToInsert);
             pos = pos + valuesToInsert.length();
             //register agent
-            valuesToInsert = fmt::format(resources[MAIN][TEMPLATE][TEMP_MAIN_REGISTER_AGENT], agent);
+            valuesToInsert = fmt::format(resources[MAIN][TEMPLATE][TEMP_MAIN_REGISTER_AGENT], agentName + std::to_string(agentId));
             main.insert(pos, valuesToInsert);
         }
     }
