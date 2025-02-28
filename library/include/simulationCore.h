@@ -28,7 +28,6 @@ public:
      * @param pLogger Logging to console and creating log file.
      */
     SimulationCore(Logger* pLogger);
-    //~SimulationCore(){};
 
     /**
      * @brief Registers an agent with the simulation core.
@@ -51,8 +50,11 @@ public:
      * @brief Runs the simulation.
      *
      * This function executes the simulation until the end time is reached.
+     *
+     * @param pNumberOfRepl Number of replications.
+     * @param pLengthOfRepl Length of one replication.
      */
-    void runSimulation(int numberOfReplications, int lengthOfReplication);
+    void runSimulation(int pNumberOfRepl, int pLengthOfRepl);
 
     /**
      * @brief Push messsage to simulation core schedule.

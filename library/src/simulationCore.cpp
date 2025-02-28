@@ -28,8 +28,8 @@ void SimulationCore::unregisterAgent(int agentId) {
     agents.erase(agentId);
 }
 
-void SimulationCore::runSimulation(int numberOfReplications, int lengthOfReplication) {
-    for (int i = 0; i < numberOfReplications; i++) {
+void SimulationCore::runSimulation(int pNumberOfRepl, int pLengthOfRepl) {
+    for (int i = 0; i < pNumberOfRepl; i++) {
         //Run
         // Set to store IDs of agents that received messages
         std::unique_ptr<std::set<AgentId_t>> receivedAgentIds = std::make_unique<std::set<AgentId_t>>();
@@ -43,7 +43,7 @@ void SimulationCore::runSimulation(int numberOfReplications, int lengthOfReplica
                 last_exec_time = message->execTime;
             }
             currTime = message->execTime;
-            if (lengthOfReplication > 0 && currTime > lengthOfReplication) {
+            if (pLengthOfRepl > 0 && currTime > pLengthOfRepl) {
                 break;
             }
             while (message) {
