@@ -83,6 +83,7 @@ struct Node;
 struct TextBuffer {
     BufferType Type;
     char Buffer[128];
+    bool deleted  = false;
     explicit TextBuffer(BufferType type);
     // Deserialize
     explicit TextBuffer(const json& data);

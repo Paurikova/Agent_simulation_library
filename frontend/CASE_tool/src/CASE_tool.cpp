@@ -1488,11 +1488,13 @@ void CASE_tool::DeleteNode(ed::NodeId nodeId) {
     // delete node links and pins
     for(Pin& pin: node->Inputs) {
         DeleteLinks(pin);
-        delete pin.PinBuffer;
+        if (!pin.PinBuffer->deleted) delete pin.PinBuffer;
+        pin.PinBuffer->deleted = true;
     }
     for(Pin& pin: node->Outputs) {
         DeleteLinks(pin);
-        delete pin.PinBuffer;
+        if (!pin.PinBuffer->deleted) delete pin.PinBuffer;
+        pin.PinBuffer->deleted = true;
     }
     //delete node id from outside node
     Node* outsideNode = FindNode(node->OutsideId);
