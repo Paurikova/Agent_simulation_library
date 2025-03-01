@@ -13,14 +13,14 @@ int main(int argc, char** argv) {
     std::unique_ptr<StateShop> stateShop = std::make_unique<StateShop>();
     std::unique_ptr<Logger> logger = std::make_unique<Logger>(false);
 
-    std::unique_ptr<Manager1ReactiveReasoning> rManager = std::make_unique<Manager1ReactiveReasoning>(20, logger.get());
+    std::unique_ptr<Manager1ReactiveReasoning> rManager = std::make_unique<Manager1ReactiveReasoning>(10, logger.get());
     std::unique_ptr<AgentManager> aManager = std::make_unique<AgentManager>(rManager.get(), logger.get());
 
     std::unique_ptr<Customer2ReactiveReasoning> rCustomer = std::make_unique<Customer2ReactiveReasoning>(stateShop.get(), logger.get());
     std::unique_ptr<Agent> aCustomer = std::make_unique<Agent>(2, aManager.get(), rCustomer.get());
     aManager->registerAgent(aCustomer.get());
 
-    std::unique_ptr<Shop3ReactiveReasoning> rShop = std::make_unique<Shop3ReactiveReasoning>(4, stateShop.get(), logger.get());
+    std::unique_ptr<Shop3ReactiveReasoning> rShop = std::make_unique<Shop3ReactiveReasoning>(15, stateShop.get(), logger.get());
     std::unique_ptr<Agent> aShop = std::make_unique<Agent>(3, aManager.get(), rShop.get());
     aManager->registerAgent(aShop.get());
 
@@ -30,8 +30,8 @@ int main(int argc, char** argv) {
     aManager->registerAgent(aLine1.get());
     aManager->registerAgent(aLine2.get());
 
-    std::unique_ptr<Cash6ReactiveReasoning> rCash1 = std::make_unique<Cash6ReactiveReasoning>(std::vector<int>{100, 500, 900}, 500, 80, stateShop.get(), logger.get());
-    std::unique_ptr<Cash6ReactiveReasoning> rCash2 = std::make_unique<Cash6ReactiveReasoning>(std::vector<int>{200, 600, 1000}, 500, 80, stateShop.get(), logger.get());
+    std::unique_ptr<Cash6ReactiveReasoning> rCash1 = std::make_unique<Cash6ReactiveReasoning>(std::vector<int>{100, 500, 900}, 50, 30, stateShop.get(), logger.get());
+    std::unique_ptr<Cash6ReactiveReasoning> rCash2 = std::make_unique<Cash6ReactiveReasoning>(std::vector<int>{200, 600, 1000}, 50, 25, stateShop.get(), logger.get());
     std::unique_ptr<Agent> aCash1 = std::make_unique<Agent>(6, aManager.get(), rCash1.get());
     std::unique_ptr<Agent> aCash2 = std::make_unique<Agent>(7, aManager.get(), rCash2.get());
     aManager->registerAgent(aCash1.get());

@@ -12,7 +12,8 @@ void Line::addToLine(int pSender, int pReceiver, SimTime_t pExecTime, State* sta
 
 void Line::removeFromLine(int pSender, int pReceiver, SimTime_t pExecTime, State* state) {
     logger->log(fmt::format("{}: removeFromLine", pReceiver));
-    stateShop->totalCustTimeInLine[pReceiver] = pExecTime - stateShop->custInLines[pReceiver].front();
+    stateShop->totalCustTimeInLine[pReceiver] += pExecTime - stateShop->custInLines[pReceiver].front();
+    std::cout << stateShop->totalCustTimeInLine[pReceiver] << std::endl;
     stateShop->totalCustInLine[pReceiver]++;
     stateShop->custInLines[pReceiver].pop();
     logger->log(fmt::format("  [{}]\n", stateShop->custInLines[pReceiver].size()));

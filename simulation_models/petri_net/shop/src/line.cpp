@@ -21,7 +21,7 @@ NodeId_t Line::addToLine_fun1(int pSender, int pReceiver, SimTime_t pExecTime, S
 //2
 NodeId_t Line::removeFromLine(int pSender, int pReceiver, SimTime_t pExecTime, State* state) {
     logger->log(fmt::format("{}: removeFromLine", pReceiver));
-    stateShop->totalCustTimeInLine[pReceiver] = pExecTime - stateShop->custInLines[pReceiver].front();
+    stateShop->totalCustTimeInLine[pReceiver] += pExecTime - stateShop->custInLines[pReceiver].front();
     stateShop->totalCustInLine[pReceiver]++;
     stateShop->custInLines[pReceiver].pop();
     logger->log(fmt::format("  [{}]\n", stateShop->custInLines[pReceiver].size()));

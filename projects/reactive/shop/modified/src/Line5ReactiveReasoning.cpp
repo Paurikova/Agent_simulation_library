@@ -15,7 +15,7 @@ void Line5ReactiveReasoning::removeFromShop(int pSender, int pReceiver, SimTime_
 void Line5ReactiveReasoning::removeFromLine(int pSender, int pReceiver, SimTime_t pExecTime, State* state) {
     //add your code
     logger->log(fmt::format("{}: removeFromLine", pReceiver));
-    stateShop->totalCustTimeInLine[pReceiver] = pExecTime - stateShop->custInLines[pReceiver].front();
+    stateShop->totalCustTimeInLine[pReceiver] += pExecTime - stateShop->custInLines[pReceiver].front();
     stateShop->totalCustInLine[pReceiver]++;
     stateShop->custInLines[pReceiver].pop();
     logger->log(fmt::format("  [{}]\n", stateShop->custInLines[pReceiver].size()));

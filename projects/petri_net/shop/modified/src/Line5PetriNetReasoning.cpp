@@ -24,7 +24,7 @@ NodeId_t Line5PetriNetReasoning::removeFromShop_fun355(int pSender, int pReceive
 NodeId_t Line5PetriNetReasoning::removeFromLine_fun352(int pSender, int pReceiver, SimTime_t pExecTime, State* state) {
     //add your code
     logger->log(fmt::format("{}: removeFromLine_fun352", pReceiver));
-    stateShop->totalCustTimeInLine[pReceiver] = pExecTime - stateShop->custInLines[pReceiver].front();
+    stateShop->totalCustTimeInLine[pReceiver] += pExecTime - stateShop->custInLines[pReceiver].front();
     stateShop->totalCustInLine[pReceiver]++;
     stateShop->custInLines[pReceiver].pop();
     logger->log(fmt::format("  [{}]\n", stateShop->custInLines[pReceiver].size()));
