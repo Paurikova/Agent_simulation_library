@@ -3,7 +3,7 @@
 #include <iostream>
 #include <vector>
 #include <functional>
-#include <unordered_map>
+#include <map>
 #include <memory>
 
 #include "types_library.h"
@@ -20,7 +20,7 @@ class Agent {
 private:
     AgentId_t id; /**< The unique identifier of the agent. */
     Agent* parent; /**< The pointer to agent's parent. */
-    std::unordered_map<AgentId_t, Agent*> childs; /**< The map of pointers to agent's childs. */
+    std::map<AgentId_t, Agent*> sons; /**< The map of pointers to agent's sons. */
     SimTime_t currTime; /**< The current time in the simulation. */
     std::unique_ptr<Schedule> schedule ; /**< Schedule for managing agent's tasks. */
 protected:
@@ -55,10 +55,10 @@ public:
     AgentId_t getId() const;
 
     /**
-     * @brief Get child of agent;
-     * @return hash map of childs of agent
+     * @brief Get son of agent;
+     * @return hash map of sons of agent
      */
-    std::unordered_map<AgentId_t, Agent*> getChilds();
+    std::map<AgentId_t, Agent*> getSons();
 
     /**
      * @brief Receives a message and push it into agent's schedule.

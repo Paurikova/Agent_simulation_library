@@ -15,8 +15,8 @@
  */
 class PetriNetReasoning : public AgentReasoning {
 private:
-    std::unordered_map<ServiceId_t, NodeId_t> serviceToNode; /**< Maps service IDs to node IDs. */
-    std::unordered_map<NodeId_t, ExecNode_t> nodeToFunct; /**< Maps node IDs to execution functions. */
+    std::map<ServiceId_t, NodeId_t> serviceToNode; /**< Maps service IDs to node IDs. */
+    std::map<NodeId_t, ExecNode_t> nodeToFunct; /**< Maps node IDs to execution functions. */
 
 protected:
     AgentId_t sender; /**< ID of the sender agent on the message. */

@@ -21,8 +21,8 @@ AgentId_t Agent::getId() const {
     return id;
 }
 
-std::unordered_map<AgentId_t, Agent*> Agent::getChilds() {
-    return childs;
+std::map<AgentId_t, Agent*> Agent::getSons() {
+    return sons;
 }
 
 void Agent::receiveMessage(Message* pMsg) {
@@ -60,7 +60,7 @@ void Agent::registerChild(Agent* pChild) {
         throw std::runtime_error("Agent with ID " + std::to_string(pChild->getId()) +
         " is already registered as child of agent with ID " + std::to_string(id) + ".");
     }
-    childs[pChild->getId()] = pChild;
+    sons[pChild->getId()] = pChild;
 }
 
 void Agent::unregisterAsChild() {
@@ -77,7 +77,7 @@ void Agent::unregisterChild(AgentId_t pChildId) {
         throw std::runtime_error("Agent with ID " + std::to_string(pChildId) + " is not child of agent with ID " + std::to_string(id) + ".");
     }
     // Erase agent from child map
-    childs.erase(pChildId);
+    sons.erase(pChildId);
 }
 
 Agent* Agent::getParent() {
@@ -91,7 +91,7 @@ void Agent::setParent(Agent* pPrent) {
 AgentId_t Agent::getAgentIdProvidedService(ServiceId_t pServiceId, AgentId_t pSenderId, AgentId_t pControlled) {
     // Search among the agent's child
     std::queue<Agent*> queue;
-    for (const auto &pair: childs) {
+    for (const auto &pair: sons) {
         Agent *child = pair.second;
         if (child->getId() == pSenderId || child->getId() == pControlled) {
             continue;
@@ -102,11 +102,11 @@ AgentId_t Agent::getAgentIdProvidedService(ServiceId_t pServiceId, AgentId_t pSe
         queue.push(child);
     }
 
-    // breadth-first search among agent's childs
+    // breadth-first search among agent's sons
     while (!queue.empty()) {
         Agent* controlledAgent = queue.front();
         queue.pop();
-        for (const auto &pair: controlledAgent->getChilds()) {
+        for (const auto &pair: controlledAgent->getSons()) {
             Agent *child = pair.second;
             if (child->providedService(pServiceId)) {
                 return child->getId();
@@ -119,7 +119,7 @@ AgentId_t Agent::getAgentIdProvidedService(ServiceId_t pServiceId, AgentId_t pSe
 }
 
 bool Agent::childExists(AgentId_t pChildId) {
-    return childs.find(pChildId) != childs.end();
+    return sons.find(pChildId) != sons.end();
 }
 
 void Agent::initialization() {
