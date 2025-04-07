@@ -13,7 +13,11 @@ void SimulationCore::registerAgent(Agent* pAgent) {
     if (!pAgent) {
         throw std::runtime_error("Cannot register agent because the agent is nullptr.");
     }
-    if (pAgent->getId() != SIMULATION_CORE_ID && !pAgent->getParent()) {
+    if (dynamic_cast<AgentManager*>(pAgent)) {
+        // If pAgent is an AgentManager, register it with SIMULATION_CORE_ID
+        agents[SIMULATION_CORE_ID] = pAgent;
+        return;
+    } else if (pAgent->getId() != SIMULATION_CORE_ID && !pAgent->getParent()) {
         throw std::runtime_error("Cannot register agent because the agent's parent is nullptr.");
     }
     agents[pAgent->getId()] = pAgent;

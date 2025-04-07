@@ -4,6 +4,7 @@
 #include <fstream>
 
 #include "agent.h"
+#include "agentManager.h"
 #include "message.h"
 #include "types_library.h"
 #include "../../units/include/logger.h"

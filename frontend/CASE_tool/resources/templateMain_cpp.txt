@@ -1,11 +1,14 @@
 //TODO include
 #include "library/include/agentManager.h"
+#include "library/include/simulationCore.h"
 
 int main(int argc, char** argv) {{
     std::unique_ptr<Logger> logger = std::make_unique<Logger>(false);
+    //simulation core
+    std::unique_ptr<SimulationCore> simulationCore = std::make_unique<SimulationCore>(logger.get());
     //manager
     //agents
-    aManager->runSimulation(1, -1);
+    simulationCore->runSimulation(1, -1);
     logger->addToFile();
     return 0;
 }}

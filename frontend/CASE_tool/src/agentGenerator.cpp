@@ -68,6 +68,10 @@ void AgentGenerator::processJson(json data, std::string path) {
             //manager
             valuesToInsert = fmt::format(resources[MAIN][TEMPLATE][TEMP_MAIN_MANAGER_DEF], agent);
             main.insert(pos, valuesToInsert);
+            pos = pos + valuesToInsert.length();
+            //register manager
+            valuesToInsert = fmt::format(resources[MAIN][TEMPLATE][TEMP_MAIN_REGISTER_AGENT], agentName + std::to_string(agentId));
+            main.insert(pos, valuesToInsert);
         } else {
             //agent reasoning
             pos = main.find(AGENTS);
