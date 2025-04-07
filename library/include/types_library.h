@@ -12,5 +12,5 @@ using NodeId_t = int;
 using ExecFunct_t = std::function<void(int, int, SimTime_t, State*)>; // type for function callback
 using ExecNode_t = std::function<NodeId_t(int, int, SimTime_t, State*)>; // type for function callback
 
-const AgentId_t SIMULATION_CORE_ID = 1;
+const AgentId_t MAIN_AGENT_ID = 1;
 const NodeId_t UNDEFINATED_NODE =  -1;
