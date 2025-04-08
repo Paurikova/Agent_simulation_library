@@ -8,7 +8,7 @@
  */
 class ReactiveReasoning : public AgentReasoning {
 private:
-    std::unordered_map<ServiceId_t, ExecFunct_t> functionMap; /**< Maps functions to service IDs. */
+    std::map<ServiceId_t, ExecFunct_t> functionMap; /**< Maps functions to service IDs. */
 
 protected:
     /**

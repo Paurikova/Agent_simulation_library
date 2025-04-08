@@ -5,7 +5,7 @@
 //parent = nullptr
 SimulationCore::SimulationCore(Logger* pLogger) : logger(pLogger) {
     currTime = -1;
-    mainSchedule = std::make_unique<Schedule>();
+    mainBox = std::make_unique<Schedule>();
 }
 
 void SimulationCore::registerAgent(Agent* pAgent) {
@@ -38,7 +38,7 @@ void SimulationCore::runSimulation(int pNumberOfRepl, int pLengthOfRepl) {
         // Set to store IDs of agents that received messages
         std::unique_ptr<std::set<AgentId_t>> receivedAgentIds = std::make_unique<std::set<AgentId_t>>();
         // Get the next scheduled message
-        Message *message = mainSchedule->popMessage();
+        Message *message = mainBox->popMessage();
         // Loop until there are no more messages scheduled for the current time
         int last_exec_time = -1;
         while (message) {
@@ -58,7 +58,7 @@ void SimulationCore::runSimulation(int pNumberOfRepl, int pLengthOfRepl) {
                 // Retrieve the receiver agent and deliver the message
                 Agent *agent = agents[message->receiver];
                 agent->receiveMessage(message);
-                message = mainSchedule->popMessage(currTime);
+                message = mainBox->popMessage(currTime);
             }
 
             // Execute agents that received messages and process their outbound messages
@@ -69,19 +69,19 @@ void SimulationCore::runSimulation(int pNumberOfRepl, int pLengthOfRepl) {
             }
             receivedAgentIds->clear();
 
-            message = mainSchedule->popMessage();
+            message = mainBox->popMessage();
         }
     }
 }
 
-void SimulationCore::pushToMainSchedule(Message* pMessage) {
+void SimulationCore::pushToMainBox(Message* pMessage) {
     if (!pMessage) {
         throw std::runtime_error("The received message is nullptr.");
     }
     if (pMessage->receiver == -1) {
         addReceiver(pMessage);
     }
-    mainSchedule->pushMessage(pMessage);
+    mainBox->pushMessage(pMessage);
 }
 
 int SimulationCore::getAgentsSize() {
@@ -96,10 +96,10 @@ Agent* SimulationCore::getAgent(int pos) {
 }
 
 void SimulationCore::initialization() {
-    Message* msg = mainSchedule->popMessage();
+    Message* msg = mainBox->popMessage();
     while (msg) {
         delete msg;
-        msg = mainSchedule->popMessage();
+        msg = mainBox->popMessage();
     }
     for (auto& [id, agent] : agents) {
         agent->initialization();
@@ -117,7 +117,7 @@ void SimulationCore::receiveAgentMessages(Agent* agent) {
         if (message->receiver == -1) {
             addReceiver(message);
         }
-        mainSchedule->pushMessage(message);
+        mainBox->pushMessage(message);
         message = agent->getTopOutboxMessage();
     }
 }

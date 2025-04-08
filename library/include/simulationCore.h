@@ -1,6 +1,6 @@
 #pragma once
 
-#include <unordered_map>
+#include <map>
 #include <fstream>
 
 #include "agent.h"
@@ -18,8 +18,8 @@
 class SimulationCore {
 private:
     SimTime_t currTime; /**< Current simulation time. */
-    std::unordered_map<AgentId_t, Agent*> agents; /**< Map of agent IDs to agent objects. */
-    std::unique_ptr<Schedule> mainSchedule; /**< Unique pointer to the main schedule. */
+    std::map<AgentId_t, Agent*> agents; /**< Map of agent IDs to agent objects. */
+    std::unique_ptr<Schedule> mainBox; /**< Unique pointer to the main schedule. */
     Logger* logger;
 public:
     /**
@@ -61,7 +61,7 @@ public:
      * @brief Push messsage to simulation core schedule.
      * @param pMessage Pushed message.
      */
-    void pushToMainSchedule(Message* pMessage);
+    void pushToMainBox(Message* pMessage);
 
     /**
      * @brief Get size of agent's array.
