@@ -9,7 +9,7 @@ SimulationCore::SimulationCore(Logger* pLogger) : logger(pLogger) {
 }
 
 void SimulationCore::registerAgent(Agent* pAgent) {
-    //Note: The registration of an agent as a parent-child is done when the agent is created.
+    //Note: The registration of an agent as a parent-son is done when the agent is created.
     if (!pAgent) {
         throw std::runtime_error("Cannot register agent because the agent is nullptr.");
     }
@@ -27,7 +27,7 @@ void SimulationCore::unregisterAgent(int agentId) {
     if (not agentExists(agentId)) {
         throw std::runtime_error("Agent with event ID " + std::to_string(agentId) + " does not exist in the map");
     }
-    agents[agentId]->unregisterAsChild();
+    agents[agentId]->unregisterAsSon();
     agents.erase(agentId);
 }
 

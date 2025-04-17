@@ -88,30 +88,30 @@ public:
     Message* getTopOutboxMessage();
 
     /**
-    * @brief Registers the agent as a child of the specified parent agent.
+    * @brief Registers the agent as a son of the specified parent agent.
     *
     * @param pParent Pointer to the parent agent.
     */
-    void registerAsChild(Agent* pParent);
+    void registerAsSon(Agent* pParent);
 
     /**
-     * @brief Registers the specified agent as a child of the current agent.
+     * @brief Registers the specified agent as a son of the current agent.
      *
-     * @param pChild Pointer to the agent to be registered as a child.
+     * @param pSon Pointer to the agent to be registered as a son.
      */
-    void registerChild(Agent* pChild);
+    void registerSon(Agent* pSon);
 
     /**
-     * @brief Unregisters this agent as a child from its parent.
+     * @brief Unregisters this agent as a son from its parent.
      */
-    void unregisterAsChild();
+    void unregisterAsSon();
 
     /**
-     * @brief Unregisters a child agent with the specified ID.
+     * @brief Unregisters a son agent with the specified ID.
      *
-     * @param pChildId The ID of the child agent to unregister.
+     * @param pSonId The ID of the son agent to unregister.
      */
-    void unregisterChild(AgentId_t pChildId);
+    void unregisterSon(AgentId_t pSonId);
 
     /**
     * @brief Gets the pointer the agent's parent.
@@ -130,7 +130,7 @@ public:
     /**
      * @brief Retrieves the ID of the agent providing the specified service.
      *
-     * The service has to be provided by agent's child.
+     * The service has to be provided by agent's son.
      *
      * @param pServiceId The ID of the service to check.
      * @param pSenderId The ID of the message sender.
@@ -140,12 +140,12 @@ public:
     AgentId_t getAgentIdProvidedService(ServiceId_t pServiceId, AgentId_t pSenderId, AgentId_t pControlled);
 
     /**
-     * @brief Checks if a child agent with the specified ID exists.
+     * @brief Checks if a son agent with the specified ID exists.
      *
-     * @param pChildId The ID of the child agent to check.
-     * @return True if a child agent with the specified ID exists, otherwise false.
+     * @param pSonId The ID of the son agent to check.
+     * @return True if a son agent with the specified ID exists, otherwise false.
      */
-    bool childExists(AgentId_t pChildId);
+    bool sonExists(AgentId_t pSonId);
 
     /**
      * @brief Agent initialization.

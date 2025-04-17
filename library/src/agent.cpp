@@ -14,7 +14,7 @@ Agent::Agent(AgentId_t pId, Agent* pParent, AgentReasoning* pAgentReasoning) {
                 "Agent type is invalid.");
     }
     agentReasoning = pAgentReasoning;
-    registerAsChild(pParent);
+    registerAsSon(pParent);
 }
 
 AgentId_t Agent::getId() const {
@@ -47,37 +47,37 @@ Message* Agent::getTopOutboxMessage() {
     return agentReasoning->getTopOutboxMessage();
 }
 
-void Agent::registerAsChild(Agent* pParent) {
+void Agent::registerAsSon(Agent* pParent) {
     if (!pParent) {
         return;
     }
-    pParent->registerChild(this);
+    pParent->registerSon(this);
     setParent(pParent);
 }
 
-void Agent::registerChild(Agent* pChild) {
-    if (childExists(pChild->getId())) {
-        throw std::runtime_error("Agent with ID " + std::to_string(pChild->getId()) +
-        " is already registered as child of agent with ID " + std::to_string(id) + ".");
+void Agent::registerSon(Agent* pSon) {
+    if (sonExists(pSon->getId())) {
+        throw std::runtime_error("Agent with ID " + std::to_string(pSon->getId()) +
+        " is already registered as son of agent with ID " + std::to_string(id) + ".");
     }
-    sons[pChild->getId()] = pChild;
+    sons[pSon->getId()] = pSon;
 }
 
-void Agent::unregisterAsChild() {
+void Agent::unregisterAsSon() {
     if (!parent) {
         return;
     }
-    parent->unregisterChild(id);
+    parent->unregisterSon(id);
     parent = nullptr;
 }
 
-void Agent::unregisterChild(AgentId_t pChildId) {
-    if (not childExists(pChildId)) {
-        // Throw an exception if the child is not agent's child
-        throw std::runtime_error("Agent with ID " + std::to_string(pChildId) + " is not child of agent with ID " + std::to_string(id) + ".");
+void Agent::unregisterSon(AgentId_t pSonId) {
+    if (not sonExists(pSonId)) {
+        // Throw an exception if the son is not agent's son
+        throw std::runtime_error("Agent with ID " + std::to_string(pSonId) + " is not son of agent with ID " + std::to_string(id) + ".");
     }
-    // Erase agent from child map
-    sons.erase(pChildId);
+    // Erase agent from son map
+    sons.erase(pSonId);
 }
 
 Agent* Agent::getParent() {
@@ -89,17 +89,17 @@ void Agent::setParent(Agent* pPrent) {
 }
 
 AgentId_t Agent::getAgentIdProvidedService(ServiceId_t pServiceId, AgentId_t pSenderId, AgentId_t pControlled) {
-    // Search among the agent's child
+    // Search among the agent's son
     std::queue<Agent*> queue;
     for (const auto &pair: sons) {
-        Agent *child = pair.second;
-        if (child->getId() == pSenderId || child->getId() == pControlled) {
+        Agent *son = pair.second;
+        if (son->getId() == pSenderId || son->getId() == pControlled) {
             continue;
         }
-        if (child->providedService(pServiceId)) {
-            return child->getId();
+        if (son->providedService(pServiceId)) {
+            return son->getId();
         }
-        queue.push(child);
+        queue.push(son);
     }
 
     // breadth-first search among agent's sons
@@ -107,19 +107,19 @@ AgentId_t Agent::getAgentIdProvidedService(ServiceId_t pServiceId, AgentId_t pSe
         Agent* controlledAgent = queue.front();
         queue.pop();
         for (const auto &pair: controlledAgent->getSons()) {
-            Agent *child = pair.second;
-            if (child->providedService(pServiceId)) {
-                return child->getId();
+            Agent *son = pair.second;
+            if (son->providedService(pServiceId)) {
+                return son->getId();
             }
-            queue.push(child);
+            queue.push(son);
         }
     } while (!queue.empty());
 
     return -1; // no agent provided the service in subhierarchy
 }
 
-bool Agent::childExists(AgentId_t pChildId) {
-    return sons.find(pChildId) != sons.end();
+bool Agent::sonExists(AgentId_t pSonId) {
+    return sons.find(pSonId) != sons.end();
 }
 
 void Agent::initialization() {
