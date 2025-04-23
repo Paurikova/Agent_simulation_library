@@ -1,38 +1,39 @@
 #include "../include/cash.h"
-
+#include "../include/state_line.h"
 //1
 NodeId_t Cash::acceptCustomer_cond1(int pSender, int pReceiver, SimTime_t pExecTime, State* state) {
-    logger->log(fmt::format("{}: acceptCustomer_cond1\n", pReceiver));
-    if (!hasCustom) {
+    StateLine *stateLine = dynamic_cast<StateLine *>(state);
+    logger->log(fmt::format("{}: acceptCustomer_cond1 (Line {})\n", pReceiver, stateLine->line));
+
+    std::queue<float> &line = (stateLine->line == 0) ? stateShop->custInLine0 : stateShop->custInLine1;
+
+    if (!(stateLine->line == 0 ? hasCustom1 : hasCustom2)) {
         return 4;
     }
+    return 5;
+}
+
+//4
+NodeId_t Cash::acceptCustomer_fun1(int pSender, int pReceiver, SimTime_t pExecTime, State* state) {
+    StateLine *stateLine = dynamic_cast<StateLine *>(state);
+    logger->log(fmt::format("{}: acceptCustomer_fun1 (Line {})\n", pReceiver, stateLine->line));
+    sendMessage(2, pExecTime, pReceiver, 4, -1, stateLine);  // Customer accepted by cash
+    return -1;
+}
+
+//5
+NodeId_t Cash::acceptCustomer_fun2(int pSender, int pReceiver, SimTime_t pExecTime, State* state) {
+    StateLine *stateLine = dynamic_cast<StateLine *>(state);
+    logger->log(fmt::format("{}: acceptCustomer_fun2 (Line {})\n", pReceiver, stateLine->line));
     delete state;
     return -1;
 }
 
-//4
-NodeId_t Cash::acceptCustomer_code1(int pSender, int pReceiver, SimTime_t pExecTime, State* state) {
-    logger->log(fmt::format("{}: acceptCustomer_code1\n", pReceiver));
-    //Has break?
-    int breakTime = -1;
-    // Loop through each row
-    for (int j = 0; j < 2; ++j) {
-        // Check if the current element is 200
-        if (breaks[j] >= pExecTime && breaks[j] + breakLength <= pExecTime) {
-            breakTime = breaks[j];
-            break;
-        }
-    }
-    StateBreak* stateBreak = dynamic_cast<StateBreak*>(state);
-    stateBreak->cashBreak = breakTime;
-    return 5;
-}
-
-//5
-NodeId_t Cash::acceptCustomer_cond2(int pSender, int pReceiver, SimTime_t pExecTime, State* state) {
-    logger->log(fmt::format("{}: acceptCustomer_cond2\n", pReceiver));
-    StateBreak* breakTime = dynamic_cast<StateBreak*>(state);
-    if (breakTime->cashBreak > -1 ) {
+//2
+NodeId_t Cash::processCustomer_cond1(int pSender, int pReceiver, SimTime_t pExecTime, State* state) {
+    StateLine* stateLine = dynamic_cast<StateLine*>(state);
+    logger->log(fmt::format("{}: processCustomer_cond1 (Line {})", pReceiver, stateLine->line));
+    if (stateLine->line == 0) {
         return 6;
     } else {
         return 7;
@@ -40,41 +41,81 @@ NodeId_t Cash::acceptCustomer_cond2(int pSender, int pReceiver, SimTime_t pExecT
 }
 
 //6
-NodeId_t Cash::acceptCustomer_fun1(int pSender, int pReceiver, SimTime_t pExecTime, State* state) {
-    StateBreak* cashBreak = dynamic_cast<StateBreak*>(state);
-    logger->log(fmt::format("{}: acceptCustomer_fun1", pReceiver));
-    //has break
-    logger->log(fmt::format("       Break [{}] [{}]\n", pReceiver, cashBreak->cashBreak));
-    //accept customer after break
-    sendMessage(2, cashBreak->cashBreak + breakLength, pReceiver, pSender);
-    delete state;
-    return -1;
+NodeId_t Cash::processCustomer_code1(int pSender, int pReceiver, SimTime_t pExecTime, State* state) {
+    logger->log(fmt::format("{}: processCustomer_code1 (Line {})", pReceiver, stateLine->line));
+    hasCustom1 = true;
+    return 8;
 }
 
 //7
-NodeId_t Cash::acceptCustomer_fun2(int pSender, int pReceiver, SimTime_t pExecTime, State* state) {
-    delete state;
-    logger->log(fmt::format("{}: acceptCustomer_fun2", pReceiver));
-    // The cash accept customer
-    sendMessage(2, pExecTime, pReceiver, pSender);
+NodeId_t Cash::processCustomer_code3(int pSender, int pReceiver, SimTime_t pExecTime, State* state) {
+    logger->log(fmt::format("{}: processCustomer_code2 (Line {})\n", pReceiver, stateLine->line));
+    hasCustom2 = true;
+    return 8;
+}
+
+//8
+NodeId_t Cash::processCustomer_cond2(int pSender, int pReceiver, SimTime_t pExecTime, State* state) {
+    StateLine* stateLine = dynamic_cast<StateLine*>(state);
+    logger->log(fmt::format("{}: processCustomer_cond2 (Line {})\n", pReceiver, stateLine->line));
+    if (stateLine->line == 0) {
+        return 9;
+    } else {
+        return 10;
+    }
+}
+
+//9
+NodeId_t Cash::processCustomer_fun1(int pSender, int pReceiver, SimTime_t pExecTime, State* state) {
+    logger->log(fmt::format("{}: processCustomer_fun1 (Line {})\n", pReceiver, state));
+    // Process the customer
+    logger->log(fmt::format("  [{}]\n", processLength1));
+    sendMessage(3, pExecTime + processLength1 , pReceiver, pReceiver, -1, state);
     return -1;
 }
 
-//2
-NodeId_t Cash::processCustomer(int pSender, int pReceiver, SimTime_t pExecTime, State* state) {
-    logger->log(fmt::format("{}: processCustomer\n", pReceiver));
-    hasCustom = true;
-    //process customer
-    logger->log(fmt::format("  [{}]\n" , processLength));
-    sendMessage(3, pExecTime + processLength, pReceiver, pReceiver);
+//10
+NodeId_t Cash::processCustomer_fun2(int pSender, int pReceiver, SimTime_t pExecTime, State* state) {
+    logger->log(fmt::format("{}: processCustomer_fun2 (Line {})\n", pReceiver, state));
+    // Process the customer
+    logger->log(fmt::format("  [{}]\n", processLength2));
+    sendMessage(3, pExecTime + processLength2 , pReceiver, pReceiver, -1, state);
     return -1;
 }
 
 //3
-NodeId_t Cash::endCustomer(int pSender, int pReceiver, SimTime_t pExecTime, State* state) {
-    logger->log(fmt::format("{}: endCustomer\n", pReceiver));
-    hasCustom = false;
-    sendMessage(3, pExecTime, pReceiver, pReceiver - 2);
+NodeId_t Cash::endCustomer_cond1(int pSender, int pReceiver, SimTime_t pExecTime, State* state) {
+    StateLine* stateLine = dynamic_cast<StateLine*>(state);
+    logger->log(fmt::format("{}: endCustomer_cond1 (Line {})\n", pReceiver, stateLine->line));
+    if (stateLine->line == 0) {
+        return 11;
+    } else {
+        return 12;
+    }
+}
+
+//11
+NodeId_t Cash::endCustomer_code1(int pSender, int pReceiver, SimTime_t pExecTime, State* state) {
+    StateLine* stateLine = dynamic_cast<StateLine*>(state);
+    logger->log(fmt::format("{}: endCustomer_code1 (Line {})\n", pReceiver, stateLine->line));
+    hasCustom1 = false;
+    return 13;
+}
+
+//12
+NodeId_t Cash::endCustomer_code2(int pSender, int pReceiver, SimTime_t pExecTime, State* state) {
+    StateLine* stateLine = dynamic_cast<StateLine*>(state);
+    logger->log(fmt::format("{}: endCustomer_code2 (Line {})\n", pReceiver, stateLine->line));
+    hasCustom2 = false;
+    sendMessage(4, pExecTime, pReceiver, 3, -1, stateLine);
+    return 13;
+}
+
+//13
+NodeId_t Cash::endCustomer_fun1(int pSender, int pReceiver, SimTime_t pExecTime, State* state) {
+    StateLine* stateLine = dynamic_cast<StateLine*>(state);
+    logger->log(fmt::format("{}: endCustomer_fun1 (Line {})\n", pReceiver, stateLine->line));
+    sendMessage(4, pExecTime, pReceiver, 3, -1, stateLine);
     return -1;
 }
 
@@ -88,18 +129,6 @@ void Cash::registerNodes() {
     });
     registerNode(3, [this](int pSender, int pReceiver, SimTime_t pExecTime, State* state) -> NodeId_t {
         return endCustomer(pSender, pReceiver, pExecTime, state);
-    });
-    registerNode(4, [this](int pSender, int pReceiver, SimTime_t pExecTime, State* state) -> NodeId_t {
-        return acceptCustomer_code1(pSender, pReceiver, pExecTime, state);
-    });
-    registerNode(5, [this](int pSender, int pReceiver, SimTime_t pExecTime, State* state) -> NodeId_t {
-        return acceptCustomer_cond2(pSender, pReceiver, pExecTime, state);
-    });
-    registerNode(6, [this](int pSender, int pReceiver, SimTime_t pExecTime, State* state) -> NodeId_t {
-        return acceptCustomer_fun1(pSender, pReceiver, pExecTime, state);
-    });
-    registerNode(7, [this](int pSender, int pReceiver, SimTime_t pExecTime, State* state) -> NodeId_t {
-        return acceptCustomer_fun2(pSender, pReceiver, pExecTime, state);
     });
 }
 

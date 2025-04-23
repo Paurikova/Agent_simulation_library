@@ -1,0 +1,2327 @@
+{
+    "m_Agents": [
+        1,
+        7
+    ],
+    "m_Links": [
+        {
+            "Color": [
+                1.0,
+                1.0,
+                1.0
+            ],
+            "EndPinID": 8,
+            "ID": 13,
+            "StartPinID": 3
+        },
+        {
+            "Color": [
+                0.20000001788139343,
+                0.5882353186607361,
+                0.8431373238563538
+            ],
+            "EndPinID": 15,
+            "ID": 16,
+            "StartPinID": 6
+        },
+        {
+            "Color": [
+                0.20000001788139343,
+                0.5882353186607361,
+                0.8431373238563538
+            ],
+            "EndPinID": 18,
+            "ID": 19,
+            "StartPinID": 6
+        },
+        {
+            "Color": [
+                0.20000001788139343,
+                0.5882353186607361,
+                0.8431373238563538
+            ],
+            "EndPinID": 21,
+            "ID": 22,
+            "StartPinID": 6
+        },
+        {
+            "Color": [
+                0.20000001788139343,
+                0.5882353186607361,
+                0.8431373238563538
+            ],
+            "EndPinID": 24,
+            "ID": 25,
+            "StartPinID": 6
+        },
+        {
+            "Color": [
+                0.20000001788139343,
+                0.5882353186607361,
+                0.8431373238563538
+            ],
+            "EndPinID": 27,
+            "ID": 28,
+            "StartPinID": 6
+        },
+        {
+            "Color": [
+                1.0,
+                1.0,
+                1.0
+            ],
+            "EndPinID": 5,
+            "ID": 42,
+            "StartPinID": 30
+        },
+        {
+            "Color": [
+                0.20000001788139343,
+                0.5882353186607361,
+                0.8431373238563538
+            ],
+            "EndPinID": 44,
+            "ID": 45,
+            "StartPinID": 33
+        },
+        {
+            "Color": [
+                0.20000001788139343,
+                0.5882353186607361,
+                0.8431373238563538
+            ],
+            "EndPinID": 47,
+            "ID": 48,
+            "StartPinID": 35
+        },
+        {
+            "Color": [
+                0.20000001788139343,
+                0.5882353186607361,
+                0.8431373238563538
+            ],
+            "EndPinID": 50,
+            "ID": 51,
+            "StartPinID": 37
+        },
+        {
+            "Color": [
+                0.20000001788139343,
+                0.5882353186607361,
+                0.8431373238563538
+            ],
+            "EndPinID": 53,
+            "ID": 54,
+            "StartPinID": 39
+        },
+        {
+            "Color": [
+                0.20000001788139343,
+                0.5882353186607361,
+                0.8431373238563538
+            ],
+            "EndPinID": 56,
+            "ID": 57,
+            "StartPinID": 41
+        },
+        {
+            "Color": [
+                0.20000001788139343,
+                0.5882353186607361,
+                0.8431373238563538
+            ],
+            "EndPinID": 99,
+            "ID": 100,
+            "StartPinID": 12
+        },
+        {
+            "Color": [
+                0.20000001788139343,
+                0.5882353186607361,
+                0.8431373238563538
+            ],
+            "EndPinID": 102,
+            "ID": 103,
+            "StartPinID": 12
+        },
+        {
+            "Color": [
+                0.20000001788139343,
+                0.5882353186607361,
+                0.8431373238563538
+            ],
+            "EndPinID": 105,
+            "ID": 106,
+            "StartPinID": 12
+        },
+        {
+            "Color": [
+                1.0,
+                1.0,
+                1.0
+            ],
+            "EndPinID": 11,
+            "ID": 116,
+            "StartPinID": 108
+        },
+        {
+            "Color": [
+                0.20000001788139343,
+                0.5882353186607361,
+                0.8431373238563538
+            ],
+            "EndPinID": 118,
+            "ID": 119,
+            "StartPinID": 111
+        },
+        {
+            "Color": [
+                0.20000001788139343,
+                0.5882353186607361,
+                0.8431373238563538
+            ],
+            "EndPinID": 121,
+            "ID": 122,
+            "StartPinID": 113
+        },
+        {
+            "Color": [
+                0.20000001788139343,
+                0.5882353186607361,
+                0.8431373238563538
+            ],
+            "EndPinID": 124,
+            "ID": 125,
+            "StartPinID": 115
+        }
+    ],
+    "m_NextAgentId": 3,
+    "m_NextId": 130,
+    "m_Nodes": [
+        {
+            "AgentId": 1,
+            "AssociatedIds": [],
+            "Color": [
+                1.0,
+                1.0,
+                1.0
+            ],
+            "Deleted": false,
+            "ID": 1,
+            "Inputs": [
+                {
+                    "ID": 2,
+                    "IsActive": true,
+                    "Kind": 1,
+                    "LinkIds": [],
+                    "Name": "",
+                    "PinBuffer": {
+                        "Buffer": "Edit me",
+                        "Type": 5
+                    },
+                    "Type": 2
+                }
+            ],
+            "InsideIds": [
+                4,
+                14,
+                17,
+                20,
+                23,
+                26,
+                29
+            ],
+            "Name": "Manager",
+            "Outputs": [
+                {
+                    "ID": 3,
+                    "IsActive": true,
+                    "Kind": 0,
+                    "LinkIds": [
+                        13
+                    ],
+                    "Name": "",
+                    "PinBuffer": {
+                        "Buffer": "Edit me",
+                        "Type": 5
+                    },
+                    "Type": 2
+                }
+            ],
+            "OutsideId": 0,
+            "Position": [
+                -300.0,
+                351.0
+            ],
+            "Size": [
+                0.0,
+                0.0
+            ],
+            "State": "{\"location\":{\"x\":-300,\"y\":351}}",
+            "Type": 0
+        },
+        {
+            "AgentId": -1,
+            "AssociatedIds": [],
+            "Color": [
+                1.0,
+                1.0,
+                1.0
+            ],
+            "Deleted": false,
+            "ID": 4,
+            "Inputs": [
+                {
+                    "ID": 5,
+                    "IsActive": true,
+                    "Kind": 1,
+                    "LinkIds": [
+                        42
+                    ],
+                    "Name": "Reasoning",
+                    "PinBuffer": {
+                        "Buffer": "Edit me",
+                        "Type": 5
+                    },
+                    "Type": 4
+                }
+            ],
+            "InsideIds": [],
+            "Name": "Responsibilities of Agent 1",
+            "Outputs": [
+                {
+                    "ID": 6,
+                    "IsActive": true,
+                    "Kind": 0,
+                    "LinkIds": [
+                        16,
+                        19,
+                        22,
+                        25,
+                        28
+                    ],
+                    "Name": "Services",
+                    "PinBuffer": {
+                        "Buffer": "Edit me",
+                        "Type": 5
+                    },
+                    "Type": 3
+                }
+            ],
+            "OutsideId": 1,
+            "Position": [
+                -120.0,
+                508.0
+            ],
+            "Size": [
+                0.0,
+                0.0
+            ],
+            "State": "{\"location\":{\"x\":-120,\"y\":508}}",
+            "Type": 5
+        },
+        {
+            "AgentId": 2,
+            "AssociatedIds": [],
+            "Color": [
+                1.0,
+                1.0,
+                1.0
+            ],
+            "Deleted": false,
+            "ID": 7,
+            "Inputs": [
+                {
+                    "ID": 8,
+                    "IsActive": true,
+                    "Kind": 1,
+                    "LinkIds": [
+                        13
+                    ],
+                    "Name": "",
+                    "PinBuffer": {
+                        "Buffer": "Edit me",
+                        "Type": 5
+                    },
+                    "Type": 2
+                }
+            ],
+            "InsideIds": [
+                10,
+                98,
+                101,
+                104,
+                107
+            ],
+            "Name": "Bird",
+            "Outputs": [
+                {
+                    "ID": 9,
+                    "IsActive": true,
+                    "Kind": 0,
+                    "LinkIds": [],
+                    "Name": "",
+                    "PinBuffer": {
+                        "Buffer": "Edit me",
+                        "Type": 5
+                    },
+                    "Type": 2
+                }
+            ],
+            "OutsideId": 0,
+            "Position": [
+                -213.0,
+                514.0
+            ],
+            "Size": [
+                0.0,
+                0.0
+            ],
+            "State": "{\"location\":{\"x\":-213,\"y\":514}}",
+            "Type": 0
+        },
+        {
+            "AgentId": -1,
+            "AssociatedIds": [],
+            "Color": [
+                1.0,
+                1.0,
+                1.0
+            ],
+            "Deleted": false,
+            "ID": 10,
+            "Inputs": [
+                {
+                    "ID": 11,
+                    "IsActive": true,
+                    "Kind": 1,
+                    "LinkIds": [
+                        116
+                    ],
+                    "Name": "Reasoning",
+                    "PinBuffer": {
+                        "Buffer": "Edit me",
+                        "Type": 5
+                    },
+                    "Type": 4
+                }
+            ],
+            "InsideIds": [],
+            "Name": "Responsibilities of Agent 2",
+            "Outputs": [
+                {
+                    "ID": 12,
+                    "IsActive": true,
+                    "Kind": 0,
+                    "LinkIds": [
+                        100,
+                        103,
+                        106
+                    ],
+                    "Name": "Services",
+                    "PinBuffer": {
+                        "Buffer": "Edit me",
+                        "Type": 5
+                    },
+                    "Type": 3
+                }
+            ],
+            "OutsideId": 7,
+            "Position": [
+                -552.0,
+                140.0
+            ],
+            "Size": [
+                0.0,
+                0.0
+            ],
+            "State": "{\"location\":{\"x\":-552,\"y\":140}}",
+            "Type": 5
+        },
+        {
+            "AgentId": -1,
+            "AssociatedIds": [
+                32
+            ],
+            "Color": [
+                0.501960813999176,
+                0.7647059559822083,
+                0.9725490808486938
+            ],
+            "Deleted": false,
+            "ID": 14,
+            "Inputs": [
+                {
+                    "ID": 15,
+                    "IsActive": true,
+                    "Kind": 1,
+                    "LinkIds": [
+                        16
+                    ],
+                    "Name": "Id",
+                    "PinBuffer": {
+                        "Buffer": "1",
+                        "Type": 4
+                    },
+                    "Type": 3
+                }
+            ],
+            "InsideIds": [],
+            "Name": "Service",
+            "Outputs": [],
+            "OutsideId": 1,
+            "Position": [
+                232.0,
+                268.0
+            ],
+            "Size": [
+                0.0,
+                0.0
+            ],
+            "State": "{\"location\":{\"x\":232,\"y\":268}}",
+            "Type": 1
+        },
+        {
+            "AgentId": -1,
+            "AssociatedIds": [
+                34
+            ],
+            "Color": [
+                0.501960813999176,
+                0.7647059559822083,
+                0.9725490808486938
+            ],
+            "Deleted": false,
+            "ID": 17,
+            "Inputs": [
+                {
+                    "ID": 18,
+                    "IsActive": true,
+                    "Kind": 1,
+                    "LinkIds": [
+                        19
+                    ],
+                    "Name": "Id",
+                    "PinBuffer": {
+                        "Buffer": "2",
+                        "Type": 4
+                    },
+                    "Type": 3
+                }
+            ],
+            "InsideIds": [],
+            "Name": "Service",
+            "Outputs": [],
+            "OutsideId": 1,
+            "Position": [
+                345.0,
+                450.0
+            ],
+            "Size": [
+                0.0,
+                0.0
+            ],
+            "State": "{\"location\":{\"x\":345,\"y\":450}}",
+            "Type": 1
+        },
+        {
+            "AgentId": -1,
+            "AssociatedIds": [
+                36
+            ],
+            "Color": [
+                0.501960813999176,
+                0.7647059559822083,
+                0.9725490808486938
+            ],
+            "Deleted": false,
+            "ID": 20,
+            "Inputs": [
+                {
+                    "ID": 21,
+                    "IsActive": true,
+                    "Kind": 1,
+                    "LinkIds": [
+                        22
+                    ],
+                    "Name": "Id",
+                    "PinBuffer": {
+                        "Buffer": "3",
+                        "Type": 4
+                    },
+                    "Type": 3
+                }
+            ],
+            "InsideIds": [],
+            "Name": "Service",
+            "Outputs": [],
+            "OutsideId": 1,
+            "Position": [
+                402.0,
+                591.0
+            ],
+            "Size": [
+                0.0,
+                0.0
+            ],
+            "State": "{\"location\":{\"x\":402,\"y\":591}}",
+            "Type": 1
+        },
+        {
+            "AgentId": -1,
+            "AssociatedIds": [
+                38
+            ],
+            "Color": [
+                0.501960813999176,
+                0.7647059559822083,
+                0.9725490808486938
+            ],
+            "Deleted": false,
+            "ID": 23,
+            "Inputs": [
+                {
+                    "ID": 24,
+                    "IsActive": true,
+                    "Kind": 1,
+                    "LinkIds": [
+                        25
+                    ],
+                    "Name": "Id",
+                    "PinBuffer": {
+                        "Buffer": "4",
+                        "Type": 4
+                    },
+                    "Type": 3
+                }
+            ],
+            "InsideIds": [],
+            "Name": "Service",
+            "Outputs": [],
+            "OutsideId": 1,
+            "Position": [
+                401.0,
+                714.0
+            ],
+            "Size": [
+                0.0,
+                0.0
+            ],
+            "State": "{\"location\":{\"x\":401,\"y\":714}}",
+            "Type": 1
+        },
+        {
+            "AgentId": -1,
+            "AssociatedIds": [
+                40
+            ],
+            "Color": [
+                0.501960813999176,
+                0.7647059559822083,
+                0.9725490808486938
+            ],
+            "Deleted": false,
+            "ID": 26,
+            "Inputs": [
+                {
+                    "ID": 27,
+                    "IsActive": true,
+                    "Kind": 1,
+                    "LinkIds": [
+                        28
+                    ],
+                    "Name": "Id",
+                    "PinBuffer": {
+                        "Buffer": "5",
+                        "Type": 4
+                    },
+                    "Type": 3
+                }
+            ],
+            "InsideIds": [],
+            "Name": "Service",
+            "Outputs": [],
+            "OutsideId": 1,
+            "Position": [
+                461.0,
+                887.0
+            ],
+            "Size": [
+                0.0,
+                0.0
+            ],
+            "State": "{\"location\":{\"x\":461,\"y\":887}}",
+            "Type": 1
+        },
+        {
+            "AgentId": -1,
+            "AssociatedIds": [],
+            "Color": [
+                0.0,
+                0.8000000715255737,
+                0.40000003576278687
+            ],
+            "Deleted": false,
+            "ID": 29,
+            "Inputs": [],
+            "InsideIds": [
+                31,
+                32,
+                34,
+                36,
+                38,
+                40,
+                43,
+                46,
+                49,
+                52,
+                55,
+                58,
+                62,
+                66,
+                70,
+                74,
+                78,
+                82,
+                86,
+                90,
+                94
+            ],
+            "Name": "Reasoning",
+            "Outputs": [
+                {
+                    "ID": 30,
+                    "IsActive": true,
+                    "Kind": 0,
+                    "LinkIds": [
+                        42
+                    ],
+                    "Name": "Reactive",
+                    "PinBuffer": {
+                        "Buffer": "Edit me",
+                        "Type": 5
+                    },
+                    "Type": 4
+                }
+            ],
+            "OutsideId": 1,
+            "Position": [
+                -284.0,
+                508.0
+            ],
+            "Size": [
+                0.0,
+                0.0
+            ],
+            "State": "{\"location\":{\"x\":-284,\"y\":508}}",
+            "Type": 3
+        },
+        {
+            "AgentId": -1,
+            "AssociatedIds": [],
+            "Color": [
+                1.0,
+                1.0,
+                1.0
+            ],
+            "Deleted": false,
+            "ID": 31,
+            "Inputs": [],
+            "InsideIds": [],
+            "Name": "Attributes",
+            "Outputs": [],
+            "OutsideId": 29,
+            "Position": [
+                208.0,
+                400.0
+            ],
+            "Size": [
+                280.0,
+                500.0
+            ],
+            "State": "{\"group_size\":{\"x\":1024,\"y\":650},\"location\":{\"x\":208,\"y\":400}}",
+            "Type": 7
+        },
+        {
+            "AgentId": -1,
+            "AssociatedIds": [
+                14
+            ],
+            "Color": [
+                0.501960813999176,
+                0.7647059559822083,
+                0.9725490808486938
+            ],
+            "Deleted": false,
+            "ID": 32,
+            "Inputs": [],
+            "InsideIds": [],
+            "Name": "Service",
+            "Outputs": [
+                {
+                    "ID": 33,
+                    "IsActive": true,
+                    "Kind": 0,
+                    "LinkIds": [
+                        45
+                    ],
+                    "Name": "Id",
+                    "PinBuffer": {
+                        "Buffer": "1",
+                        "Type": 4
+                    },
+                    "Type": 0
+                }
+            ],
+            "OutsideId": 29,
+            "Position": [
+                -314.0,
+                284.0
+            ],
+            "Size": [
+                0.0,
+                0.0
+            ],
+            "State": "{\"location\":{\"x\":-314,\"y\":284}}",
+            "Type": 2
+        },
+        {
+            "AgentId": -1,
+            "AssociatedIds": [
+                17
+            ],
+            "Color": [
+                0.501960813999176,
+                0.7647059559822083,
+                0.9725490808486938
+            ],
+            "Deleted": false,
+            "ID": 34,
+            "Inputs": [],
+            "InsideIds": [],
+            "Name": "Service",
+            "Outputs": [
+                {
+                    "ID": 35,
+                    "IsActive": true,
+                    "Kind": 0,
+                    "LinkIds": [
+                        48
+                    ],
+                    "Name": "Id",
+                    "PinBuffer": {
+                        "Buffer": "2",
+                        "Type": 4
+                    },
+                    "Type": 0
+                }
+            ],
+            "OutsideId": 29,
+            "Position": [
+                -314.0,
+                380.0
+            ],
+            "Size": [
+                0.0,
+                0.0
+            ],
+            "State": "{\"location\":{\"x\":-314,\"y\":380}}",
+            "Type": 2
+        },
+        {
+            "AgentId": -1,
+            "AssociatedIds": [
+                20
+            ],
+            "Color": [
+                0.501960813999176,
+                0.7647059559822083,
+                0.9725490808486938
+            ],
+            "Deleted": false,
+            "ID": 36,
+            "Inputs": [],
+            "InsideIds": [],
+            "Name": "Service",
+            "Outputs": [
+                {
+                    "ID": 37,
+                    "IsActive": true,
+                    "Kind": 0,
+                    "LinkIds": [
+                        51
+                    ],
+                    "Name": "Id",
+                    "PinBuffer": {
+                        "Buffer": "3",
+                        "Type": 4
+                    },
+                    "Type": 0
+                }
+            ],
+            "OutsideId": 29,
+            "Position": [
+                -314.0,
+                476.0
+            ],
+            "Size": [
+                0.0,
+                0.0
+            ],
+            "State": "{\"location\":{\"x\":-314,\"y\":476}}",
+            "Type": 2
+        },
+        {
+            "AgentId": -1,
+            "AssociatedIds": [
+                23
+            ],
+            "Color": [
+                0.501960813999176,
+                0.7647059559822083,
+                0.9725490808486938
+            ],
+            "Deleted": false,
+            "ID": 38,
+            "Inputs": [],
+            "InsideIds": [],
+            "Name": "Service",
+            "Outputs": [
+                {
+                    "ID": 39,
+                    "IsActive": true,
+                    "Kind": 0,
+                    "LinkIds": [
+                        54
+                    ],
+                    "Name": "Id",
+                    "PinBuffer": {
+                        "Buffer": "4",
+                        "Type": 4
+                    },
+                    "Type": 0
+                }
+            ],
+            "OutsideId": 29,
+            "Position": [
+                -314.0,
+                588.0
+            ],
+            "Size": [
+                0.0,
+                0.0
+            ],
+            "State": "{\"location\":{\"x\":-314,\"y\":588}}",
+            "Type": 2
+        },
+        {
+            "AgentId": -1,
+            "AssociatedIds": [
+                26
+            ],
+            "Color": [
+                0.501960813999176,
+                0.7647059559822083,
+                0.9725490808486938
+            ],
+            "Deleted": false,
+            "ID": 40,
+            "Inputs": [],
+            "InsideIds": [],
+            "Name": "Service",
+            "Outputs": [
+                {
+                    "ID": 41,
+                    "IsActive": true,
+                    "Kind": 0,
+                    "LinkIds": [
+                        57
+                    ],
+                    "Name": "Id",
+                    "PinBuffer": {
+                        "Buffer": "5",
+                        "Type": 4
+                    },
+                    "Type": 0
+                }
+            ],
+            "OutsideId": 29,
+            "Position": [
+                -314.0,
+                716.0
+            ],
+            "Size": [
+                0.0,
+                0.0
+            ],
+            "State": "{\"location\":{\"x\":-314,\"y\":716}}",
+            "Type": 2
+        },
+        {
+            "AgentId": -1,
+            "AssociatedIds": [],
+            "Color": [
+                1.0,
+                0.6980392336845398,
+                0.40000003576278687
+            ],
+            "Deleted": false,
+            "ID": 43,
+            "Inputs": [
+                {
+                    "ID": 44,
+                    "IsActive": true,
+                    "Kind": 1,
+                    "LinkIds": [
+                        45
+                    ],
+                    "Name": "",
+                    "PinBuffer": {
+                        "Buffer": "initialization",
+                        "Type": 0
+                    },
+                    "Type": 0
+                }
+            ],
+            "InsideIds": [],
+            "Name": "Function",
+            "Outputs": [],
+            "OutsideId": 29,
+            "Position": [
+                -8.0,
+                284.0
+            ],
+            "Size": [
+                0.0,
+                0.0
+            ],
+            "State": "{\"location\":{\"x\":-8,\"y\":284}}",
+            "Type": 10
+        },
+        {
+            "AgentId": -1,
+            "AssociatedIds": [],
+            "Color": [
+                1.0,
+                0.6980392336845398,
+                0.40000003576278687
+            ],
+            "Deleted": false,
+            "ID": 46,
+            "Inputs": [
+                {
+                    "ID": 47,
+                    "IsActive": true,
+                    "Kind": 1,
+                    "LinkIds": [
+                        48
+                    ],
+                    "Name": "",
+                    "PinBuffer": {
+                        "Buffer": "startWindow",
+                        "Type": 0
+                    },
+                    "Type": 0
+                }
+            ],
+            "InsideIds": [],
+            "Name": "Function",
+            "Outputs": [],
+            "OutsideId": 29,
+            "Position": [
+                -8.0,
+                380.0
+            ],
+            "Size": [
+                0.0,
+                0.0
+            ],
+            "State": "{\"location\":{\"x\":-8,\"y\":380}}",
+            "Type": 10
+        },
+        {
+            "AgentId": -1,
+            "AssociatedIds": [],
+            "Color": [
+                1.0,
+                0.6980392336845398,
+                0.40000003576278687
+            ],
+            "Deleted": false,
+            "ID": 49,
+            "Inputs": [
+                {
+                    "ID": 50,
+                    "IsActive": true,
+                    "Kind": 1,
+                    "LinkIds": [
+                        51
+                    ],
+                    "Name": "",
+                    "PinBuffer": {
+                        "Buffer": "move",
+                        "Type": 0
+                    },
+                    "Type": 0
+                }
+            ],
+            "InsideIds": [],
+            "Name": "Function",
+            "Outputs": [],
+            "OutsideId": 29,
+            "Position": [
+                -8.0,
+                492.0
+            ],
+            "Size": [
+                0.0,
+                0.0
+            ],
+            "State": "{\"location\":{\"x\":-8,\"y\":492}}",
+            "Type": 10
+        },
+        {
+            "AgentId": -1,
+            "AssociatedIds": [],
+            "Color": [
+                1.0,
+                0.6980392336845398,
+                0.40000003576278687
+            ],
+            "Deleted": false,
+            "ID": 52,
+            "Inputs": [
+                {
+                    "ID": 53,
+                    "IsActive": true,
+                    "Kind": 1,
+                    "LinkIds": [
+                        54
+                    ],
+                    "Name": "",
+                    "PinBuffer": {
+                        "Buffer": "birdUpdated",
+                        "Type": 0
+                    },
+                    "Type": 0
+                }
+            ],
+            "InsideIds": [],
+            "Name": "Function",
+            "Outputs": [],
+            "OutsideId": 29,
+            "Position": [
+                8.0,
+                604.0
+            ],
+            "Size": [
+                0.0,
+                0.0
+            ],
+            "State": "{\"location\":{\"x\":8,\"y\":604}}",
+            "Type": 10
+        },
+        {
+            "AgentId": -1,
+            "AssociatedIds": [],
+            "Color": [
+                1.0,
+                0.6980392336845398,
+                0.40000003576278687
+            ],
+            "Deleted": false,
+            "ID": 55,
+            "Inputs": [
+                {
+                    "ID": 56,
+                    "IsActive": true,
+                    "Kind": 1,
+                    "LinkIds": [
+                        57
+                    ],
+                    "Name": "",
+                    "PinBuffer": {
+                        "Buffer": "draw",
+                        "Type": 0
+                    },
+                    "Type": 0
+                }
+            ],
+            "InsideIds": [],
+            "Name": "Function",
+            "Outputs": [],
+            "OutsideId": 29,
+            "Position": [
+                8.0,
+                716.0
+            ],
+            "Size": [
+                0.0,
+                0.0
+            ],
+            "State": "{\"location\":{\"x\":8,\"y\":716}}",
+            "Type": 10
+        },
+        {
+            "AgentId": -1,
+            "AssociatedIds": [],
+            "Color": [
+                0.501960813999176,
+                0.7647059559822083,
+                0.9725490808486938
+            ],
+            "Deleted": false,
+            "ID": 58,
+            "Inputs": [
+                {
+                    "ID": 59,
+                    "IsActive": false,
+                    "Kind": 1,
+                    "LinkIds": [],
+                    "Name": "",
+                    "PinBuffer": {
+                        "Buffer": "float",
+                        "Type": 1
+                    },
+                    "Type": 5
+                },
+                {
+                    "ID": 60,
+                    "IsActive": false,
+                    "Kind": 1,
+                    "LinkIds": [],
+                    "Name": "",
+                    "PinBuffer": {
+                        "Buffer": "3",
+                        "Type": 2
+                    },
+                    "Type": 6
+                }
+            ],
+            "InsideIds": [],
+            "Name": "Attribute",
+            "Outputs": [
+                {
+                    "ID": 61,
+                    "IsActive": false,
+                    "Kind": 0,
+                    "LinkIds": [],
+                    "Name": "",
+                    "PinBuffer": {
+                        "Buffer": "speed",
+                        "Type": 0
+                    },
+                    "Type": 1
+                }
+            ],
+            "OutsideId": 29,
+            "Position": [
+                232.0,
+                544.0
+            ],
+            "Size": [
+                0.0,
+                0.0
+            ],
+            "State": "{\"location\":{\"x\":232,\"y\":544}}",
+            "Type": 6
+        },
+        {
+            "AgentId": -1,
+            "AssociatedIds": [],
+            "Color": [
+                0.501960813999176,
+                0.7647059559822083,
+                0.9725490808486938
+            ],
+            "Deleted": false,
+            "ID": 62,
+            "Inputs": [
+                {
+                    "ID": 63,
+                    "IsActive": false,
+                    "Kind": 1,
+                    "LinkIds": [],
+                    "Name": "",
+                    "PinBuffer": {
+                        "Buffer": "sf::CircleShape",
+                        "Type": 1
+                    },
+                    "Type": 5
+                },
+                {
+                    "ID": 64,
+                    "IsActive": false,
+                    "Kind": 1,
+                    "LinkIds": [],
+                    "Name": "",
+                    "PinBuffer": {
+                        "Buffer": "InitValue",
+                        "Type": 2
+                    },
+                    "Type": 6
+                }
+            ],
+            "InsideIds": [],
+            "Name": "Attribute",
+            "Outputs": [
+                {
+                    "ID": 65,
+                    "IsActive": false,
+                    "Kind": 0,
+                    "LinkIds": [],
+                    "Name": "",
+                    "PinBuffer": {
+                        "Buffer": "shape",
+                        "Type": 0
+                    },
+                    "Type": 1
+                }
+            ],
+            "OutsideId": 29,
+            "Position": [
+                232.0,
+                656.0
+            ],
+            "Size": [
+                0.0,
+                0.0
+            ],
+            "State": "{\"location\":{\"x\":232,\"y\":656}}",
+            "Type": 6
+        },
+        {
+            "AgentId": -1,
+            "AssociatedIds": [],
+            "Color": [
+                0.501960813999176,
+                0.7647059559822083,
+                0.9725490808486938
+            ],
+            "Deleted": false,
+            "ID": 66,
+            "Inputs": [
+                {
+                    "ID": 67,
+                    "IsActive": false,
+                    "Kind": 1,
+                    "LinkIds": [],
+                    "Name": "",
+                    "PinBuffer": {
+                        "Buffer": "sf::RenderWindow&",
+                        "Type": 1
+                    },
+                    "Type": 5
+                },
+                {
+                    "ID": 68,
+                    "IsActive": false,
+                    "Kind": 1,
+                    "LinkIds": [],
+                    "Name": "",
+                    "PinBuffer": {
+                        "Buffer": "InitValue",
+                        "Type": 2
+                    },
+                    "Type": 6
+                }
+            ],
+            "InsideIds": [],
+            "Name": "Attribute",
+            "Outputs": [
+                {
+                    "ID": 69,
+                    "IsActive": false,
+                    "Kind": 0,
+                    "LinkIds": [],
+                    "Name": "",
+                    "PinBuffer": {
+                        "Buffer": "window",
+                        "Type": 0
+                    },
+                    "Type": 1
+                }
+            ],
+            "OutsideId": 29,
+            "Position": [
+                232.0,
+                780.0
+            ],
+            "Size": [
+                0.0,
+                0.0
+            ],
+            "State": "{\"location\":{\"x\":232,\"y\":780}}",
+            "Type": 6
+        },
+        {
+            "AgentId": -1,
+            "AssociatedIds": [],
+            "Color": [
+                0.501960813999176,
+                0.7647059559822083,
+                0.9725490808486938
+            ],
+            "Deleted": false,
+            "ID": 70,
+            "Inputs": [
+                {
+                    "ID": 71,
+                    "IsActive": false,
+                    "Kind": 1,
+                    "LinkIds": [],
+                    "Name": "",
+                    "PinBuffer": {
+                        "Buffer": "std::vector<StateBird*>",
+                        "Type": 1
+                    },
+                    "Type": 5
+                },
+                {
+                    "ID": 72,
+                    "IsActive": false,
+                    "Kind": 1,
+                    "LinkIds": [],
+                    "Name": "",
+                    "PinBuffer": {
+                        "Buffer": "InitValue",
+                        "Type": 2
+                    },
+                    "Type": 6
+                }
+            ],
+            "InsideIds": [],
+            "Name": "Attribute",
+            "Outputs": [
+                {
+                    "ID": 73,
+                    "IsActive": false,
+                    "Kind": 0,
+                    "LinkIds": [],
+                    "Name": "",
+                    "PinBuffer": {
+                        "Buffer": "birds",
+                        "Type": 0
+                    },
+                    "Type": 1
+                }
+            ],
+            "OutsideId": 29,
+            "Position": [
+                232.0,
+                896.0
+            ],
+            "Size": [
+                0.0,
+                0.0
+            ],
+            "State": "{\"location\":{\"x\":232,\"y\":896}}",
+            "Type": 6
+        },
+        {
+            "AgentId": -1,
+            "AssociatedIds": [],
+            "Color": [
+                0.501960813999176,
+                0.7647059559822083,
+                0.9725490808486938
+            ],
+            "Deleted": false,
+            "ID": 74,
+            "Inputs": [
+                {
+                    "ID": 75,
+                    "IsActive": false,
+                    "Kind": 1,
+                    "LinkIds": [],
+                    "Name": "",
+                    "PinBuffer": {
+                        "Buffer": "int",
+                        "Type": 1
+                    },
+                    "Type": 5
+                },
+                {
+                    "ID": 76,
+                    "IsActive": false,
+                    "Kind": 1,
+                    "LinkIds": [],
+                    "Name": "",
+                    "PinBuffer": {
+                        "Buffer": "300",
+                        "Type": 2
+                    },
+                    "Type": 6
+                }
+            ],
+            "InsideIds": [],
+            "Name": "Attribute",
+            "Outputs": [
+                {
+                    "ID": 77,
+                    "IsActive": false,
+                    "Kind": 0,
+                    "LinkIds": [],
+                    "Name": "",
+                    "PinBuffer": {
+                        "Buffer": "number_of_birds",
+                        "Type": 0
+                    },
+                    "Type": 1
+                }
+            ],
+            "OutsideId": 29,
+            "Position": [
+                634.0,
+                535.0
+            ],
+            "Size": [
+                0.0,
+                0.0
+            ],
+            "State": "{\"location\":{\"x\":634,\"y\":535}}",
+            "Type": 6
+        },
+        {
+            "AgentId": -1,
+            "AssociatedIds": [],
+            "Color": [
+                0.501960813999176,
+                0.7647059559822083,
+                0.9725490808486938
+            ],
+            "Deleted": false,
+            "ID": 78,
+            "Inputs": [
+                {
+                    "ID": 79,
+                    "IsActive": false,
+                    "Kind": 1,
+                    "LinkIds": [],
+                    "Name": "",
+                    "PinBuffer": {
+                        "Buffer": "float",
+                        "Type": 1
+                    },
+                    "Type": 5
+                },
+                {
+                    "ID": 80,
+                    "IsActive": false,
+                    "Kind": 1,
+                    "LinkIds": [],
+                    "Name": "",
+                    "PinBuffer": {
+                        "Buffer": "50",
+                        "Type": 2
+                    },
+                    "Type": 6
+                }
+            ],
+            "InsideIds": [],
+            "Name": "Attribute",
+            "Outputs": [
+                {
+                    "ID": 81,
+                    "IsActive": false,
+                    "Kind": 0,
+                    "LinkIds": [],
+                    "Name": "",
+                    "PinBuffer": {
+                        "Buffer": "visual_distance",
+                        "Type": 0
+                    },
+                    "Type": 1
+                }
+            ],
+            "OutsideId": 29,
+            "Position": [
+                632.0,
+                656.0
+            ],
+            "Size": [
+                0.0,
+                0.0
+            ],
+            "State": "{\"location\":{\"x\":632,\"y\":656}}",
+            "Type": 6
+        },
+        {
+            "AgentId": -1,
+            "AssociatedIds": [],
+            "Color": [
+                0.501960813999176,
+                0.7647059559822083,
+                0.9725490808486938
+            ],
+            "Deleted": false,
+            "ID": 82,
+            "Inputs": [
+                {
+                    "ID": 83,
+                    "IsActive": false,
+                    "Kind": 1,
+                    "LinkIds": [],
+                    "Name": "",
+                    "PinBuffer": {
+                        "Buffer": "float",
+                        "Type": 1
+                    },
+                    "Type": 5
+                },
+                {
+                    "ID": 84,
+                    "IsActive": false,
+                    "Kind": 1,
+                    "LinkIds": [],
+                    "Name": "",
+                    "PinBuffer": {
+                        "Buffer": "0.4",
+                        "Type": 2
+                    },
+                    "Type": 6
+                }
+            ],
+            "InsideIds": [],
+            "Name": "Attribute",
+            "Outputs": [
+                {
+                    "ID": 85,
+                    "IsActive": false,
+                    "Kind": 0,
+                    "LinkIds": [],
+                    "Name": "",
+                    "PinBuffer": {
+                        "Buffer": "match_factor",
+                        "Type": 0
+                    },
+                    "Type": 1
+                }
+            ],
+            "OutsideId": 29,
+            "Position": [
+                632.0,
+                768.0
+            ],
+            "Size": [
+                0.0,
+                0.0
+            ],
+            "State": "{\"location\":{\"x\":632,\"y\":768}}",
+            "Type": 6
+        },
+        {
+            "AgentId": -1,
+            "AssociatedIds": [],
+            "Color": [
+                0.501960813999176,
+                0.7647059559822083,
+                0.9725490808486938
+            ],
+            "Deleted": false,
+            "ID": 86,
+            "Inputs": [
+                {
+                    "ID": 87,
+                    "IsActive": false,
+                    "Kind": 1,
+                    "LinkIds": [],
+                    "Name": "",
+                    "PinBuffer": {
+                        "Buffer": "float",
+                        "Type": 1
+                    },
+                    "Type": 5
+                },
+                {
+                    "ID": 88,
+                    "IsActive": false,
+                    "Kind": 1,
+                    "LinkIds": [],
+                    "Name": "",
+                    "PinBuffer": {
+                        "Buffer": "0.25",
+                        "Type": 2
+                    },
+                    "Type": 6
+                }
+            ],
+            "InsideIds": [],
+            "Name": "Attribute",
+            "Outputs": [
+                {
+                    "ID": 89,
+                    "IsActive": false,
+                    "Kind": 0,
+                    "LinkIds": [],
+                    "Name": "",
+                    "PinBuffer": {
+                        "Buffer": "separate_factor",
+                        "Type": 0
+                    },
+                    "Type": 1
+                }
+            ],
+            "OutsideId": 29,
+            "Position": [
+                632.0,
+                880.0
+            ],
+            "Size": [
+                0.0,
+                0.0
+            ],
+            "State": "{\"location\":{\"x\":632,\"y\":880}}",
+            "Type": 6
+        },
+        {
+            "AgentId": -1,
+            "AssociatedIds": [],
+            "Color": [
+                0.501960813999176,
+                0.7647059559822083,
+                0.9725490808486938
+            ],
+            "Deleted": false,
+            "ID": 90,
+            "Inputs": [
+                {
+                    "ID": 91,
+                    "IsActive": false,
+                    "Kind": 1,
+                    "LinkIds": [],
+                    "Name": "",
+                    "PinBuffer": {
+                        "Buffer": "float",
+                        "Type": 1
+                    },
+                    "Type": 5
+                },
+                {
+                    "ID": 92,
+                    "IsActive": false,
+                    "Kind": 1,
+                    "LinkIds": [],
+                    "Name": "",
+                    "PinBuffer": {
+                        "Buffer": "2.0",
+                        "Type": 2
+                    },
+                    "Type": 6
+                }
+            ],
+            "InsideIds": [],
+            "Name": "Attribute",
+            "Outputs": [
+                {
+                    "ID": 93,
+                    "IsActive": false,
+                    "Kind": 0,
+                    "LinkIds": [],
+                    "Name": "",
+                    "PinBuffer": {
+                        "Buffer": "separation",
+                        "Type": 0
+                    },
+                    "Type": 1
+                }
+            ],
+            "OutsideId": 29,
+            "Position": [
+                920.0,
+                528.0
+            ],
+            "Size": [
+                0.0,
+                0.0
+            ],
+            "State": "{\"location\":{\"x\":920,\"y\":528}}",
+            "Type": 6
+        },
+        {
+            "AgentId": -1,
+            "AssociatedIds": [],
+            "Color": [
+                0.501960813999176,
+                0.7647059559822083,
+                0.9725490808486938
+            ],
+            "Deleted": false,
+            "ID": 94,
+            "Inputs": [
+                {
+                    "ID": 95,
+                    "IsActive": false,
+                    "Kind": 1,
+                    "LinkIds": [],
+                    "Name": "",
+                    "PinBuffer": {
+                        "Buffer": "float",
+                        "Type": 1
+                    },
+                    "Type": 5
+                },
+                {
+                    "ID": 96,
+                    "IsActive": false,
+                    "Kind": 1,
+                    "LinkIds": [],
+                    "Name": "",
+                    "PinBuffer": {
+                        "Buffer": "0.1",
+                        "Type": 2
+                    },
+                    "Type": 6
+                }
+            ],
+            "InsideIds": [],
+            "Name": "Attribute",
+            "Outputs": [
+                {
+                    "ID": 97,
+                    "IsActive": false,
+                    "Kind": 0,
+                    "LinkIds": [],
+                    "Name": "",
+                    "PinBuffer": {
+                        "Buffer": "cohere_factor",
+                        "Type": 0
+                    },
+                    "Type": 1
+                }
+            ],
+            "OutsideId": 29,
+            "Position": [
+                920.0,
+                672.0
+            ],
+            "Size": [
+                0.0,
+                0.0
+            ],
+            "State": "{\"location\":{\"x\":920,\"y\":672}}",
+            "Type": 6
+        },
+        {
+            "AgentId": -1,
+            "AssociatedIds": [
+                110
+            ],
+            "Color": [
+                0.501960813999176,
+                0.7647059559822083,
+                0.9725490808486938
+            ],
+            "Deleted": false,
+            "ID": 98,
+            "Inputs": [
+                {
+                    "ID": 99,
+                    "IsActive": true,
+                    "Kind": 1,
+                    "LinkIds": [
+                        100
+                    ],
+                    "Name": "Id",
+                    "PinBuffer": {
+                        "Buffer": "1",
+                        "Type": 4
+                    },
+                    "Type": 3
+                }
+            ],
+            "InsideIds": [],
+            "Name": "Service",
+            "Outputs": [],
+            "OutsideId": 7,
+            "Position": [
+                -69.0,
+                -24.0
+            ],
+            "Size": [
+                0.0,
+                0.0
+            ],
+            "State": "{\"location\":{\"x\":-69,\"y\":-24}}",
+            "Type": 1
+        },
+        {
+            "AgentId": -1,
+            "AssociatedIds": [
+                112
+            ],
+            "Color": [
+                0.501960813999176,
+                0.7647059559822083,
+                0.9725490808486938
+            ],
+            "Deleted": false,
+            "ID": 101,
+            "Inputs": [
+                {
+                    "ID": 102,
+                    "IsActive": true,
+                    "Kind": 1,
+                    "LinkIds": [
+                        103
+                    ],
+                    "Name": "Id",
+                    "PinBuffer": {
+                        "Buffer": "2",
+                        "Type": 4
+                    },
+                    "Type": 3
+                }
+            ],
+            "InsideIds": [],
+            "Name": "Service",
+            "Outputs": [],
+            "OutsideId": 7,
+            "Position": [
+                -184.0,
+                156.0
+            ],
+            "Size": [
+                0.0,
+                0.0
+            ],
+            "State": "{\"group_size\":{\"x\":280,\"y\":500},\"location\":{\"x\":-184,\"y\":156}}",
+            "Type": 1
+        },
+        {
+            "AgentId": -1,
+            "AssociatedIds": [
+                114
+            ],
+            "Color": [
+                0.501960813999176,
+                0.7647059559822083,
+                0.9725490808486938
+            ],
+            "Deleted": false,
+            "ID": 104,
+            "Inputs": [
+                {
+                    "ID": 105,
+                    "IsActive": true,
+                    "Kind": 1,
+                    "LinkIds": [
+                        106
+                    ],
+                    "Name": "Id",
+                    "PinBuffer": {
+                        "Buffer": "3",
+                        "Type": 4
+                    },
+                    "Type": 3
+                }
+            ],
+            "InsideIds": [],
+            "Name": "Service",
+            "Outputs": [],
+            "OutsideId": 7,
+            "Position": [
+                -65.0,
+                320.0
+            ],
+            "Size": [
+                0.0,
+                0.0
+            ],
+            "State": "{\"location\":{\"x\":-65,\"y\":320}}",
+            "Type": 1
+        },
+        {
+            "AgentId": -1,
+            "AssociatedIds": [],
+            "Color": [
+                0.0,
+                0.8000000715255737,
+                0.40000003576278687
+            ],
+            "Deleted": false,
+            "ID": 107,
+            "Inputs": [],
+            "InsideIds": [
+                109,
+                110,
+                112,
+                114,
+                117,
+                120,
+                123,
+                126
+            ],
+            "Name": "Reasoning",
+            "Outputs": [
+                {
+                    "ID": 108,
+                    "IsActive": true,
+                    "Kind": 0,
+                    "LinkIds": [
+                        116
+                    ],
+                    "Name": "Reactive",
+                    "PinBuffer": {
+                        "Buffer": "Edit me",
+                        "Type": 5
+                    },
+                    "Type": 4
+                }
+            ],
+            "OutsideId": 7,
+            "Position": [
+                -777.0,
+                195.0
+            ],
+            "Size": [
+                0.0,
+                0.0
+            ],
+            "State": "{\"location\":{\"x\":-777,\"y\":195}}",
+            "Type": 3
+        },
+        {
+            "AgentId": -1,
+            "AssociatedIds": [],
+            "Color": [
+                1.0,
+                1.0,
+                1.0
+            ],
+            "Deleted": false,
+            "ID": 109,
+            "Inputs": [],
+            "InsideIds": [],
+            "Name": "Attributes",
+            "Outputs": [],
+            "OutsideId": 107,
+            "Position": [
+                -176.0,
+                96.0
+            ],
+            "Size": [
+                280.0,
+                500.0
+            ],
+            "State": "{\"group_size\":{\"x\":280,\"y\":500},\"location\":{\"x\":-176,\"y\":96}}",
+            "Type": 7
+        },
+        {
+            "AgentId": -1,
+            "AssociatedIds": [
+                98
+            ],
+            "Color": [
+                0.501960813999176,
+                0.7647059559822083,
+                0.9725490808486938
+            ],
+            "Deleted": false,
+            "ID": 110,
+            "Inputs": [],
+            "InsideIds": [],
+            "Name": "Service",
+            "Outputs": [
+                {
+                    "ID": 111,
+                    "IsActive": true,
+                    "Kind": 0,
+                    "LinkIds": [
+                        119
+                    ],
+                    "Name": "Id",
+                    "PinBuffer": {
+                        "Buffer": "1",
+                        "Type": 4
+                    },
+                    "Type": 0
+                }
+            ],
+            "OutsideId": 107,
+            "Position": [
+                -762.0,
+                -116.0
+            ],
+            "Size": [
+                0.0,
+                0.0
+            ],
+            "State": "{\"location\":{\"x\":-762,\"y\":-116}}",
+            "Type": 2
+        },
+        {
+            "AgentId": -1,
+            "AssociatedIds": [
+                101
+            ],
+            "Color": [
+                0.501960813999176,
+                0.7647059559822083,
+                0.9725490808486938
+            ],
+            "Deleted": false,
+            "ID": 112,
+            "Inputs": [],
+            "InsideIds": [],
+            "Name": "Service",
+            "Outputs": [
+                {
+                    "ID": 113,
+                    "IsActive": true,
+                    "Kind": 0,
+                    "LinkIds": [
+                        122
+                    ],
+                    "Name": "Id",
+                    "PinBuffer": {
+                        "Buffer": "2",
+                        "Type": 4
+                    },
+                    "Type": 0
+                }
+            ],
+            "OutsideId": 107,
+            "Position": [
+                -762.0,
+                28.0
+            ],
+            "Size": [
+                0.0,
+                0.0
+            ],
+            "State": "{\"location\":{\"x\":-762,\"y\":28}}",
+            "Type": 2
+        },
+        {
+            "AgentId": -1,
+            "AssociatedIds": [
+                104
+            ],
+            "Color": [
+                0.501960813999176,
+                0.7647059559822083,
+                0.9725490808486938
+            ],
+            "Deleted": false,
+            "ID": 114,
+            "Inputs": [],
+            "InsideIds": [],
+            "Name": "Service",
+            "Outputs": [
+                {
+                    "ID": 115,
+                    "IsActive": true,
+                    "Kind": 0,
+                    "LinkIds": [
+                        125
+                    ],
+                    "Name": "Id",
+                    "PinBuffer": {
+                        "Buffer": "3",
+                        "Type": 4
+                    },
+                    "Type": 0
+                }
+            ],
+            "OutsideId": 107,
+            "Position": [
+                -762.0,
+                140.0
+            ],
+            "Size": [
+                0.0,
+                0.0
+            ],
+            "State": "{\"location\":{\"x\":-762,\"y\":140}}",
+            "Type": 2
+        },
+        {
+            "AgentId": -1,
+            "AssociatedIds": [],
+            "Color": [
+                1.0,
+                0.6980392336845398,
+                0.40000003576278687
+            ],
+            "Deleted": false,
+            "ID": 117,
+            "Inputs": [
+                {
+                    "ID": 118,
+                    "IsActive": true,
+                    "Kind": 1,
+                    "LinkIds": [
+                        119
+                    ],
+                    "Name": "",
+                    "PinBuffer": {
+                        "Buffer": "getPosition",
+                        "Type": 0
+                    },
+                    "Type": 0
+                }
+            ],
+            "InsideIds": [],
+            "Name": "Function",
+            "Outputs": [],
+            "OutsideId": 107,
+            "Position": [
+                -440.0,
+                -100.0
+            ],
+            "Size": [
+                0.0,
+                0.0
+            ],
+            "State": "{\"location\":{\"x\":-440,\"y\":-100}}",
+            "Type": 10
+        },
+        {
+            "AgentId": -1,
+            "AssociatedIds": [],
+            "Color": [
+                1.0,
+                0.6980392336845398,
+                0.40000003576278687
+            ],
+            "Deleted": false,
+            "ID": 120,
+            "Inputs": [
+                {
+                    "ID": 121,
+                    "IsActive": true,
+                    "Kind": 1,
+                    "LinkIds": [
+                        122
+                    ],
+                    "Name": "",
+                    "PinBuffer": {
+                        "Buffer": "move",
+                        "Type": 0
+                    },
+                    "Type": 0
+                }
+            ],
+            "InsideIds": [],
+            "Name": "Function",
+            "Outputs": [],
+            "OutsideId": 107,
+            "Position": [
+                -408.0,
+                28.0
+            ],
+            "Size": [
+                0.0,
+                0.0
+            ],
+            "State": "{\"location\":{\"x\":-408,\"y\":28}}",
+            "Type": 10
+        },
+        {
+            "AgentId": -1,
+            "AssociatedIds": [],
+            "Color": [
+                1.0,
+                0.6980392336845398,
+                0.40000003576278687
+            ],
+            "Deleted": false,
+            "ID": 123,
+            "Inputs": [
+                {
+                    "ID": 124,
+                    "IsActive": true,
+                    "Kind": 1,
+                    "LinkIds": [
+                        125
+                    ],
+                    "Name": "",
+                    "PinBuffer": {
+                        "Buffer": "setPosition",
+                        "Type": 0
+                    },
+                    "Type": 0
+                }
+            ],
+            "InsideIds": [],
+            "Name": "Function",
+            "Outputs": [],
+            "OutsideId": 107,
+            "Position": [
+                -424.0,
+                178.0
+            ],
+            "Size": [
+                0.0,
+                0.0
+            ],
+            "State": "{\"location\":{\"x\":-424,\"y\":178}}",
+            "Type": 10
+        },
+        {
+            "AgentId": -1,
+            "AssociatedIds": [],
+            "Color": [
+                0.501960813999176,
+                0.7647059559822083,
+                0.9725490808486938
+            ],
+            "Deleted": false,
+            "ID": 126,
+            "Inputs": [
+                {
+                    "ID": 127,
+                    "IsActive": false,
+                    "Kind": 1,
+                    "LinkIds": [],
+                    "Name": "",
+                    "PinBuffer": {
+                        "Buffer": "StateBird*",
+                        "Type": 1
+                    },
+                    "Type": 5
+                },
+                {
+                    "ID": 128,
+                    "IsActive": false,
+                    "Kind": 1,
+                    "LinkIds": [],
+                    "Name": "",
+                    "PinBuffer": {
+                        "Buffer": "nullptr",
+                        "Type": 2
+                    },
+                    "Type": 6
+                }
+            ],
+            "InsideIds": [],
+            "Name": "Attribute",
+            "Outputs": [
+                {
+                    "ID": 129,
+                    "IsActive": false,
+                    "Kind": 0,
+                    "LinkIds": [],
+                    "Name": "",
+                    "PinBuffer": {
+                        "Buffer": "birdState",
+                        "Type": 0
+                    },
+                    "Type": 1
+                }
+            ],
+            "OutsideId": 107,
+            "Position": [
+                -152.0,
+                144.0
+            ],
+            "Size": [
+                0.0,
+                0.0
+            ],
+            "State": "{\"location\":{\"x\":-152,\"y\":144}}",
+            "Type": 6
+        }
+    ]
+}

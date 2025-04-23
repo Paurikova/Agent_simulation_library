@@ -1,20 +1,29 @@
 #include "../include/line.h"
+#include "../include/state_line.h"
+
+std::queue<SimTime_t>& Line::chooseLine() {
+    if (stateShop->custInLine0.size() <= stateShop->custInLine1.size()) {
+        return stateShop->custInLine0;  // Line 0 is chosen
+    } else {
+        return stateShop->custInLine1;  // Line 1 is chosen
+    }
+}
 
 //1
 NodeId_t Line::addToLine_cond1(int pSender, int pReceiver, SimTime_t pExecTime, State* state) {
-    logger->log(fmt::format("{}: addToLine_cond1", pReceiver));
-    stateShop->custInLines[pReceiver].push(pExecTime);
-    logger->log(fmt::format("  [{}]\n", stateShop->custInLines[pReceiver].size()));
-    if (stateShop->custInLines[pReceiver].size() == 1) {
-        return 5;
-    }
-    return -1;
-}
+    auto& line = chooseLine();  // Get the appropriate line
 
-//5
-NodeId_t Line::addToLine_fun1(int pSender, int pReceiver, SimTime_t pExecTime, State* state) {
-    logger->log(fmt::format("{}: addToLine_fun1\n", pReceiver));
-    sendMessage(1, pExecTime, pReceiver, pReceiver + 2, -1 , new StateBreak());
+    logger->log(fmt::format("{}: addToLine (chosen line: {})", pReceiver, (line == stateShop->custInLine0) ? 0 : 1));
+
+    line.push(pExecTime);
+
+    logger->log(fmt::format("  [Line{} size: {}]\n", (line == stateShop->custInLine0) ? 0 : 1, line.size()));
+
+    if (line.size() == 1) {
+        StateLine* stateLine = new StateLine(line == stateShop->custInLine0 ? 0 : 1);
+        sendMessage(1, pExecTime, pReceiver, pReceiver+1, -1, stateLine);
+        return -1;
+    }
     return -1;
 }
 
@@ -27,29 +36,6 @@ NodeId_t Line::removeFromLine(int pSender, int pReceiver, SimTime_t pExecTime, S
     logger->log(fmt::format("  [{}]\n", stateShop->custInLines[pReceiver].size()));
     //process customer by cash
     sendMessage(2, pExecTime, pReceiver, pSender);
-    return -1;
-}
-
-//3
-NodeId_t Line::removeFromShop(int pSender, int pReceiver, SimTime_t pExecTime, State* state) {
-    logger->log(fmt::format("{}: removeFromShop\n", pReceiver));
-    sendMessage(4, pExecTime, pReceiver, 3);
-    return -1;
-}
-
-//4
-NodeId_t Line::hasCustomer_cond1(int pSender, int pReceiver, SimTime_t pExecTime, State* state) {
-    logger->log(fmt::format("{}: hasCustomer_cond1\n", pReceiver));
-    if (stateShop->custInLines[pReceiver].size() > 0) {
-        return 6;
-    }
-    return -1;
-}
-
-//6
-NodeId_t Line::hasCustomer_fun1(int pSender, int pReceiver, SimTime_t pExecTime, State* state) {
-    logger->log(fmt::format("{}: hasCustomer_fun1\n", pReceiver));
-    sendMessage(1, pExecTime, pReceiver, pReceiver + 2, -1, new StateBreak());
     return -1;
 }
 
