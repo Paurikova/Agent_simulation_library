@@ -14,7 +14,6 @@ private:
     bool hasCustom2 = false;
 
     // Function declarations
-    int hasBreak(int value, int cash);
     void acceptCustomer(int pSender, int pReceiver, SimTime_t pExecTime, State* state);
     void processCustomer(int pSender, int pReceiver, SimTime_t pExecTime, State* state);
     void endCustomer(int pSender, int pReceiver, SimTime_t pExecTime, State* state);

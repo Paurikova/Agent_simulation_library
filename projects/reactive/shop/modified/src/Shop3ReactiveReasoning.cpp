@@ -1,23 +1,24 @@
 #include "../include/Shop3ReactiveReasoning.h"
+#include "../include/state_line.h"
 #include <cstdlib>
 void Shop3ReactiveReasoning::addCustomerToLine(int pSender, int pReceiver, SimTime_t pExecTime, State* state) {
     //add your code
     logger->log(fmt::format("{}: addCustomerToLine", pReceiver));
-    logger->log(fmt::format("   Line1[{}]     Line2[{}]\n", stateShop->custInLines[4].size(), stateShop->custInLines[5].size()));
-    if (stateShop->custInLines[4].size() >= stateShop->custInLines[5].size()) {
-        sendMessage(1,pExecTime, pReceiver,5);
-    } else {
-        sendMessage(1,pExecTime, pReceiver,4);
-    }
+    logger->log(fmt::format("   Line 0 [{}]     Line 1 [{}]\n", stateShop->custInLine0.size(), stateShop->custInLine1.size()));
+    sendMessage(1, pExecTime, pReceiver, pReceiver+1);
 }
 void Shop3ReactiveReasoning::removeCustomer(int pSender, int pReceiver, SimTime_t pExecTime, State* state) {
     //add your code
     logger->log(fmt::format("{}: removeCustomer", pReceiver));
     stateShop->custInShop -= 1;
     logger->log(fmt::format("  [{}]\n", stateShop->custInShop));
-    if (stateShop->custInShop > 0) {
-        sendMessage(4, pExecTime + 1, pReceiver, pSender);
+    StateLine* stateLine = dynamic_cast<StateLine*>(state);
+    if (stateLine->line == 0 ? (stateShop->custInLine0.size() > 0)
+                             : (stateShop->custInLine1.size() > 0)) {
+        sendMessage(1, pExecTime + 1, pReceiver, 5, 1, state);
+        return;
     }
+    delete state;
 }
 void Shop3ReactiveReasoning::newCustomer(int pSender, int pReceiver, SimTime_t pExecTime, State* state) {
     //add your code

@@ -23,22 +23,17 @@ int main(int argc, char** argv) {
     std::unique_ptr<Agent> aCustomer = std::make_unique<Agent>(2, aManager.get(), rCustomer.get());
     simulationCore->registerAgent(aCustomer.get());
 
-    std::unique_ptr<Shop3ReactiveReasoning> rShop = std::make_unique<Shop3ReactiveReasoning>(15, stateShop.get(), logger.get());
+    std::unique_ptr<Shop3ReactiveReasoning> rShop = std::make_unique<Shop3ReactiveReasoning>(2, stateShop.get(), logger.get());
     std::unique_ptr<Agent> aShop = std::make_unique<Agent>(3, aManager.get(), rShop.get());
     simulationCore->registerAgent(aShop.get());
 
     std::unique_ptr<Line5ReactiveReasoning> rLine = std::make_unique<Line5ReactiveReasoning>(stateShop.get(), logger.get());
-    std::unique_ptr<Agent> aLine1 = std::make_unique<Agent>(4, aManager.get(), rLine.get());
-    std::unique_ptr<Agent> aLine2 = std::make_unique<Agent>(5, aManager.get(), rLine.get());
-    simulationCore->registerAgent(aLine1.get());
-    simulationCore->registerAgent(aLine2.get());
+    std::unique_ptr<Agent> aLine = std::make_unique<Agent>(4, aManager.get(), rLine.get());
+    simulationCore->registerAgent(aLine.get());
 
-    std::unique_ptr<Cash6ReactiveReasoning> rCash1 = std::make_unique<Cash6ReactiveReasoning>(std::vector<int>{100, 500, 900}, 50, 30, stateShop.get(), logger.get());
-    std::unique_ptr<Cash6ReactiveReasoning> rCash2 = std::make_unique<Cash6ReactiveReasoning>(std::vector<int>{200, 600, 1000}, 50, 25, stateShop.get(), logger.get());
-    std::unique_ptr<Agent> aCash1 = std::make_unique<Agent>(6, aManager.get(), rCash1.get());
-    std::unique_ptr<Agent> aCash2 = std::make_unique<Agent>(7, aManager.get(), rCash2.get());
-    simulationCore->registerAgent(aCash1.get());
-    simulationCore->registerAgent(aCash2.get());
+    std::unique_ptr<Cash6ReactiveReasoning> rCash = std::make_unique<Cash6ReactiveReasoning>(30, 25, stateShop.get(), logger.get());
+    std::unique_ptr<Agent> aCash = std::make_unique<Agent>(5, aManager.get(), rCash.get());
+    simulationCore->registerAgent(aCash.get());
 
     sf::RenderWindow window(sf::VideoMode(800, 600), "Shop Simulation");
     std::unique_ptr<Graph4ReactiveReasoning> rGraph = std::make_unique<Graph4ReactiveReasoning>(500, window, stateShop.get(), logger.get());
