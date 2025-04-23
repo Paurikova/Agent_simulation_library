@@ -1,6 +1,4 @@
 #include "../../../../library/include/agentManager.h"
-#include "../../../../library/include/agent.h"
-
 #include "../include/bird.h"
 #include "../include/manager.h"
 #include "configReader.h"

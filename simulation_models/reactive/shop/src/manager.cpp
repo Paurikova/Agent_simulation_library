@@ -46,7 +46,7 @@ void Manager::initMessage() {
     //open
     sendMessage(1, 0, 1, 3);
     //window
-    sendMessage(1, 0, 1, 8);
+    sendMessage(1, 0, 1, 6);
     // new customer
     sendMessage(1, 0, 1, 1);
 }

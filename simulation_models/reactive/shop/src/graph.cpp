@@ -1,5 +1,4 @@
 #include "../include/graph.h"
-
 void Graph::draw(int pSender, int pReceiver, SimTime_t pExecTime, State* state) {
     logger->log(fmt::format("{}: draw", pReceiver));
     if (window.isOpen()) {
@@ -16,14 +15,18 @@ void Graph::draw(int pSender, int pReceiver, SimTime_t pExecTime, State* state) 
         std::vector<float> data;
         data.push_back(stateShop->custInShop);  // current number of customers in shop
         logger->log(fmt::format("Data: custInShop [{}]", data.back()));
-        data.push_back(stateShop->custInLines[4].size()); // current number of customers in line 1
+
+        data.push_back(stateShop->custInLine0.size());
         logger->log(fmt::format("   custInLine1 [{}]", data.back()));
-        data.push_back(stateShop->custInLines[5].size()); //current number of customers in line 2
+        data.push_back(stateShop->custInLine1.size());
         logger->log(fmt::format("   custInLine2 [{}]", data.back()));
-        data.push_back(stateShop->totalCustTimeInLine[4]/(stateShop->totalCustInLine[4] == 0 ? 1 : stateShop->totalCustInLine[4])); //average waiting time in line 1 with paying
-        logger->log(fmt::format("   totalCustTimeInLine1 [{}]", data.back()));
-        data.push_back(stateShop->totalCustTimeInLine[5]/(stateShop->totalCustInLine[5] == 0 ? 1 : stateShop->totalCustInLine[5]));  //average waiting time in line 1 with paying
-        logger->log(fmt::format("   totalCustTimeInLine2 [{}]\n", data.back()));
+        float avgLine0 = stateShop->totalCustTimeInLine0 / (stateShop->totalCustInLine0 == 0 ? 1 : stateShop->totalCustInLine0);
+        data.push_back(avgLine0);
+        logger->log(fmt::format("   avgWaitTimeLine01[{}]", avgLine0));
+        float avgLine1 = stateShop->totalCustTimeInLine1 / (stateShop->totalCustInLine1 == 0 ? 1 : stateShop->totalCustInLine1);
+        data.push_back(avgLine1);
+        logger->log(fmt::format("   avgWaitTimeLine2 [{}]\n", avgLine1));
+
         // Draw the bar chart
         drawBarChart(data);
 

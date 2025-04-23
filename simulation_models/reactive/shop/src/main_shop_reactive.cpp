@@ -24,29 +24,29 @@ int main(int argc, char** argv) {
     std::unique_ptr<Agent> aCustomer = std::make_unique<Agent>(2, aManager.get(), rCustomer.get());
     simulationCore->registerAgent(aCustomer.get());
 
-    std::unique_ptr<Shop> rShop = std::make_unique<Shop>(15, stateShop.get(), logger.get());
+    std::unique_ptr<Shop> rShop = std::make_unique<Shop>(2, stateShop.get(), logger.get());
     std::unique_ptr<Agent> aShop = std::make_unique<Agent>(3, aManager.get(), rShop.get());
     simulationCore->registerAgent(aShop.get());
 
     std::unique_ptr<Line> rLine = std::make_unique<Line>(stateShop.get(), logger.get());
-    std::unique_ptr<Agent> aLine1 = std::make_unique<Agent>(4, aManager.get(), rLine.get());
-    std::unique_ptr<Agent> aLine2 = std::make_unique<Agent>(5, aManager.get(), rLine.get());
-    simulationCore->registerAgent(aLine1.get());
-    simulationCore->registerAgent(aLine2.get());
+    std::unique_ptr<Agent> aLine = std::make_unique<Agent>(4, aManager.get(), rLine.get());
+    simulationCore->registerAgent(aLine.get());
 
-    std::unique_ptr<Cash> rCash1 = std::make_unique<Cash>(std::vector<int>{100, 500, 900}, 50, 30, stateShop.get(), logger.get());
-    std::unique_ptr<Cash> rCash2 = std::make_unique<Cash>(std::vector<int>{200, 600, 1000}, 50, 25, stateShop.get(), logger.get());
-    std::unique_ptr<Agent> aCash1 = std::make_unique<Agent>(6, aManager.get(), rCash1.get());
-    std::unique_ptr<Agent> aCash2 = std::make_unique<Agent>(7, aManager.get(), rCash2.get());
-    simulationCore->registerAgent(aCash1.get());
-    simulationCore->registerAgent(aCash2.get());
+    std::unique_ptr<Cash> rCash = std::make_unique<Cash>( 30, 25, stateShop.get(), logger.get());
+    std::unique_ptr<Agent> aCash = std::make_unique<Agent>(5, aManager.get(), rCash.get());
 
+    simulationCore->registerAgent(aCash.get());
+
+    // Graph agent for visualization
     sf::RenderWindow window(sf::VideoMode(800, 600), "Shop Simulation");
     std::unique_ptr<Graph> rGraph = std::make_unique<Graph>(500, window, stateShop.get(), logger.get());
-    std::unique_ptr<Agent> aGraph = std::make_unique<Agent>(8, aManager.get(), rGraph.get());
+    std::unique_ptr<Agent> aGraph = std::make_unique<Agent>(6, aManager.get(), rGraph.get());
     simulationCore->registerAgent(aGraph.get());
 
+    // Run the simulation
     simulationCore->runSimulation(1, -1);
+
+    // Write logs to file
     logger->addToFile();
 
     // No need to manually delete anything, since smart pointers take care of that.

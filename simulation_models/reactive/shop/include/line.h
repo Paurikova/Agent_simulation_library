@@ -7,13 +7,16 @@
 class Line : public ReactiveReasoning {
 private:
     StateShop* stateShop;
-    //function
+
+    std::queue<SimTime_t>& chooseLine();
+    // Function handlers
     void addToLine(int pSender, int pReceiver, SimTime_t pExecTime, State* state);
     void removeFromLine(int pSender, int pReceiver, SimTime_t pExecTime, State* state);
     void removeFromShop(int pSender, int pReceiver, SimTime_t pExecTime, State* state);
     void hasCustomer(int pSender, int pReceiver, SimTime_t pExecTime, State* state);
 
     void registerFunctions() override;
+
 public:
     Line(StateShop* pState, Logger* pLogger) : ReactiveReasoning(pLogger), stateShop(pState) {};
 };
