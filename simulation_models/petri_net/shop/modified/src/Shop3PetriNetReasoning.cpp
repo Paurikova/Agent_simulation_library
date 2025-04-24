@@ -1,25 +1,25 @@
-#include "../include/Shop4PetriNetReasoning.h"
+#include "../include/Shop3PetriNetReasoning.h"
 #include "../include/state_line.h"
-NodeId_t Shop4PetriNetReasoning::addCustomerToLine(int pSender, int pReceiver, SimTime_t pExecTime, State* state) {
+NodeId_t Shop3PetriNetReasoning::addCustomerToLine(int pSender, int pReceiver, SimTime_t pExecTime, State* state) {
     //add your code
     logger->log(fmt::format("{}: addCustomerToLine", pReceiver));
     logger->log(fmt::format("   Line 0 [{}]     Line 1 [{}]\n", stateShop->custInLine0.size(), stateShop->custInLine1.size()));
     sendMessage(1, pExecTime, pReceiver, pReceiver+1);
     return -1;
 }
-NodeId_t Shop4PetriNetReasoning::removeCustomer_fun177(int pSender, int pReceiver, SimTime_t pExecTime, State* state) {
+NodeId_t Shop3PetriNetReasoning::removeCustomer_fun177(int pSender, int pReceiver, SimTime_t pExecTime, State* state) {
     //add your code
     logger->log(fmt::format("{}: removeCustomer_fun177", pReceiver));
     delete state;
     return -1;
 }
-NodeId_t Shop4PetriNetReasoning::removeCustomer_fun174(int pSender, int pReceiver, SimTime_t pExecTime, State* state) {
+NodeId_t Shop3PetriNetReasoning::removeCustomer_fun174(int pSender, int pReceiver, SimTime_t pExecTime, State* state) {
     //add your code
     logger->log(fmt::format("{}: removeCustomer_fun174", pReceiver));
     sendMessage(1, pExecTime + 1, pReceiver, 5, 1, state);
     return -1;
 }
-NodeId_t Shop4PetriNetReasoning::removeCustomer_cond169(int pSender, int pReceiver, SimTime_t pExecTime, State* state) {
+NodeId_t Shop3PetriNetReasoning::removeCustomer_cond169(int pSender, int pReceiver, SimTime_t pExecTime, State* state) {
     logger->log(fmt::format("{}: removeCustomer_cond169", pReceiver));
     stateShop->custInShop -= 1;
     logger->log(fmt::format("  [{}]\n", stateShop->custInShop));
@@ -33,7 +33,7 @@ NodeId_t Shop4PetriNetReasoning::removeCustomer_cond169(int pSender, int pReceiv
         return 177;
     }
 }
-NodeId_t Shop4PetriNetReasoning::newCustomer(int pSender, int pReceiver, SimTime_t pExecTime, State* state) {
+NodeId_t Shop3PetriNetReasoning::newCustomer(int pSender, int pReceiver, SimTime_t pExecTime, State* state) {
     //add your code
     logger->log(fmt::format("{}: newCustomer", pReceiver));
     stateShop->custInShop += 1;
@@ -43,20 +43,20 @@ NodeId_t Shop4PetriNetReasoning::newCustomer(int pSender, int pReceiver, SimTime
     sendMessage(5, pExecTime + shoppingTime, pReceiver, pReceiver);
     return -1;
 }
-NodeId_t Shop4PetriNetReasoning::close(int pSender, int pReceiver, SimTime_t pExecTime, State* state) {
+NodeId_t Shop3PetriNetReasoning::close(int pSender, int pReceiver, SimTime_t pExecTime, State* state) {
     //add your code
     logger->log(fmt::format("{}: close", pReceiver));
     logger->log("   Shop is close\n");
     return -1;
 }
-NodeId_t Shop4PetriNetReasoning::open(int pSender, int pReceiver, SimTime_t pExecTime, State* state) {
+NodeId_t Shop3PetriNetReasoning::open(int pSender, int pReceiver, SimTime_t pExecTime, State* state) {
     //add your code
     logger->log(fmt::format("{}: open", pReceiver));
     logger->log("   Shopping is open\n");
     return -1;
 }
 
-void Shop4PetriNetReasoning::registerNodes() {
+void Shop3PetriNetReasoning::registerNodes() {
     //registration
     registerNode(180, [this](int pSender, int pReceiver, SimTime_t pExecTime, State* state)->NodeId_t{
         return addCustomerToLine(pSender, pReceiver, pExecTime, state);
@@ -81,7 +81,7 @@ void Shop4PetriNetReasoning::registerNodes() {
     });
 }
 
-void Shop4PetriNetReasoning::registerServices() {
+void Shop3PetriNetReasoning::registerServices() {
     //services
     registerService(5, 180);
     registerService(4, 169);

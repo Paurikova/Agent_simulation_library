@@ -3,7 +3,7 @@
 #include "../../../../../library/include/petriNetReasoning.h"
 #include "state_shop.h"
 
-class Cash6PetriNetReasoning : public PetriNetReasoning {
+class Cash5PetriNetReasoning : public PetriNetReasoning {
 private:
     //attributes
     bool hasCustom2 = false;
@@ -28,7 +28,7 @@ private:
     void registerNodes() override;
     void registerServices() override;
 public:
-    Cash6PetriNetReasoning(int pProcessLength1, int pProcessLength2, StateShop* pStateShop, Logger* pLogger) :
+    Cash5PetriNetReasoning(int pProcessLength1, int pProcessLength2, StateShop* pStateShop, Logger* pLogger) :
             PetriNetReasoning(pLogger),  processLength1(pProcessLength1),
             processLength2(pProcessLength2), stateShop(pStateShop) {}
 };

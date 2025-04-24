@@ -3,7 +3,7 @@
 #include "../../../../../library/include/petriNetReasoning.h"
 #include "state_shop.h"
 
-class Shop4PetriNetReasoning : public PetriNetReasoning {
+class Shop3PetriNetReasoning : public PetriNetReasoning {
 private:
     //attributes
     int shopping = 15;
@@ -19,6 +19,6 @@ private:
     void registerNodes() override;
     void registerServices() override;
 public:
-    Shop4PetriNetReasoning(int pShopping, StateShop* pStateShop, Logger* pLogger) :
+    Shop3PetriNetReasoning(int pShopping, StateShop* pStateShop, Logger* pLogger) :
             PetriNetReasoning(pLogger), shopping(pShopping), stateShop(pStateShop) {}
 };

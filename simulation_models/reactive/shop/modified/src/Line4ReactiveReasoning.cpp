@@ -1,14 +1,14 @@
 //TODO include
-#include "../include/Line5ReactiveReasoning.h"
+#include "../include/Line4ReactiveReasoning.h"
 #include "../include/state_line.h"
-std::queue<SimTime_t>& Line5ReactiveReasoning::chooseLine() {
+std::queue<SimTime_t>& Line4ReactiveReasoning::chooseLine() {
     if (stateShop->custInLine0.size() <= stateShop->custInLine1.size()) {
         return stateShop->custInLine0;  // Line 0 is chosen
     } else {
         return stateShop->custInLine1;  // Line 1 is chosen
     }
 }
-void Line5ReactiveReasoning::removeFromLine(int pSender, int pReceiver, SimTime_t pExecTime, State* state) {
+void Line4ReactiveReasoning::removeFromLine(int pSender, int pReceiver, SimTime_t pExecTime, State* state) {
     //add your code
     StateLine* stateLine = dynamic_cast<StateLine*>(state);
     logger->log(fmt::format("{}: removeFromLine (line: {})", pReceiver, stateLine->line));
@@ -34,7 +34,7 @@ void Line5ReactiveReasoning::removeFromLine(int pSender, int pReceiver, SimTime_
     }
 }
 
-void Line5ReactiveReasoning::addToLine(int pSender, int pReceiver, SimTime_t pExecTime, State* state) {
+void Line4ReactiveReasoning::addToLine(int pSender, int pReceiver, SimTime_t pExecTime, State* state) {
     //add your code
     auto& line = chooseLine();  // Get the appropriate line
 
@@ -50,7 +50,7 @@ void Line5ReactiveReasoning::addToLine(int pSender, int pReceiver, SimTime_t pEx
     }
 }
 
-void Line5ReactiveReasoning::registerFunctions() {
+void Line4ReactiveReasoning::registerFunctions() {
     //registration
     registerFunction(2, [this](int pSender, int pReceiver, SimTime_t pExecTime, State* state) {
         removeFromLine(pSender, pReceiver, pExecTime, state);

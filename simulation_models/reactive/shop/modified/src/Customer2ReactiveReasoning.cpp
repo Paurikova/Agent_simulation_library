@@ -1,6 +1,6 @@
 //TODO include
-#include "../include/Customer4ReactiveReasoning.h"
-void Customer4ReactiveReasoning::createCustomer(int pSender, int pReceiver, SimTime_t pExecTime, State* state) {
+#include "../include/Customer2ReactiveReasoning.h"
+void Customer2ReactiveReasoning::createCustomer(int pSender, int pReceiver, SimTime_t pExecTime, State* state) {
     //add your code
     logger->log(fmt::format("{}: createCustomer", pReceiver));
     int isCreated = rand() % 2;
@@ -16,7 +16,7 @@ void Customer4ReactiveReasoning::createCustomer(int pSender, int pReceiver, SimT
     }
 }
 
-void Customer4ReactiveReasoning::registerFunctions() {
+void Customer2ReactiveReasoning::registerFunctions() {
     //registration
     registerFunction(1, [this](int pSender, int pReceiver, SimTime_t pExecTime, State* state) {
         createCustomer(pSender, pReceiver, pExecTime, state);

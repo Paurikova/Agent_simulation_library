@@ -3,7 +3,7 @@
 #include "../../../../../library/include/reactiveReasoning.h"
 #include "state_shop.h"
 
-class Cash6ReactiveReasoning : public ReactiveReasoning {
+class Cash5ReactiveReasoning : public ReactiveReasoning {
 private:
     //attributes
     bool hasCustom2 = false;
@@ -18,7 +18,7 @@ private:
     //registration
     void registerFunctions() override;
 public:
-    Cash6ReactiveReasoning(int pProcessLength1, int pProcessLength2, StateShop* pStateShop, Logger* pLogger) :
+    Cash5ReactiveReasoning(int pProcessLength1, int pProcessLength2, StateShop* pStateShop, Logger* pLogger) :
             ReactiveReasoning(pLogger),  processLength1(pProcessLength1),
             processLength2(pProcessLength2), stateShop(pStateShop) {}
 };

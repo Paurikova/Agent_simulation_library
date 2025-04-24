@@ -7,7 +7,7 @@
 #include <iostream>
 #include <unordered_map>
 
-class Graph2ReactiveReasoning : public ReactiveReasoning {
+class Graph6ReactiveReasoning : public ReactiveReasoning {
 private:
     //attributes
     std::string names[5] = {"in_shop", "in_line1", "in_line2", "t_line1", "t_line2"};
@@ -21,8 +21,8 @@ private:
     void registerFunctions() override;
     void drawBarChart(std::vector<float>& data);
 public:
-    Graph2ReactiveReasoning(int showStep, sf::RenderWindow& window, StateShop* pStateShop, Logger* logger) : ReactiveReasoning(logger),
-                                                                                           showStep(showStep), window(window), stateShop(pStateShop) {
+    Graph6ReactiveReasoning(int showStep, sf::RenderWindow& window, StateShop* pStateShop, Logger* logger) : ReactiveReasoning(logger),
+                                                                                                             showStep(showStep), window(window), stateShop(pStateShop) {
         if (!font.loadFromFile("/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf")) {
             std::cerr << "Failed to load DejaVuSans font!" << std::endl;
         }

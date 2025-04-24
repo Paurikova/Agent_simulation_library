@@ -1,6 +1,6 @@
 //TODO include
-#include "../include/Graph2ReactiveReasoning.h"
-void Graph2ReactiveReasoning::draw(int pSender, int pReceiver, SimTime_t pExecTime, State* state) {
+#include "../include/Graph6ReactiveReasoning.h"
+void Graph6ReactiveReasoning::draw(int pSender, int pReceiver, SimTime_t pExecTime, State* state) {
     //add your code
     logger->log(fmt::format("{}: draw", pReceiver));
     if (window.isOpen()) {
@@ -41,14 +41,14 @@ void Graph2ReactiveReasoning::draw(int pSender, int pReceiver, SimTime_t pExecTi
     }
 }
 
-void Graph2ReactiveReasoning::registerFunctions() {
+void Graph6ReactiveReasoning::registerFunctions() {
     //registration
     registerFunction(1, [this](int pSender, int pReceiver, SimTime_t pExecTime, State* state) {
         draw(pSender, pReceiver, pExecTime, state);
     });
 }
 
-void Graph2ReactiveReasoning::drawBarChart(std::vector<float>& data) {
+void Graph6ReactiveReasoning::drawBarChart(std::vector<float>& data) {
     float barWidth = 50.f;
     float spaceBetweenBars = 20.f;
 

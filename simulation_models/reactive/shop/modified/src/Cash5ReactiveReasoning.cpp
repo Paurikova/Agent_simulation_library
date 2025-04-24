@@ -1,7 +1,7 @@
 //TODO include
-#include "../include/Cash6ReactiveReasoning.h"
+#include "../include/Cash5ReactiveReasoning.h"
 #include "../include/state_line.h"
-void Cash6ReactiveReasoning::endCustomer(int pSender, int pReceiver, SimTime_t pExecTime, State* state) {
+void Cash5ReactiveReasoning::endCustomer(int pSender, int pReceiver, SimTime_t pExecTime, State* state) {
     //add your code
     StateLine* stateLine = dynamic_cast<StateLine*>(state);
     logger->log(fmt::format("{}: endCustomer (Line {})\n", pReceiver, stateLine->line));
@@ -12,7 +12,7 @@ void Cash6ReactiveReasoning::endCustomer(int pSender, int pReceiver, SimTime_t p
     }
     sendMessage(4, pExecTime, pReceiver, 3, -1, stateLine);
 }
-void Cash6ReactiveReasoning::processCustomer(int pSender, int pReceiver, SimTime_t pExecTime, State* state) {
+void Cash5ReactiveReasoning::processCustomer(int pSender, int pReceiver, SimTime_t pExecTime, State* state) {
     //add your code
     StateLine* stateLine = dynamic_cast<StateLine*>(state);
     logger->log(fmt::format("{}: processCustomer (Line {})", pReceiver, stateLine->line));
@@ -26,7 +26,7 @@ void Cash6ReactiveReasoning::processCustomer(int pSender, int pReceiver, SimTime
     logger->log(fmt::format("  [{}]\n", stateLine->line == 0 ? processLength1 : processLength2));
     sendMessage(3, pExecTime + (stateLine->line == 0 ? processLength1 : processLength2), pReceiver, pReceiver, -1, stateLine);
 }
-void Cash6ReactiveReasoning::acceptCustomer(int pSender, int pReceiver, SimTime_t pExecTime, State* state) {
+void Cash5ReactiveReasoning::acceptCustomer(int pSender, int pReceiver, SimTime_t pExecTime, State* state) {
     //add your code
     StateLine *stateLine = dynamic_cast<StateLine *>(state);
     logger->log(fmt::format("{}: acceptCustomer (Line {})\n", pReceiver, stateLine->line));
@@ -37,7 +37,7 @@ void Cash6ReactiveReasoning::acceptCustomer(int pSender, int pReceiver, SimTime_
     delete state;
 }
 
-void Cash6ReactiveReasoning::registerFunctions() {
+void Cash5ReactiveReasoning::registerFunctions() {
     //registration
     registerFunction(3, [this](int pSender, int pReceiver, SimTime_t pExecTime, State* state) {
         endCustomer(pSender, pReceiver, pExecTime, state);
