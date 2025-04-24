@@ -1,3 +1,3 @@
-# For running simmulation models
+# For running simulation models
 sudo apt-get install libfmt-dev
 sudo apt-get install fonts-dejavu
