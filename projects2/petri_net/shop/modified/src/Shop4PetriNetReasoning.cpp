@@ -1,4 +1,5 @@
 #include "../include/Shop4PetriNetReasoning.h"
+#include "../include/state_line.h"
 NodeId_t Shop4PetriNetReasoning::addCustomerToLine(int pSender, int pReceiver, SimTime_t pExecTime, State* state) {
     //add your code
     logger->log(fmt::format("{}: addCustomerToLine", pReceiver));
@@ -6,16 +7,25 @@ NodeId_t Shop4PetriNetReasoning::addCustomerToLine(int pSender, int pReceiver, S
     sendMessage(1, pExecTime, pReceiver, pReceiver+1);
     return -1;
 }
-NodeId_t Shop4PetriNetReasoning::removeCustomer_fun2_fun177(int pSender, int pReceiver, SimTime_t pExecTime, State* state) {
+NodeId_t Shop4PetriNetReasoning::removeCustomer_fun177(int pSender, int pReceiver, SimTime_t pExecTime, State* state) {
     //add your code
+    logger->log(fmt::format("{}: removeCustomer_fun177", pReceiver));
+    delete state;
     return -1;
 }
-NodeId_t Shop4PetriNetReasoning::removeCustomer_fun1_fun174(int pSender, int pReceiver, SimTime_t pExecTime, State* state) {
+NodeId_t Shop4PetriNetReasoning::removeCustomer_fun174(int pSender, int pReceiver, SimTime_t pExecTime, State* state) {
     //add your code
+    logger->log(fmt::format("{}: removeCustomer_fun174", pReceiver));
+    sendMessage(1, pExecTime + 1, pReceiver, 5, 1, state);
     return -1;
 }
-NodeId_t Shop4PetriNetReasoning::Condition_cond169(int pSender, int pReceiver, SimTime_t pExecTime, State* state) {
-    if () {
+NodeId_t Shop4PetriNetReasoning::removeCustomer_cond169(int pSender, int pReceiver, SimTime_t pExecTime, State* state) {
+    logger->log(fmt::format("{}: removeCustomer_cond169", pReceiver));
+    stateShop->custInShop -= 1;
+    logger->log(fmt::format("  [{}]\n", stateShop->custInShop));
+    StateLine* stateLine = dynamic_cast<StateLine*>(state);
+    if (stateLine->line == 0 ? (stateShop->custInLine0.size() > 0)
+                             : (stateShop->custInLine1.size() > 0)) {
         //add your code
         return 174;
     } else {
@@ -52,13 +62,13 @@ void Shop4PetriNetReasoning::registerNodes() {
         return addCustomerToLine(pSender, pReceiver, pExecTime, state);
     });
     registerNode(177, [this](int pSender, int pReceiver, SimTime_t pExecTime, State* state)->NodeId_t{
-        return removeCustomer_fun2_fun177(pSender, pReceiver, pExecTime, state);
+        return removeCustomer_fun177(pSender, pReceiver, pExecTime, state);
     });
     registerNode(174, [this](int pSender, int pReceiver, SimTime_t pExecTime, State* state)->NodeId_t{
-        return removeCustomer_fun1_fun174(pSender, pReceiver, pExecTime, state);
+        return removeCustomer_fun174(pSender, pReceiver, pExecTime, state);
     });
     registerNode(169, [this](int pSender, int pReceiver, SimTime_t pExecTime, State* state)->NodeId_t{
-        return Condition_cond169(pSender, pReceiver, pExecTime, state);
+        return removeCustomer_cond169(pSender, pReceiver, pExecTime, state);
     });
     registerNode(166, [this](int pSender, int pReceiver, SimTime_t pExecTime, State* state)->NodeId_t{
         return newCustomer(pSender, pReceiver, pExecTime, state);
