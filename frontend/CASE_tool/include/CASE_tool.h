@@ -188,7 +188,7 @@ bool Splitter(bool split_vertically, float thickness, float* size1, float* size2
 
 struct CASE_tool : public Application {
     using Application::Application;
-    const std::string PROJECT_PATH = "/home/miska/CLionProjects/Agent_simulation_library";
+    const std::string PROJECT_PATH = "[path to library]";
     const std::string CASE_TOOL_PATH = PROJECT_PATH + "/frontend/CASE_tool";
     const std::string RESOURCE_PATH = CASE_TOOL_PATH + "/resources"; /**< Default path to resources. */
     typedef int AgentId;

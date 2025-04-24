@@ -20,7 +20,7 @@ using json = nlohmann::json;
  */
 class AgentGenerator {
 private:
-    const std::string RESOURCE_PATH = "/home/miska/CLionProjects/Agent_simulation_library/frontend/CASE_tool";
+    const std::string RESOURCE_PATH = "[path to library]/frontend/CASE_tool";
     // reactive templates
     const std::string TEMPLATE_REACTIVE_JSON = "templatesReactive.json"; /**< Default template JSON file name. */
     const std::string CLASS_REACTIVE_H = "templateReactive_h.txt"; /**< Default template header file name. */

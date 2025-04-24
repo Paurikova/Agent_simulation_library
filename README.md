@@ -19,3 +19,9 @@
 - **Shop_reactive** - Shop simulation using reactive agents.
 - **Shop_petri_net** - Shop simulation using Petri nets.
 - **CASE_tool** - CASE tool for creating models used by the Agent simulation library.
+
+### Before the first run:
+Set **[path to library]** in:
+- **agentGenerator.h** [line: 23]
+- **CASE_tool.h** [line: 191]
+- **logger.h** [line: 22]

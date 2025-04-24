@@ -19,7 +19,7 @@ private:
     FileManager* fileManager = new FileManager();
     bool console;
     std::string data;
-    std::string path = "/home/miska/CLionProjects/Agent_simulation_library/logs";
+    std::string path = "[path to library]/logs";
 
 public:
 
