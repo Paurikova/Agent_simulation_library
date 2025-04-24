@@ -1,3 +1,3 @@
-add_subdirectory(flocking_model_intelligent)
-add_subdirectory(flocking_model_stupid)
 add_subdirectory(shop)
+add_subdirectory(flocking_model_basic)
+add_subdirectory(flocking_model_intelligent)
