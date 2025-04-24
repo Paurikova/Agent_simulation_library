@@ -2,6 +2,7 @@
 
 #include "imgui_internal.h"
 #include "../include/types_frontend.h"
+#include <algorithm>
 
 static inline auto ImGui_GetItemRect() -> ImRect
 {
@@ -1448,7 +1449,7 @@ void CASE_tool::OnFrame(float deltaTime) {
 void CASE_tool::DeleteNode(ed::NodeId nodeId) {
     // find deleted node
     Node* node = FindNode(nodeId);
-    if (node->Deleted) return;
+    if (!node || node->Deleted) return;
     //we don't wanna delete master node
     if ((node->Type == NodeType::ExtAgent && node->ID.Get() == 1) ||
         (node->Type == NodeType::RespAgent && FindNode(node->OutsideId)->ID.Get() == 1))
@@ -1462,17 +1463,19 @@ void CASE_tool::DeleteNode(ed::NodeId nodeId) {
         ed::NodeId outsideId = node->OutsideId;
         DeleteNode(outsideId);
         node = FindNode(nodeId);
+        if (!node) return;
         m_Inside = 0;
     }
 
     // if node is associated by other node, delete them as first
     if (!node->InsideIds.empty()) {
         //delete all inside nodes
-        while(!node->InsideIds.empty()) {
+        while (!node->InsideIds.empty()) {
             ed::NodeId id = node->InsideIds.back();
             node->InsideIds.pop_back();
             DeleteNode(id);
             node = FindNode(nodeId);
+            if (!node) return;
         }
     }
     // if node is Responsible Service, delete service node that is associated with this node
@@ -1482,38 +1485,53 @@ void CASE_tool::DeleteNode(ed::NodeId nodeId) {
             node->AssociatedIds.pop_back();
             DeleteNode(id);
             node = FindNode(nodeId);
+            if (!node) return;
         }
     }
 
     // delete node links and pins
     for(Pin& pin: node->Inputs) {
         DeleteLinks(pin);
-        if (!pin.PinBuffer->deleted) delete pin.PinBuffer;
-        pin.PinBuffer->deleted = true;
+        if (pin.PinBuffer && !pin.PinBuffer->deleted) {
+            pin.PinBuffer->deleted = true;
+            delete pin.PinBuffer;
+            pin.PinBuffer = nullptr;
+        }
     }
+
     for(Pin& pin: node->Outputs) {
         DeleteLinks(pin);
-        if (!pin.PinBuffer->deleted) delete pin.PinBuffer;
-        pin.PinBuffer->deleted = true;
+        if (pin.PinBuffer && !pin.PinBuffer->deleted) {
+            pin.PinBuffer->deleted = true;
+            delete pin.PinBuffer;
+            pin.PinBuffer = nullptr;
+        }
     }
+
     //delete node id from outside node
     Node* outsideNode = FindNode(node->OutsideId);
     if (outsideNode && !outsideNode->Deleted) {
-        auto id = std::find_if(outsideNode->InsideIds.begin(), outsideNode->InsideIds.end(),
-                               [nodeId](auto &insideId) { return insideId == nodeId; });
-        if (id != outsideNode->InsideIds.end())
-            outsideNode->InsideIds.erase(id);
+        auto it = std::find_if(outsideNode->InsideIds.begin(), outsideNode->InsideIds.end(),
+                               [nodeId](const ed::NodeId& insideId) {
+                                   return insideId == nodeId;
+                               });
+        if (it != outsideNode->InsideIds.end()) {
+            outsideNode->InsideIds.erase(it);
+        }
     }
     //delete node
     //if node is ext agent, delete it from agent list and go up
     if (node->Type == NodeType::ExtAgent) {
-        auto id = std::find_if(m_Agents.begin(), m_Agents.end(),
-                               [nodeId](auto &insideId) { return insideId == nodeId; });
-        if (id != m_Agents.end()) {
-            m_Agents.erase(id);
+        auto it = std::find_if(m_Agents.begin(), m_Agents.end(),
+                               [nodeId](const ed::NodeId& agentId) {
+                                   return agentId == nodeId;
+                               });
+        if (it != m_Agents.end()) {
+            m_Agents.erase(it);
         }
         m_Inside = 0;
     }
+
     auto id = std::find_if(m_Nodes.begin(), m_Nodes.end(),
                            [nodeId](auto &node) { return node.ID == nodeId; });
     if (id != m_Nodes.end()) {
@@ -1523,30 +1541,36 @@ void CASE_tool::DeleteNode(ed::NodeId nodeId) {
 
 void CASE_tool::DeleteLinks(Pin& pin) {
     //loop over all link id assocaited with the pin
-    while(!pin.LinkIds.empty()) {
-        auto& linkId = pin.LinkIds.back();
+    while (!pin.LinkIds.empty()) {
+        auto linkId = pin.LinkIds.back();
+        pin.LinkIds.pop_back();
         DeleteLink(linkId);
     }
 }
 
 void CASE_tool::DeleteLink(ed::LinkId linkId) {
-    auto id = std::find_if(m_Links.begin(), m_Links.end(),
-                           [linkId](auto &link) { return link.ID == linkId; });
-    if (id != m_Links.end()) {
-        Link* link = FindLink(linkId);
-        //delete link id from associated pins
-        Pin* pin = FindPin(link->StartPinID);
-        DeleteLinkId(pin, linkId);
-        pin = FindPin(link->EndPinID);
-        DeleteLinkId(pin, linkId);
-        m_Links.erase(id);
+    auto it = std::find_if(m_Links.begin(), m_Links.end(),
+                           [linkId](auto& link) { return link.ID == linkId; });
+
+    if (it != m_Links.end()) {
+        if (Link* link = FindLink(linkId)) {
+            if (Pin* start = FindPin(link->StartPinID)) {
+                DeleteLinkId(start, linkId);
+            }
+            if (Pin* end = FindPin(link->EndPinID)) {
+                DeleteLinkId(end, linkId);
+            }
+        }
+        m_Links.erase(it);
     }
 }
 
-void CASE_tool::DeleteLinkId(Pin* otherPin, ed::LinkId linkId) {
-    auto otherId = std::find_if(otherPin->LinkIds.begin(), otherPin->LinkIds.end(),
-                                [linkId](auto &otherLinkId) { return otherLinkId == linkId; });
-    otherPin->LinkIds.erase(otherId);
+void CASE_tool::DeleteLinkId(Pin* pin, ed::LinkId linkId) {
+    if (!pin) return;
+    auto it = std::find(pin->LinkIds.begin(), pin->LinkIds.end(), linkId);
+    if (it != pin->LinkIds.end()) {
+        pin->LinkIds.erase(it);
+    }
 }
 
 void CASE_tool::AddInsideNodeId(ed::NodeId outsideId, ed::NodeId insideId) {
